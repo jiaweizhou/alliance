@@ -13,9 +13,9 @@ class m151027_135904_usertocards extends Migration
     			'userid'=> Schema::TYPE_INTEGER . ' NOT NULL',
     			'cardnumber' => Schema::TYPE_STRING . ' NOT NULL',
     			],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
-    	$this->createIndex('usertocards', 'userid', 'id');
-    	$this->addForeignKey('useridKey', 'friends', 'userid', 'user', 'id','CASCADE','CASCADE');
-    	$this->createIndex('phone', 'user', 'phone',true);
+    	$this->createIndex( 'userid','usertocards', 'userid');
+    	$this->addForeignKey('useridKey', 'usertocards', 'userid', 'users', 'id','CASCADE','CASCADE');
+    	//$this->createIndex('phone', 'user', 'phone',true);
     }
 
     public function down()

@@ -26,10 +26,13 @@ class m151027_134709_users extends Migration
     			'hobby' => Schema::TYPE_STRING,
     			'signature' => Schema::TYPE_STRING,
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
-    			'updated_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0'
+    			'updated_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
+    			
+    			'channel'=> Schema::TYPE_STRING,
+    			'platform' => Schema::TYPE_STRING,
     			],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
     	//$this->createIndex('user', 'user', 'user',true);
-    	$this->createIndex('phone', 'user', 'phone',true);
+    	$this->createIndex('phone', 'users', 'phone',true);
     }
 
     public function down()
