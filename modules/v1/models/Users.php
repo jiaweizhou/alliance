@@ -11,7 +11,7 @@ use Yii;
  * @property string $phone
  * @property string $pwd
  * @property string $authKey
- * @property integer $fatherid
+ * @property string $fatherid
  * @property integer $directalliancecount
  * @property integer $allalliancecount
  * @property integer $corns
@@ -47,9 +47,9 @@ class Users extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['phone', 'pwd', 'authKey', 'fatherid'], 'required'],
-            [['fatherid', 'directalliancecount', 'allalliancecount', 'corns', 'alliancerewards', 'created_at', 'updated_at'], 'integer'],
-            [['phone', 'pwd', 'authKey', 'thumb', 'gender', 'area', 'job', 'hobby', 'signature', 'channel', 'platform'], 'string', 'max' => 255],
+            [['phone'], 'required'],
+            [[ 'directalliancecount', 'allalliancecount', 'corns', 'alliancerewards', 'created_at', 'updated_at'], 'integer'],
+            [['fatherid','phone', 'pwd', 'authKey', 'thumb', 'gender', 'area', 'job', 'hobby', 'signature', 'channel', 'platform'], 'string', 'max' => 255],
             [['nickname'], 'string', 'max' => 20],
             [['phone'], 'unique']
         ];
@@ -89,7 +89,33 @@ class Users extends \yii\db\ActiveRecord
      */
     public function updateChannel($channel){
     	$this->channel = $channel;
-    	$this->save();
+    	if($this->save()){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
+    public function setFather($fatherphone){
+    	//$result=$this->find()->select()->join('INNER JOIN','users u1',['u1.phone'=>$fatherphone])->join('LEFT JOIN','users u2','u3.phone = u1.fatherid')->join('Left JOIN','users u3','u3.phone = u2.fatherid')->one();
+    	$result=(new \yii\db\Query())
+    		->select('u1.id as f, u2.id as gf ,u3.id as ggf')
+    		->from('users u1')->where('u1.phone=:id',[':id'=>$fatherphone])->join('LEFT JOIN','users u2','u2.phone = u1.fatherid')
+    		->join('Left JOIN','users u3','u3.phone = u2.fatherid')
+    		->one();
+    	//var_dump($result);
+    	if($result){
+    		
+    		$this->fatherid = $fatherphone;
+    		//var_dump($this);
+    		$this->save();
+    		//var_dump();
+    		Users::updateAllCounters(['directalliancecount'=>1,'allalliancecount'=>1],['id'=>$result['f']]);
+    		Users::updateAllCounters(['allalliancecount'=>1],['id'=>$result['gf']]);
+    		Users::updateAllCounters(['allalliancecount'=>1],['id'=>$result['ggf']]);
+    		return true;
+    	}else{
+    		return false;
+    	}
     }
     public function getUsertocards()
     {

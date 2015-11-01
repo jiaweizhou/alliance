@@ -18,7 +18,12 @@ class UsersController extends Controller {
 				'token'=>$token
 		));
 	}
-	
+	public function actionTest(){
+		//$model = Users::find()->where('id = 1')->one();
+		
+		Users::updateAllCounters(['directalliancecount'=>1],['id'=>1]);
+		return array('flag'=>'ok');
+	}
 	//for sign up
 	public function actionSignup() {
 		$model = new Users ();
@@ -51,11 +56,35 @@ class UsersController extends Controller {
 			// return json_encode("sighup success");
 		}
 	}
+	public function actionSetfather(){
+		$data = Yii::$app->request->post ();
+		$user=Users::findOne(['phone'=>$data['phone']]);
+		if ($user){
+			if($user->fatherid!=''){
+				return array('flag'=>0,'msg'=> 'father has been setted');
+			}
+			if($user->setFather($data['fatherphone'])){
+				return array('flag'=>1,'msg'=> 'update father success');
+			}else{
+				return array('flag'=>0,'msg'=> 'update father fail');
+			}
+		}else{
+			return array('flag'=>0,'msg'=> 'can not find the user');
+		}
+	
+	}
 	public function actionSetchannel(){
 		$data = Yii::$app->request->post ();
 		$user=Users::find()->where(['phone'=>$data['phone']])->one();
 		if ($user){
-			$user.updateChannel($data['channel']);
+			if($user.updateChannel($data['channel'])){
+				return array('flag'=>1,'msg'=> 'update user channel success');
+			}else{
+				return array('flag'=>0,'msg'=> 'update user channel fail');
+			}
+		}else{
+			return array('flag'=>0,'msg'=> 'can not find the user');
 		}
+		
 	}
 }

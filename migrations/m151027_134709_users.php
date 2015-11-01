@@ -13,7 +13,7 @@ class m151027_134709_users extends Migration
     			'phone' => Schema::TYPE_STRING . ' NOT NULL',
     			'pwd' => Schema::TYPE_STRING . ' NOT NULL',
     			'authKey' => Schema::TYPE_STRING . ' NOT NULL',
-    			'fatherid' =>  Schema::TYPE_INTEGER . ' NOT NULL',
+    			'fatherid' =>  Schema::TYPE_STRING ,
     			'directalliancecount'=>Schema::TYPE_BIGINT . ' DEFAULT 0',
     			'allalliancecount'=>Schema::TYPE_BIGINT . ' DEFAULT 0',
     			'corns'=>Schema::TYPE_BIGINT . ' DEFAULT 0',
