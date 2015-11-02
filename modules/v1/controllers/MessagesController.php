@@ -19,7 +19,7 @@ use app\modules\v1\models\Replys;
 // use app\modules\v1\models\Appl;
 
 class MessagesController extends Controller {
-	public $modelClass = 'app\modules\v1\models\Message';
+	public $modelClass = 'app\modules\v1\models\Messages';
 	public $serializer = [ 
 			'class' => 'yii\rest\Serializer',
 			'collectionEnvelope' => 'items' 
@@ -33,58 +33,61 @@ class MessagesController extends Controller {
 
 	public function actionGet() {
 		$data = Yii::$app->request->post ();
-		$phone = User::findOne ( [ 
+		$phone = Users::findOne ( [ 
 				'phone' => $data ['phone'] 
 		] );
 		// $data = Message::find ()->select ( 'msg.id' )->join ( 'INNER JOIN', 'friends', ' msg.userid =friends.friendid and msg.userid = :id ', [':id' => Yii::$app->user->id ]);
-		$data = Message::find ()->select ( 'msg.id' )->join ( 'INNER JOIN', 'friends', ' msg.userid =friends.friendid and friends.myid = :id  or msg.userid = :id', [ 
+		$data = Messages::find ()->distinct()->select ('messages.id')->join ( 'INNER JOIN', 'friends', ' messages.userid =friends.friendid and friends.myid = :id  or messages.userid = :id', [ 
 				':id' => $phone ['id'] 
 		] );
-// 		$pages = new \yii\data\Pagination ( [ 
-// 				'totalCount' => $data->count (),
-// 				'pageSize' => '10' 
-// 		] );
-		//$models = $data->orderBy ( "msg.created_at desc" )->offset ( $pages->offset )->limit ( $pages->limit )->all ();
+		$pages = new \yii\data\Pagination ( [ 
+				'totalCount' => $data->count (),
+				'pageSize' => '10' 
+		] );
+		$models = $data->orderBy ( "messages.created_at desc" )->offset ( $pages->offset )->limit ( $pages->limit )->all ();
 		//$models = $data->orderBy ( "msg.created_at desc" )->limit ( $pages->limit )->all ();
-		$models = $data->orderBy ( "msg.created_at desc" )->all ();
+		//$models = $data->orderBy ( "msg.created_at desc" )->all ();
 		$result = array ();
 		$result ['item'] = array ();
 		foreach ( $models as $model ) {
 			$msg = (new \yii\db\Query ())->select ( [ 
-					'msg.*',
-					'user.nickname',
-					'user.thumb' 
-			] )->from ( 'msg' )->join ( 'INNER JOIN', 'user', 'msg.userid = user.id and msg.id = :id', [ 
+					'messages.*',
+					'users.phone',
+					'users.nickname',
+					'users.thumb' 
+			] )->from ( 'messages' )->join ( 'INNER JOIN', 'users', 'messages.userid = users.id and messages.id = :id', [ 
 					':id' => $model ['id'] 
 			] )->one ();
 			$info = $msg;
-			//$info['appkinds'] = explode(" ", $info['appkinds']);
-			$info ['apps'] = (new \yii\db\Query ())->select ( [ 
-					'app.*' 
-			] )->from ( 'msg' )->join ( 'INNER JOIN', 'app', 'app.version>\'\' and msg.appid = app.id and msg.id = :id', [ 
-					':id' => $model ['id'] 
-			] )->all ();
+			//unset($msg['id']);
+			//$info['appkinds'] = explode(" ", $info['appkinds']);msg
+			
+			$info ['pictures'] = (new \yii\db\Query ())->select ( [ 
+					'messagetopictures.picture' 
+			] )->from ('messagetopictures')
+			->where(['messageid' => $msg['id']])->all();
 			
 			$info ['replys'] = (new \yii\db\Query ())->select ( [ 
-					'reply.*',
+					'replys.*',
 					'user1.nickname as fromnickname',
 					'user1.phone as fromphone',
 					'user2.nickname as tonickname',
 					'user2.phone as tophone' 
-			] )->from ( 'reply' )->join ( 'INNER JOIN', 'user user1', 'user1.id = reply.fromid and reply.msgid= :id', [ 
+			] )->from ( 'replys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = replys.fromid and replys.messageid = :id', [ 
 					':id' => $model ['id'] 
-			] )->join ( 'Left JOIN', 'user user2', 'user2.id = reply.toid' )->orderBy ( "reply.created_at" )->all ();
+			] )->join ( 'Left JOIN', 'users user2', 'user2.id = replys.toid' )->orderBy ( "replys.created_at" )->all ();
+			
 			$info['zan']=(new \yii\db\Query())
-			->select('u.phone,u.nickname')->from('zan z')
-			->join('INNER JOIN','user u','u.id=z.myid and z.msgid=:id',[':id'=>$model ['id'] ])
+			->select('u.phone,u.nickname')->from('zans z')
+			->join('INNER JOIN','users u','u.id=z.userid and z.msgid=:id',[':id'=>$model ['id'] ])
 			->all();
 			
 			$result ['item'] [] = $info;
 		}
-// 		$result ['_meta'] = array (
-// 				'pageCount' => $pages->pageCount,
-// 				'currentPage' => $pages->page + 1 
-// 		);
+		$result ['_meta'] = array (
+				'pageCount' => $pages->pageCount,
+				'currentPage' => $pages->page + 1 
+		);
 		return $result;
 		// return $model;
 	}
@@ -209,48 +212,51 @@ class MessagesController extends Controller {
 	}
 	public function actionReply() {
 		$data = Yii::$app->request->post ();
-		$user=new User();
-		$fromphone=$user->find()->select('id')->where(['phone'=>$data['fphone']])->one();
-		$model=new Reply();
+		//$user=new Users();
+		$fromphone=Users::find()->select('id')->where(['phone'=>$data['fphone']])->one();
+		//var_dump($fromphone);
+		$model=new Replys();
 		if($data['tphone']==''){
 			$model->toid=0;
 		}else{
-			$tophone=$user->find()->select('id')->where(['phone'=>$data['tphone']])->one();
+			$tophone=Users::find()->select('id')->where(['phone'=>$data['tphone']])->one();
+			//var_dump($tophone);
 			$model->toid=$tophone['id'];
 		}
-		$to=Message::findOne(['id'=>$data['msgid']]);
-		if($fromphone['id']!=$to['id']){
-			$model3=new Notify();
-			$model3->from=$fromphone['id'];
-			$model3->to=$to['userid'];
-			//$model3->kind='评论';
-			$model3->kind=$data['content'];
-			$model3->created_at=time();
-			$model3->msg_id=$data['msgid'];
-			if(!$model3->save()){
-				echo json_encode ( array (
-						'flag' => 0,
-						'msg' => 'Reply failed!'
-				));
-				return;
-			}
-		}
+// 		$to=Messages::findOne(['id'=>$data['msgid']]);
+// 		if($fromphone['id']!=$to['id']){
+// 			$model3=new Notify();
+// 			$model3->from=$fromphone['id'];
+// 			$model3->to=$to['userid'];
+// 			//$model3->kind='评论';
+// 			$model3->kind=$data['content'];
+// 			$model3->created_at=time();
+// 			$model3->msg_id=$data['msgid'];
+// 			if(!$model3->save()){
+// 				echo json_encode ( array (
+// 						'flag' => 0,
+// 						'msg' => 'Reply failed!'
+// 				));
+// 				return;
+// 			}
+// 		}
+		
 		$model->fromid=$fromphone['id'];
-		$model->msgid=$data['msgid'];
+		$model->messageid=$data['msgid'];
 		$model->content=$data['content'];
 		$model->isread=0;
 		$model->created_at=time();
-		
+		//var_dump($model);
 		if($model->save()){
-			echo json_encode ( array (
+			return array (
 					'flag' => 1,
 					'msg' => 'Reply success!'
-			) );
+			);
 		}else{
-			echo json_encode ( array (
+			return array (
 					'flag' => 0,
 					'msg' => 'Reply failed!'
-					));
+			);
 		}
 	}
 	public function actionBeforeSend(){
