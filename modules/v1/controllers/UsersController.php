@@ -20,9 +20,9 @@ class UsersController extends Controller {
 	}
 	public function actionTest(){
 		//$model = Users::find()->where('id = 1')->one();
-		
-		Users::updateAllCounters(['directalliancecount'=>1],['id'=>1]);
-		return array('flag'=>'ok');
+		$data = Yii::$app->request->post();
+		$user=Users::find()->where(['phone'=>$data['phone']])->one();
+		return $user;
 	}
 	//for sign up
 	public function actionSignup() {
