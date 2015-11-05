@@ -172,10 +172,10 @@ class RecommendationsController extends Controller
 		unset($data['recommendationid']);
 		
 		foreach ($data as $item=>$arg ){
-			$applyjob->$item = $arg;
+			$recommendation->$item = $arg;
 		}
 		
-        if ($applyjob->save()) {
+        if ($recommendation->save()) {
             return 	array (
         			'flag' => 1,
         			'msg' => 'update job applying success!'
