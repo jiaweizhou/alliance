@@ -72,14 +72,14 @@ class RecommendationcommentsController extends Controller
     public function actionUpdate()
     {
     	$data=Yii::$app->request->post();
-    	if(!isset($data['phone'])||!isset($data['recommendationid'])){
+    	if(!isset($data['phone'])||!isset($data['recommendationcommentid'])){
     		return 	array (
     				'flag' => 0,
     				'msg' => 'no enough arg!'
     		);
     	}
     	$user = Users::findOne(['phone'=>$data['phone']]);
-    	$recommendation=$this->findModel($data['recommendationid']);
+    	$recommendation=$this->findModel($data['recommendationcommentid']);
     	if (!$recommendation||!$user){
     		return  array (
     				'flag' => 0,
@@ -122,14 +122,14 @@ class RecommendationcommentsController extends Controller
     public function actionDelete()
     {
     	$data=Yii::$app->request->post();
-    	if(!isset($data['phone'])||!isset($data['recommendationid'])){
+    	if(!isset($data['phone'])||!isset($data['recommendationcommentid'])){
     		return 	array (
     				'flag' => 0,
     				'msg' => 'no enough arg!'
     		);
     	}
     	$user = Users::findOne(['phone'=>$data['phone']]);
-        $recommendation=$this->findModel($data['recommendationid']);
+        $recommendation=$this->findModel($data['recommendationcommentid']);
         if (!$recommendation||!$user){
         	return  array (
 						'flag' => 0,

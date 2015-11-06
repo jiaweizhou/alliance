@@ -73,7 +73,7 @@ class DatersController extends Controller
         if(!$user){
         	return 	array (
         			'flag' => 0,
-        			'msg' => 'create recommendation fail!'
+        			'msg' => 'create dater fail!'
         	);
         }
         $data['userid'] = $user->id;
@@ -84,13 +84,13 @@ class DatersController extends Controller
         if ($model->save()) {
             return 	array (
         			'flag' => 1,
-        			'msg' => 'create recommendation success!'
+        			'msg' => 'create dater success!'
         	);
         } else {
         	//var_dump($model->errors);
             return 	array (
         			'flag' => 0,
-        			'msg' => 'create recommendation fail!'
+        			'msg' => 'create dater fail!'
         	);
         }
     }

@@ -12,7 +12,7 @@ class m151105_113251_recommendations extends Migration
     			'id' => Schema::TYPE_PK,
     			'userid' => Schema::TYPE_INTEGER ,
     			'title' => Schema::TYPE_STRING . ' NOT NULL',
-    			'kind' => Schema::TYPE_INTEGER . ' NOT NULL',
+    			'kindid' => Schema::TYPE_INTEGER . ' NOT NULL',
     			'location' => Schema::TYPE_BIGINT . ' NOT NULL',
     			'sellerphone' => Schema::TYPE_STRING . ' DEFAULT ""',
     			'reason' => Schema::TYPE_STRING . ' DEFAULT ""',
@@ -29,7 +29,7 @@ class m151105_113251_recommendations extends Migration
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
     			],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
     	$this->addForeignKey('rcuseridKey', 'recommendations', 'userid', 'users', 'id','CASCADE','CASCADE');
-    	$this->addForeignKey('rcpid', 'recommendations', 'kind', 'kindsofrecommendation', 'id','CASCADE','CASCADE');
+    	$this->addForeignKey('rcpid', 'recommendations', 'kindid', 'kindsofrecommendation', 'id','CASCADE','CASCADE');
     }
 
     public function down()

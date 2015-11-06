@@ -40,7 +40,7 @@ class RecommendationsController extends Controller
 			}
 			
 			if(isset($data['kindid'])){
-				$query->andFilterWhere(['kind' => $data['kindid']]);
+				$query->andFilterWhere(['kindid' => $data['kindid']]);
 			}
 			if(isset($data['title'])){
 				$query->andFilterWhere(['like', 'title',$data['title']]);
@@ -88,7 +88,7 @@ class RecommendationsController extends Controller
         $model = new Recommendations();
         $data=Yii::$app->request->post();
         
-        if(empty($data['phone'])||empty($data['title'])||empty($data['location'])||empty($data['kind'])||empty($data['reason'])){
+        if(empty($data['phone'])||empty($data['title'])||empty($data['location'])||empty($data['kindid'])||empty($data['reason'])){
         	return 	array (
         			'flag' => 0,
         			'msg' => 'no enough arg!'
@@ -104,12 +104,12 @@ class RecommendationsController extends Controller
         }
         unset($data['phone']);
         $model->title = isset($data['title'])?$data['title']:'';
-        $model->kind = $data['kind'];
+        $model->kindid = $data['kindid'];
         $model->location = $data['location'];
         $model->sellerphone = isset($data['sellerphone'])?$data['sellerphone']:'';
         $model->reason = isset($data['reason'])?$data['reason']:'';
         $i=0;
-        for($i=0;$i<=9;$i++){
+        for($i=1;$i<=9;$i++){
         	$model->setAttribute('picture'. $i, isset($data['picture' . $i])?$data['picture' . $i]:'');
         }
 //         if(is_array($data['picture'])){

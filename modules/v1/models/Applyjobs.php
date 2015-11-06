@@ -17,7 +17,7 @@ use Yii;
  * @property integer $hidephone
  * @property string $content
  * @property integer $professionid
- * @property string $create_at
+ * @property string $created_at
  *
  * @property Professions $profession
  * @property Users $user
@@ -38,7 +38,7 @@ class Applyjobs extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userid', 'jobproperty', 'degree', 'hidephone', 'professionid','work_at','create_at'], 'integer'],
+            [['userid', 'jobproperty', 'degree', 'hidephone', 'professionid','work_at','created_at'], 'integer'],
             [['jobproperty', 'title', 'degree', 'work_at', 'status', 'content'], 'required'],
             [['title', 'status', 'content'], 'string', 'max' => 255]
         ];

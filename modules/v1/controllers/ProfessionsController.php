@@ -18,15 +18,17 @@ class ProfessionsController extends Controller
      * Lists all Professions models.
      * @return mixed
      */
-    public function actionIndex()
+	public $serializer = [
+			'class' => 'yii\rest\Serializer',
+			'collectionEnvelope' => 'items'
+	];
+    public function actionList()
     {
         $dataProvider = new ActiveDataProvider([
             'query' => Professions::find(),
         ]);
 
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
+        return $dataProvider;
     }
 
     /**
