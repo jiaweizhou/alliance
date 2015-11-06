@@ -29,7 +29,7 @@ class ApplyjobsController extends Controller
 	public function actionSearch()
 	{ 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('applyjobs.*,users.phone,users.nickname,users.thumb')->from('applyjobs')->orderBy('created_at desc')->join('INNER JOIN','users','applyjobs.userid = users.id');
+		$query = (new \yii\db\Query ())->select('applyjobs.*,users.phone,users.nickname,users.thumb,professions.profession')->from('applyjobs')->orderBy('created_at desc')->join('INNER JOIN','users','applyjobs.userid = users.id')->join('INNER JOIN','professions','applyjobs.professionid = professions.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
