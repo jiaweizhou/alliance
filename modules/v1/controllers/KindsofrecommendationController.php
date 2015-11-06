@@ -24,11 +24,12 @@ class KindsofrecommendationController extends Controller
 	];
     public function actionList()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Kindsofrecommendation::find(),
-        ]);
+//         $dataProvider = new ActiveDataProvider([
+//             'query' => Kindsofrecommendation::find(),
+//         ]);
 
-        return $dataProvider;
+//         return $dataProvider;
+    	return Kindsofrecommendation::find()->all();
     }
 
     /**

@@ -24,11 +24,11 @@ class HobbiesController extends Controller
 	];
     public function actionList()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Hobbies::find(),
-        ]);
+//         $dataProvider = new ActiveDataProvider([
+//             'query' => Hobbies::find(),
+//         ]);
 
-        return $dataProvider;
+        return Hobbies::find()->all();
     }
 
     /**

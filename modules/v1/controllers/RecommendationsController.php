@@ -29,7 +29,7 @@ class RecommendationsController extends Controller
 	public function actionSearch()
 	{ 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('recommendations.*')->from('recommendations')->join('INNER JOIN','users','recommendations.userid = users.id');
+		$query = (new \yii\db\Query ())->select('recommendations.*,kindsofrecommendation.kind')->from('recommendations')->join('INNER JOIN','users','recommendations.userid = users.id')->join('INNER JOIN','kindsofrecommendation','recommendations.kindid = kindsofrecommendation.id');
 // 		$dataProvider = new ActiveDataProvider([
 // 				'query' => $query,
 // 		]);

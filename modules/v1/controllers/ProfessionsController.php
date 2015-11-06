@@ -24,11 +24,12 @@ class ProfessionsController extends Controller
 	];
     public function actionList()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => Professions::find(),
-        ]);
+//         $dataProvider = new ActiveDataProvider([
+//             'query' => Professions::find(),
+//         ]);
 
-        return $dataProvider;
+//         return $dataProvider;
+        return Professions::find()->all();
     }
 
     /**
