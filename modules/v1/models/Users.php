@@ -15,6 +15,9 @@ use Yii;
  * @property integer $directalliancecount
  * @property integer $allalliancecount
  * @property integer $corns
+ * @property integer $money
+ * @property integer $envelope
+ * @property integer $cornsforgrab
  * @property integer $alliancerewards
  * @property string $nickname
  * @property string $thumb
@@ -48,7 +51,7 @@ class Users extends \yii\db\ActiveRecord
     {
         return [
             [['phone'], 'required'],
-            [[ 'directalliancecount', 'allalliancecount', 'corns', 'alliancerewards', 'created_at', 'updated_at'], 'integer'],
+            [[ 'directalliancecount', 'allalliancecount', 'money','corns','envelope','cornsforgrab', 'alliancerewards', 'created_at', 'updated_at'], 'integer'],
             [['fatherid','phone', 'pwd', 'authKey', 'thumb', 'gender', 'area', 'job', 'hobby', 'signature', 'channel', 'platform'], 'string', 'max' => 255],
             [['nickname'], 'string', 'max' => 20],
             [['phone'], 'unique']

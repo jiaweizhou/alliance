@@ -16,7 +16,11 @@ class m151027_134709_users extends Migration
     			'fatherid' =>  Schema::TYPE_INTEGER . ' DEFAULT 0',
     			'directalliancecount'=>Schema::TYPE_BIGINT . ' DEFAULT 0',
     			'allalliancecount'=>Schema::TYPE_BIGINT . ' DEFAULT 0',
+    			
     			'corns'=>Schema::TYPE_BIGINT . ' DEFAULT 0',
+    			'envelope' => Schema::TYPE_BIGINT . ' DEFAULT 0',
+    			'cornsforgrab' => Schema::TYPE_BIGINT . ' DEFAULT 0',
+    			
     			'alliancerewards'=>Schema::TYPE_BIGINT . ' DEFAULT 0',
     			'nickname' => Schema::TYPE_STRING . '(20) ',
     			'thumb' => Schema::TYPE_STRING. ' DEFAULT "" ',
