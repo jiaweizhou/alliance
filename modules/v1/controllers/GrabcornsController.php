@@ -28,6 +28,11 @@ class GrabcornsController extends Controller
      * @return mixed
      */
 
+	public function actionGetthree(){
+		$data=Yii::$app->request->post();
+		return  (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns')->where('grabcorns.islotteried = 0 and end_at = 0 and foruser = 0')->limit(3)->all();
+
+	}
 	public function actionSearch()
 	{ 
 // 		$data=Yii::$app->request->post();
@@ -90,7 +95,7 @@ class GrabcornsController extends Controller
 					'msg' => 'no enough arg!'
 			);
 		}
-		$grabcorn = (new \yii\db\Query ())->select('grabcorns.*')->from('grabcorns')->where(['id'=>$data['grabcornid']])->one();
+		$grabcorn = (new \yii\db\Query ())->select('grabcorns.*')->offset ( 0 )->limit(20)->from('grabcorns')->where(['id'=>$data['grabcornid']])->one();
 		if(!$grabcorn){
 			return 	array (
 					'flag' => 0,

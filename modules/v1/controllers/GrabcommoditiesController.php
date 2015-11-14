@@ -27,7 +27,11 @@ class GrabcommoditiesController extends Controller
      * Lists all Applyjobs models.
      * @return mixed
      */
-
+	public function actionGetthree(){
+		$data=Yii::$app->request->post();
+		return  (new \yii\db\Query ())->orderBy('date desc')->select('id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->from('grabcommodities')->where('grabcommodities.islotteried = 0 and end_at = 0 and foruser = 0')->limit(3)->all();
+	
+	}
 	public function actionSearch()
 	{ 
 // 		$data=Yii::$app->request->post();
