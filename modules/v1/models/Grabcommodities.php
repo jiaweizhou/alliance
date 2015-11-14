@@ -5,7 +5,7 @@ namespace app\modules\v1\models;
 use Yii;
 
 /**
- * This is the model class for table "grabcorns".
+ * This is the model class for table "grabcommodities".
  *
  * @property integer $id
  * @property string $picture
@@ -20,17 +20,18 @@ use Yii;
  * @property integer $winneruserid
  * @property integer $winnerrecordid
  * @property integer $winnernumber
- * 
  * @property integer $foruser
+ *
+ * @property Grabcommodityrecords[] $grabcommodityrecords
  */
-class Grabcorns extends \yii\db\ActiveRecord
+class Grabcommodities extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'grabcorns';
+        return 'grabcommodities';
     }
 
     /**
@@ -40,7 +41,7 @@ class Grabcorns extends \yii\db\ActiveRecord
     {
         return [
             [['title', 'version', 'needed', 'remain', 'created_at', 'date', 'end_at'], 'required'],
-            [['needed', 'left', 'created_at', 'date', 'end_at', 'islotteried', 'winneruserid','winnerrecordid','winnernumber','foruser'], 'integer'],
+            [['needed', 'remain', 'created_at', 'date', 'end_at', 'islotteried', 'winneruserid', 'winnerrecordid', 'winnernumber', 'foruser'], 'integer'],
             [['picture', 'title', 'version'], 'string', 'max' => 255]
         ];
     }
@@ -56,12 +57,23 @@ class Grabcorns extends \yii\db\ActiveRecord
             'title' => 'Title',
             'version' => 'Version',
             'needed' => 'Needed',
-            'left' => 'Left',
+            'remain' => 'Remain',
             'created_at' => 'Created At',
             'date' => 'Date',
             'end_at' => 'End At',
             'islotteried' => 'Islotteried',
-            'winnerid' => 'Winnerid',
+            'winneruserid' => 'Winneruserid',
+            'winnerrecordid' => 'Winnerrecordid',
+            'winnernumber' => 'Winnernumber',
+            'foruser' => 'Foruser',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getGrabcommodityrecords()
+    {
+        return $this->hasMany(Grabcommodityrecords::className(), ['grabcommodityid' => 'id']);
     }
 }

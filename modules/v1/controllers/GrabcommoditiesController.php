@@ -4,7 +4,7 @@ namespace app\modules\v1\controllers;
 
 use Yii;
 use Exception;
-use app\modules\v1\models\Grabcorns;
+use app\modules\v1\models\Grabcommodities;
 use yii\data\ActiveDataProvider;
 use yii\rest\Controller;
 use yii\web\NotFoundHttpException;
@@ -15,9 +15,9 @@ use app\modules\v1\models\app\modules\v1\models;
 /**
  * ApplyjobsController implements the CRUD actions for Applyjobs model.
  */
-class GrabcornsController extends Controller
+class GrabcommoditiesController extends Controller
 {
-	public $modelClass = 'app\modules\v1\models\Grabcorns';
+	public $modelClass = 'app\modules\v1\models\Grabcommodities';
 	public $serializer = [
 			'class' => 'yii\rest\Serializer',
 			'collectionEnvelope' => 'items'
@@ -31,32 +31,32 @@ class GrabcornsController extends Controller
 	public function actionSearch()
 	{ 
 // 		$data=Yii::$app->request->post();
-		$query = Grabcorns::find()->orderBy('created_at desc')->where(['islotteried'=>0]);
+		$query = Grabcommodities::find()->orderBy('created_at desc')->where(['islotteried'=>0]);
 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('grabcorns.*')->from('grabcorns');
+		$query = (new \yii\db\Query ())->select('grabcommodities.*')->from('grabcommodities');
 		// 		$dataProvider = new ActiveDataProvider([
 		// 				'query' => $query,
 		// 		]);
 		
 		if(!empty($data)){
-			$query->andFilterWhere(['grabcorns.islotteried' => isset($data['islotteried'])?$data['islotteried']:0]);
+			$query->andFilterWhere(['grabcommodities.islotteried' => isset($data['islotteried'])?$data['islotteried']:0]);
 
 		}
 		$dataProvider = new \yii\data\Pagination ( [
 				'totalCount' => $query->count (),
 				'pageSize' => '20'
 		] );
-		$models = $query->orderBy ( "grabcorns.created_at desc" )->offset ( $dataProvider->offset )->limit ( $dataProvider->limit )->all ();
+		$models = $query->orderBy ( "grabcommodities.created_at desc" )->offset ( $dataProvider->offset )->limit ( $dataProvider->limit )->all ();
 		//var_dump($models);
 		$result['items'] =array();
 		foreach ( $models as $model ) {
 			$comments = (new \yii\db\Query ())->select ( [
-					'grabcornrecords.*',
+					'grabcommodityrecords.*',
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
-			] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
+			] )->from ( 'grabcommodityrecords' )->orderBy('grabcommodityrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and grabcommodityrecords.grabcommodityid = :id', [
 					':id' => $model ['id']
 			] )->all ();
 			$model['comments'] = $comments;
@@ -83,7 +83,7 @@ class GrabcornsController extends Controller
     public function actionCreate()
     {
     	
-        $model = new Grabcorns();
+        $model = new Grabcommodities();
         $data=Yii::$app->request->post();
         //var_dump(isset($date['content']);
         if(!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['end_at']))){
@@ -101,13 +101,13 @@ class GrabcornsController extends Controller
         if ($model->save()) {
             return 	array (
         			'flag' => 1,
-        			'msg' => 'create grabcorn success!'
+        			'msg' => 'create grabcommodity success!'
         	);
         } else {
         	//var_dump($model->errors);
             return 	array (
         			'flag' => 0,
-        			'msg' => 'create grabcorn fail!'
+        			'msg' => 'create grabcommodity fail!'
         	);
         }
     }
@@ -121,36 +121,36 @@ class GrabcornsController extends Controller
     public function actionUpdate()
     {
     	$data=Yii::$app->request->post();
-    	if(!isset($data['grabcornid'])){
+    	if(!isset($data['grabcommodityid'])){
     		return 	array (
     				'flag' => 0,
     				'msg' => 'no enough arg!'
     		);
     	}
-    	$grabcorn=$this->findModel($data['grabcornid']);
-    	if (!$grabcorn){
+    	$grabcommodity=$this->findModel($data['grabcommodityid']);
+    	if (!$grabcommodity){
     		return  array (
     				'flag' => 0,
-    				'msg' => 'update dater fail!'
+    				'msg' => 'update grabcommodity fail!'
     		);
     	}
         //$model = $this->findModel($id);
 		//unset($data['phone']);
-		unset($data['grabcornid']);
+		unset($data['grabcommodityid']);
 		
 		foreach ($data as $item=>$arg ){
-			$grabcorn->$item = $arg;
+			$grabcommodity->$item = $arg;
 		}
 		
-        if ($grabcorn->save()) {
+        if ($grabcommodity->save()) {
             return 	array (
         			'flag' => 1,
-        			'msg' => 'update dater success!'
+        			'msg' => 'update grabcommodity success!'
         	);
         } else {
             return  array (
     				'flag' => 0,
-    				'msg' => 'update dater fail!'
+    				'msg' => 'update grabcommodity fail!'
     		);
         }
     }
@@ -164,29 +164,29 @@ class GrabcornsController extends Controller
     public function actionDelete()
     {
     	$data=Yii::$app->request->post();
-    	if(!isset($data['grabcornid'])){
+    	if(!isset($data['grabcommodityid'])){
     		return 	array (
     				'flag' => 0,
     				'msg' => 'no enough arg!'
     		);
     	}
     	
-        $grabcorn=$this->findModel($data['grabcornid']);
-        if (!$grabcorn){
+        $grabcommodity=$this->findModel($data['grabcommodityid']);
+        if (!$grabcommodity){
         	return  array (
 						'flag' => 0,
-						'msg' => 'delete grabcorn fail!'
+						'msg' => 'delete grabcommodity fail!'
 				);
         }
-		if($grabcorn->delete()){
+		if($grabcommodity->delete()){
 			return 	array (
 					'flag' => 1,
-					'msg' => 'delete grabcorn success!'
+					'msg' => 'delete grabcommodity success!'
 			);
 		}else{
 			return 	array (
 					'flag' => 0,
-					'msg' => 'delete grabcorn fail!'
+					'msg' => 'delete grabcommodity fail!'
 			);
 		}
     }
@@ -194,15 +194,15 @@ class GrabcornsController extends Controller
     
     public function actionBuy(){
     	$data=Yii::$app->request->post();
-    	if(!(isset($data['phone'])&&isset($data['grabcornid'])&&isset($data['count'])&&isset($data['type']))){
+    	if(!(isset($data['phone'])&&isset($data['grabcommodityid'])&&isset($data['count'])&&isset($data['type']))){
     		return 	array (
     				'flag' => 0,
     				'msg' => 'no enough arg!'
     		);
     	}
     	//Users::findOne(['phone'=>$data['phone']])
-    	$grabcorn = Grabcorns::findOne(['id'=>$data['grabcornid']]);
-    	if(!$grabcorn){
+    	$grabcommodity = Grabcommodities::findOne(['id'=>$data['grabcommodityid']]);
+    	if(!$grabcommodity){
     		return 	array (
     				'flag' => 0,
     				'msg' => 'activity not exist!'
@@ -232,27 +232,29 @@ class GrabcornsController extends Controller
     	$transaction=$connection->beginTransaction();
     	try {
     		
-    		$connection->createCommand('select * from grabcorns where id=:id for update',[':id'=>$data['grabcornid'],':count'=>$data['count']]);
-    		$connection->createCommand('select * from users where id=:id for update',[':id'=>$data['grabcornid'],':count'=>$data['count']]);
-    		$updatecount=$connection->createCommand('update grabcorns set remain=remain-:count where id=:id and remain>=:count',[':id'=>$data['grabcornid'],':count'=>(int)$data['count']])->execute();
+    		$connection->createCommand('select * from grabcommodities where id=:id for update',[':id'=>$data['grabcommodityid'],':count'=>$data['count']]);
+    		$connection->createCommand('select * from users where id=:id for update',[':id'=>$data['grabcommodityid'],':count'=>$data['count']]);
+    		$updatecount=$connection->createCommand('update grabcommodities set remain=remain-:count where id=:id and remain>=:count',[':id'=>$data['grabcommodityid'],':count'=>(int)$data['count']])->execute();
     		switch ($data['type']){
     			case 0://yuer
     				$updatemoney=$connection->createCommand('update users set money = money-:count where id = :userid and money>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
     			case 1://duojinbi
-    				$updatemoney=$connection->createCommand('update users set cornsforgrab = cornsforgrab-:count where id = :userid and cornsforgrab>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
+    				//$updatemoney=$connection->createCommand('update users set cornsforgrab = cornsforgrab-:count where id = :userid and cornsforgrab>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
     			case 2://hongbao
     				$updatemoney=$connection->createCommand('update users set envelope = envelope-:count where id = :userid and envelope>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
     			case 3://jinbi
+    				$updatemoney=$connection->createCommand('update users set corns = corns-:count where id = :userid and corns>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();	
     				break;
     			case 4://zhifupintai
+    				
     				break;
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
-    		$inserrecord=$connection->createCommand('insert into grabcornrecords(userid,grabcornid,count,numbers,type,created_at) values (:userid,:grabcornid,:count,:numbers,:type,:created_at)'
-    					,[':userid'=>$user->id,':grabcornid'=>$data['grabcornid'],':count'=>$data['count'],':numbers'=>"",':type'=>$data['type'],':created_at'=>time()])->execute();
+    		$inserrecord=$connection->createCommand('insert into grabcommodityrecords(userid,grabcommodityid,count,numbers,type,created_at) values (:userid,:grabcommodityid,:count,:numbers,:type,:created_at)'
+    					,[':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid'],':count'=>$data['count'],':numbers'=>"",':type'=>$data['type'],':created_at'=>time()])->execute();
     		//var_dump($expression)
     		if(!(($data['type']==4||$updatemoney)&&$updatecount&&$inserrecord)){
     			throw new Exception("Value must be 1 or below");
@@ -261,7 +263,7 @@ class GrabcornsController extends Controller
     		$transaction->commit();
     	} catch (Exception $e) {
     		$transaction->rollBack();
-    		var_dump("133435465");
+    		var_dump($e->getMessage());
     		//Yii::$app->log->logger->
     		return 	array (
     				'flag' => 0,
@@ -280,16 +282,16 @@ class GrabcornsController extends Controller
     public function actionBuyall(){
     	$time = time();
     	$data=Yii::$app->request->post();
-    	if(!(isset($data['phone'])&&isset($data['grabcornid'])&&isset($data['type']))){
+    	if(!(isset($data['phone'])&&isset($data['grabcommodityid'])&&isset($data['type']))){
     		return 	array (
     				'flag' => 0,
     				'msg' => 'no enough arg!'
     		);
     	}
     	//Users::findOne(['phone'=>$data['phone']])
-    	$grabcorn = Grabcorns::findOne(['id'=>$data['grabcornid']]);
+    	$grabcommodity = Grabcommodities::findOne(['id'=>$data['grabcommodityid']]);
     	
-    	if(!$grabcorn){
+    	if(!$grabcommodity){
     		return 	array (
     				'flag' => 0,
     				'msg' => 'activity not exist!'
@@ -301,7 +303,7 @@ class GrabcornsController extends Controller
 //     				'msg' => 'activity is end!'
 //     		);
 //     	}
-    	$data['count'] = $grabcorn->needed;
+    	$data['count'] = $grabcommodity->needed;
     	$user = Users::findOne(['phone'=>$data['phone']]);
     	if(!$user){
     		return 	array (
@@ -321,34 +323,35 @@ class GrabcornsController extends Controller
     	$transaction=$connection->beginTransaction();
     	try {
     
-    		//$connection->createCommand('select * from grabcorns where id=:id for update',[':id'=>$data['grabcornid'],':count'=>$data['count']]);
-    		$connection->createCommand('select * from users where id=:id for update',[':id'=>$data['grabcornid'],':count'=>$data['count']]);
-    		//$updatecount=$connection->createCommand('update grabcorns set remain=remain-:count where id=:id and remain>=:count',[':id'=>$data['grabcornid'],':count'=>(int)$data['count']])->execute();
+    		//$connection->createCommand('select * from grabcorns where id=:id for update',[':id'=>$data['grabcommodityid'],':count'=>$data['count']]);
+    		$connection->createCommand('select * from users where id=:id for update',[':id'=>$data['grabcommodityid'],':count'=>$data['count']]);
+    		//$updatecount=$connection->createCommand('update grabcorns set remain=remain-:count where id=:id and remain>=:count',[':id'=>$data['grabcommodityid'],':count'=>(int)$data['count']])->execute();
     		switch ($data['type']){
     			case 0://yuer
     				$updatemoney=$connection->createCommand('update users set money = money-:count where id = :userid and money>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
     			case 1://duojinbi
-    				$updatemoney=$connection->createCommand('update users set cornsforgrab = cornsforgrab-:count where id = :userid and cornsforgrab>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
+    				//$updatemoney=$connection->createCommand('update users set cornsforgrab = cornsforgrab-:count where id = :userid and cornsforgrab>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
     			case 2://hongbao
     				$updatemoney=$connection->createCommand('update users set envelope = envelope-:count where id = :userid and envelope>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
     			case 3://jinbi
+    				$updatemoney=$connection->createCommand('update users set corns = corns-:count where id = :userid and corns>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
     			case 4://zhifupintai
     				break;
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
-    		$insertgrab=$connection->createCommand('insert into grabcorns(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid from grabcorns where id = :grabcornid',[':time'=>$time,':userid'=>$user->id,':grabcornid'=>$data['grabcornid']])->execute();
+    		$insertgrab=$connection->createCommand('insert into grabcommodities(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid from grabcommodities where id = :grabcommodityid',[':time'=>$time,':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid']])->execute();
     		//$insertgrabid=mysql_insert_id($connection);
     		$insertgrabid=$connection->getLastInsertID();
     		//var_dump($insertgrab);
     		//var_dump($insertgrabid);
-    		$inserrecord=$connection->createCommand('insert into grabcornrecords(userid,grabcornid,count,numbers,type,created_at) values (:userid,:grabcornid,:count,:numbers,:type,:created_at)'
-    				,[':userid'=>$user->id,':grabcornid'=>$insertgrabid,':count'=>$grabcorn->needed,':numbers'=>"",':type'=>$data['type'],':created_at'=>time()])->execute();
+    		$inserrecord=$connection->createCommand('insert into grabcommodityrecords(userid,grabcommodityid,count,numbers,type,created_at) values (:userid,:grabcommodityid,:count,:numbers,:type,:created_at)'
+    				,[':userid'=>$user->id,':grabcommodityid'=>$insertgrabid,':count'=>$grabcommodity->needed,':numbers'=>"",':type'=>$data['type'],':created_at'=>time()])->execute();
     		$insertrid=$connection->getLastInsertID();
-    		$updategrab=$connection->createCommand('update grabcorns set winnerrecordid=:recordid where grabcorns.id=:id',['recordid'=>$insertrid,':id'=>$data['grabcornid']])->execute();
+    		$updategrab=$connection->createCommand('update grabcommodities set winnerrecordid=:recordid where grabcommodities.id = :id',['recordid'=>$insertrid,':id'=>$data['grabcommodityid']])->execute();
     		//var_dump($expression)
     		if(!(($data['type']==4||$updatemoney)&&$inserrecord&&$insertgrab&&$updategrab)){
     			throw new Exception("Value must be 1 or below");
@@ -382,7 +385,7 @@ class GrabcornsController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = Grabcorns::findOne($id)) !== null) {
+        if (($model = Grabcommodities::findOne($id)) !== null) {
             return $model;
         }else {
         	return false;

@@ -16,6 +16,9 @@ class m151107_123653_grabcronrecords extends Migration
     			'count'=>Schema::TYPE_INTEGER . ' NOT NULL',
     			
     			'numbers' =>Schema::TYPE_STRING . ' DEFAULT ""',
+    			
+    			'type' => Schema::TYPE_INTEGER . ' NOT NULL',
+    			
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL',
 
     	],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
