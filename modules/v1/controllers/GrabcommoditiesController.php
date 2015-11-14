@@ -151,6 +151,7 @@ class GrabcommoditiesController extends Controller
         }
         
         $data['created_at'] = time();
+        $data['end_at'] = 0;
         $data['remain'] = $data['needed'];
         foreach ($data as $item=>$value){
         	$model->$item = $data[$item];
@@ -163,6 +164,7 @@ class GrabcommoditiesController extends Controller
         } else {
         	//var_dump($model->errors);
             return 	array (
+            		'error'=> $model->errors,
         			'flag' => 0,
         			'msg' => 'create grabcommodity fail!'
         	);

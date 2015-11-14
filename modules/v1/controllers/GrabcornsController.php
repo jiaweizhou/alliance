@@ -143,18 +143,23 @@ class GrabcornsController extends Controller
         }
         
         $data['created_at'] = time();
+        
+        //var_dump(microtime(true));
+        $data['end_at'] = 0;
         $data['remain'] = $data['needed'];
         foreach ($data as $item=>$value){
         	$model->$item = $data[$item];
         }
         if ($model->save()) {
             return 	array (
+
         			'flag' => 1,
         			'msg' => 'create grabcorn success!'
         	);
         } else {
         	//var_dump($model->errors);
             return 	array (
+            		'error'=> $model->errors,
         			'flag' => 0,
         			'msg' => 'create grabcorn fail!'
         	);
