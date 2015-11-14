@@ -21,6 +21,7 @@ use Yii;
  * @property integer $winnerrecordid
  * @property integer $winnernumber
  * @property integer $foruser
+ * @property integer $kind
  *
  * @property Grabcommodityrecords[] $grabcommodityrecords
  */
@@ -40,8 +41,8 @@ class Grabcommodities extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'version', 'needed', 'remain', 'created_at', 'date', 'end_at'], 'required'],
-            [['needed', 'remain', 'created_at', 'date', 'end_at', 'islotteried', 'winneruserid', 'winnerrecordid', 'winnernumber', 'foruser'], 'integer'],
+            [['title', 'version', 'needed', 'remain', 'created_at', 'date', 'end_at','kind'], 'required'],
+            [['needed', 'remain', 'created_at', 'date', 'end_at', 'islotteried', 'winneruserid', 'winnerrecordid', 'winnernumber', 'foruser','kind'], 'integer'],
             [['picture', 'title', 'version'], 'string', 'max' => 255]
         ];
     }

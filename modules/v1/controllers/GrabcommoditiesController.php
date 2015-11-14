@@ -86,7 +86,7 @@ class GrabcommoditiesController extends Controller
         $model = new Grabcommodities();
         $data=Yii::$app->request->post();
         //var_dump(isset($date['content']);
-        if(!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['end_at']))){
+        if(!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['kind']))){
         	return 	array (
         			'flag' => 0,
         			'msg' => 'no enough arg!'

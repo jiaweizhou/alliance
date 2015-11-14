@@ -12,6 +12,7 @@ class m151108_073345_grabcommodities extends Migration
     			'id' => Schema::TYPE_PK,
     			'picture'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
     			 
+    			'kind' => Schema::TYPE_INTEGER . 'NOT NULL',
     			'title' => Schema::TYPE_STRING . ' NOT NULL',
     			'version' => Schema::TYPE_STRING . ' NOT NULL',
     			 
