@@ -31,50 +31,94 @@ class GrabcornsController extends Controller
 	public function actionSearch()
 	{ 
 // 		$data=Yii::$app->request->post();
-		$query = Grabcorns::find()->orderBy('created_at desc')->where(['islotteried'=>0]);
+		//$query = Grabcorns::find()->where(['islotteried'=>0]);
 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('grabcorns.*')->from('grabcorns');
-		// 		$dataProvider = new ActiveDataProvider([
-		// 				'query' => $query,
-		// 		]);
-		
-		if(!empty($data)){
-			$query->andFilterWhere(['grabcorns.islotteried' => isset($data['islotteried'])?$data['islotteried']:0]);
-
+		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns');
+				$dataProvider = new ActiveDataProvider([
+						'query' => $query,
+				]);
+		//var_dump(isset($data['type']));
+		if(isset($data)&&isset($data['type'])){
+			if($data['type']==0){
+				$query->where('grabcorns.islotteried = 0 and end_at = 0 and foruser = 0');
+			}else if($data['type']==1){
+				$query->where('grabcorns.islotteried = 0 and end_at != 0 and foruser = 0');
+			}else if($data['type']==2){
+				$query->where('grabcorns.islotteried = 1 and end_at != 0 and foruser = 0');
+			}
 		}
-		$dataProvider = new \yii\data\Pagination ( [
-				'totalCount' => $query->count (),
-				'pageSize' => '20'
-		] );
-		$models = $query->orderBy ( "grabcorns.created_at desc" )->offset ( $dataProvider->offset )->limit ( $dataProvider->limit )->all ();
-		//var_dump($models);
-		$result['items'] =array();
-		foreach ( $models as $model ) {
-			$comments = (new \yii\db\Query ())->select ( [
+		return $dataProvider;
+// 		$dataProvider = new \yii\data\Pagination ( [
+// 				'totalCount' => $query->count (),
+// 				'pageSize' => '20'
+// 		] );
+// 		$models = $query->orderBy ( "grabcorns.date desc" )->offset ( $dataProvider->offset )->limit ( $dataProvider->limit )->all ();
+// 		//var_dump($models);
+// 		$result['items'] =array();
+// 		foreach ( $models as $model ) {
+// 			$comments = (new \yii\db\Query ())->select ( [
+// 					'grabcornrecords.*',
+// 					'users.phone',
+// 					'users.nickname',
+// 					'users.thumb'
+// 			] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
+// 					':id' => $model ['id']
+// 			] )->all ();
+// 			$model['comments'] = $comments;
+// 			$result['items'][]=$model;
+// 		}
+// 		//$result['items'] = $models;
+// 		$result['_meta'] = array(
+// 				'totalCount'=>$dataProvider->totalCount,
+// 				'pageCount'=>$dataProvider->pageCount,
+// 				'currentPage'=>$dataProvider->page+1,
+// 				'perPage'=>$dataProvider->pageSize,
+// 		);
+// 		//$dataProvider->on($name, $handler)
+// 		//$dataProvider->
+// 		return $result;
+		
+	}
+
+	public function actionView()
+	{
+		$data=Yii::$app->request->post();
+		if(!(isset($data['phone'])&&isset($data['grabcornid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$grabcorn = (new \yii\db\Query ())->select('grabcorns.*')->from('grabcorns')->where(['id'=>$data['grabcornid']])->one();
+		if(!$grabcorn){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no grabcorn with this id!'
+			);
+		}
+		$records = (new \yii\db\Query ())->select ( [
 					'grabcornrecords.*',
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
 			] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
-					':id' => $model ['id']
+					':id' => $grabcorn['id']
 			] )->all ();
-			$model['comments'] = $comments;
-			$result['items'][]=$model;
-		}
-		//$result['items'] = $models;
-		$result['_meta'] = array(
-				'totalCount'=>$dataProvider->totalCount,
-				'pageCount'=>$dataProvider->pageCount,
-				'currentPage'=>$dataProvider->page+1,
-				'perPage'=>$dataProvider->pageSize,
-		);
-		//$dataProvider->on($name, $handler)
-		//$dataProvider->
+		$myrecords = (new \yii\db\Query ())->select ( [
+					'grabcornrecords.*',
+					'users.phone',
+					'users.nickname',
+					'users.thumb'
+			] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and users.phone = :phone and grabcornrecords.grabcornid = :id', [
+					':id' => $grabcorn['id'],':phone'=>$data['phone']
+			] )->all ();
+		$result['detail'] = $grabcorn;
+		$result['records'] = $records;
+		$result['myrecords']=$myrecords;
 		return $result;
-		
 	}
-
+	
     /**
      * Creates a new Applyjobs model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -86,7 +130,7 @@ class GrabcornsController extends Controller
         $model = new Grabcorns();
         $data=Yii::$app->request->post();
         //var_dump(isset($date['content']);
-        if(!(isset($data['kind'])&&!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date']))){
+        if(!(isset($data['kind'])&&isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date']))){
         	return 	array (
         			'flag' => 0,
         			'msg' => 'no enough arg!'
@@ -340,7 +384,7 @@ class GrabcornsController extends Controller
     				break;
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
-    		$insertgrab=$connection->createCommand('insert into grabcorns(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid from grabcorns where id = :grabcornid',[':time'=>$time,':userid'=>$user->id,':grabcornid'=>$data['grabcornid']])->execute();
+    		$insertgrab=$connection->createCommand('insert into grabcorns(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser,kind) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid,kind from grabcorns where id = :grabcornid',[':time'=>$time,':userid'=>$user->id,':grabcornid'=>$data['grabcornid']])->execute();
     		//$insertgrabid=mysql_insert_id($connection);
     		$insertgrabid=$connection->getLastInsertID();
     		//var_dump($insertgrab);

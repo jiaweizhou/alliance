@@ -12,6 +12,23 @@ class m151108_073345_grabcommodities extends Migration
     			'id' => Schema::TYPE_PK,
     			'picture'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
     			 
+    			'picture1'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'picture2'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'picture3'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'picture4'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'picture5'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'picture6'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			
+    			'detail1'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'detail2'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'detail3'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'detail4'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'detail5'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'detail6'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'detail7'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'detail8'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'detail9'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			
     			'kind' => Schema::TYPE_INTEGER . 'NOT NULL',
     			'title' => Schema::TYPE_STRING . ' NOT NULL',
     			'version' => Schema::TYPE_STRING . ' NOT NULL',

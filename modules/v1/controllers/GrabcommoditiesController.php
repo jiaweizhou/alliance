@@ -31,50 +31,103 @@ class GrabcommoditiesController extends Controller
 	public function actionSearch()
 	{ 
 // 		$data=Yii::$app->request->post();
-		$query = Grabcommodities::find()->orderBy('created_at desc')->where(['islotteried'=>0]);
+		//$query = Grabcommodities::find()->where(['islotteried'=>0]);
 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('grabcommodities.*')->from('grabcommodities');
-		// 		$dataProvider = new ActiveDataProvider([
-		// 				'query' => $query,
-		// 		]);
+		$query = (new \yii\db\Query ())->select('id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->orderBy ( "grabcommodities.date desc" )->from('grabcommodities');
+		$dataProvider = new ActiveDataProvider([
+			'query' => $query,
+		]);
+		if(isset($data)&&isset($data['type'])){
+			if($data['type']==0){
+				$query->where('grabcommodities.islotteried = 0 and end_at = 0 and foruser = 0');
+			}else if($data['type']==1){
+				$query->where('grabcommodities.islotteried = 0 and end_at != 0 and foruser = 0');
+			}else if($data['type']==2){
+				$query->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0');
+			}
+		}
 		
-		if(!empty($data)){
-			$query->andFilterWhere(['grabcommodities.islotteried' => isset($data['islotteried'])?$data['islotteried']:0]);
-
-		}
-		$dataProvider = new \yii\data\Pagination ( [
-				'totalCount' => $query->count (),
-				'pageSize' => '20'
-		] );
-		$models = $query->orderBy ( "grabcommodities.created_at desc" )->offset ( $dataProvider->offset )->limit ( $dataProvider->limit )->all ();
+		return $dataProvider;
+// 		$dataProvider = new \yii\data\Pagination ( [
+// 				'totalCount' => $query->count (),
+// 				'pageSize' => '20'
+// 		] );
+//		$models = $query->orderBy ( "grabcommodities.date desc" )->offset ( $dataProvider->offset )->limit ( $dataProvider->limit )->all ();
 		//var_dump($models);
-		$result['items'] =array();
-		foreach ( $models as $model ) {
-			$comments = (new \yii\db\Query ())->select ( [
-					'grabcommodityrecords.*',
-					'users.phone',
-					'users.nickname',
-					'users.thumb'
-			] )->from ( 'grabcommodityrecords' )->orderBy('grabcommodityrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and grabcommodityrecords.grabcommodityid = :id', [
-					':id' => $model ['id']
-			] )->all ();
-			$model['comments'] = $comments;
-			$result['items'][]=$model;
-		}
+//		$result['items'] =array();
+// 		foreach ( $models as $model ) {
+// 			$comments = (new \yii\db\Query ())->select ( [
+// 					'grabcommodityrecords.*',
+// 					'users.phone',
+// 					'users.nickname',
+// 					'users.thumb'
+// 			] )->from ( 'grabcommodityrecords' )->orderBy('grabcommodityrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and grabcommodityrecords.grabcommodityid = :id', [
+// 					':id' => $model ['id']
+// 			] )->all ();
+// 			$model['comments'] = $comments;
+// 			$result['items'][]=$model;
+// 		}
 		//$result['items'] = $models;
-		$result['_meta'] = array(
-				'totalCount'=>$dataProvider->totalCount,
-				'pageCount'=>$dataProvider->pageCount,
-				'currentPage'=>$dataProvider->page+1,
-				'perPage'=>$dataProvider->pageSize,
-		);
+// 		$result['_meta'] = array(
+// 				'totalCount'=>$dataProvider->totalCount,
+// 				'pageCount'=>$dataProvider->pageCount,
+// 				'currentPage'=>$dataProvider->page+1,
+// 				'perPage'=>$dataProvider->pageSize,
+// 		);
 		//$dataProvider->on($name, $handler)
 		//$dataProvider->
-		return $result;
+//		return $result;
+
 		
 	}
-
+	public function actionFormeractivities(){
+		$data=Yii::$app->request->post();
+		if(!(isset($data['phone'])&&isset($data['grabcommodityid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+	}
+	public function actionView()
+	{
+		$data=Yii::$app->request->post();
+		if(!(isset($data['phone'])&&isset($data['grabcommodityid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$grabcommodity = (new \yii\db\Query ())->select('grabcommodities.*')->from('grabcommodities')->where(['id'=>$data['grabcommodityid']])->one();
+		if(!$grabcommodity){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no grabcommodity with this id!'
+			);
+		}
+		$records = (new \yii\db\Query ())->select ( [
+				'grabcommodityrecords.*',
+				'users.phone',
+				'users.nickname',
+				'users.thumb'
+		] )->from ( 'grabcommodityrecords' )->orderBy('grabcommodityrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and grabcommodityrecords.grabcommodityid = :id', [
+				':id' => $grabcommodity['id']
+		] )->all ();
+		$myrecords = (new \yii\db\Query ())->select ( [
+				'grabcommodityrecords.*',
+				'users.phone',
+				'users.nickname',
+				'users.thumb'
+		] )->from ( 'grabcommodityrecords' )->orderBy('grabcommodityrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and users.phone = :phone and grabcommodityrecords.grabcommodityid = :id', [
+				':id' => $grabcommodity['id'],':phone'=>$data['phone']
+		] )->all ();
+		$result['detail'] = $grabcommodity;
+		$result['records'] = $records;
+		$result['myrecords']=$myrecords;
+		return $result;
+	}
+	
     /**
      * Creates a new Applyjobs model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -343,7 +396,7 @@ class GrabcommoditiesController extends Controller
     				break;
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
-    		$insertgrab=$connection->createCommand('insert into grabcommodities(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid from grabcommodities where id = :grabcommodityid',[':time'=>$time,':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid']])->execute();
+    		$insertgrab=$connection->createCommand('insert into grabcommodities(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser,kind) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid,kind from grabcommodities where id = :grabcommodityid',[':time'=>$time,':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid']])->execute();
     		//$insertgrabid=mysql_insert_id($connection);
     		$insertgrabid=$connection->getLastInsertID();
     		//var_dump($insertgrab);
