@@ -41,7 +41,7 @@ class Grabcorns extends \yii\db\ActiveRecord
     {
         return [
             [['title', 'version', 'needed', 'remain', 'created_at', 'date', 'end_at','kind'], 'required'],
-            [['needed', 'left', 'created_at', 'date', 'end_at', 'islotteried', 'winneruserid','winnerrecordid','winnernumber','foruser','kind'], 'integer'],
+            [['needed', 'remain', 'created_at', 'date', 'end_at', 'islotteried', 'winneruserid','winnerrecordid','winnernumber','foruser','kind'], 'integer'],
             [['picture', 'title', 'version'], 'string', 'max' => 255]
         ];
     }
