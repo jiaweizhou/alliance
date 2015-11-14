@@ -87,12 +87,17 @@ class GrabcommoditiesController extends Controller
 	}
 	public function actionFormeractivities(){
 		$data=Yii::$app->request->post();
-		if(!(isset($data['phone'])&&isset($data['grabcommodityid']))){
+		if(!(isset($data['kind']))){
 			return 	array (
 					'flag' => 0,
 					'msg' => 'no enough arg!'
 			);
 		}
+		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcommodities.*,users.phone,users.thumb,grabcommodityrecords.numbers,grabcommodityrecords.count')->from('grabcommodities')->join('LEFT JOIN', 'grabcommodityrecords','grabcommodities.winnerrecordid = grabcommodityrecords.id')->leftJoin('users','grabcommodities.winneruserid=users.id')->where(['kind'=>$data['kind'],'foruser'=>0]);
+		$dataProvider = new ActiveDataProvider([
+				'query' => $query,
+		]);
+		return $dataProvider;
 	}
 	public function actionView()
 	{
@@ -131,7 +136,28 @@ class GrabcommoditiesController extends Controller
 		$result['myrecords']=$myrecords;
 		return $result;
 	}
-	
+	public function actionMorerecords(){
+		$data=Yii::$app->request->post();
+		if(!(isset($data['grabcommodityid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$query=(new \yii\db\Query ())->select ( [
+				'grabcommodityrecords.*',
+				'users.phone',
+				'users.nickname',
+				'users.thumb'
+		] )->from ( 'grabcommodityrecords' )->orderBy('grabcommodityrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and grabcommodityrecords.grabcommodityid = :id', [
+				':id' => $data['grabcommodityid']
+		] );
+		// = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns');
+		$dataProvider = new ActiveDataProvider([
+				'query' => $query,
+		]);
+		return $dataProvider;
+	}
     /**
      * Creates a new Applyjobs model.
      * If creation is successful, the browser will be redirected to the 'view' page.

@@ -137,7 +137,28 @@ class GrabcornsController extends Controller
 		$result['myrecords']=$myrecords;
 		return $result;
 	}
-	
+	public function actionMorerecords(){
+		$data=Yii::$app->request->post();
+		if(!(isset($data['grabcornid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$query=(new \yii\db\Query ())->select ( [
+				'grabcornrecords.*',
+				'users.phone',
+				'users.nickname',
+				'users.thumb'
+		] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
+				':id' => $data['grabcornid']
+		] );
+		// = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns');
+		$dataProvider = new ActiveDataProvider([
+				'query' => $query,
+		]);
+		return $dataProvider;
+	}
     /**
      * Creates a new Applyjobs model.
      * If creation is successful, the browser will be redirected to the 'view' page.
