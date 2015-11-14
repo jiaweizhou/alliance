@@ -33,6 +33,20 @@ class GrabcornsController extends Controller
 		return  (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns')->where('grabcorns.islotteried = 0 and end_at = 0 and foruser = 0')->limit(3)->all();
 
 	}
+	public function actionFormeractivities(){
+		$data=Yii::$app->request->post();
+		if(!(isset($data['kind']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*,users.phone,users.thumb,grabcornrecords.numbers,grabcornrecords.count')->from('grabcorns')->join('LEFT JOIN', 'grabcornrecords','grabcorns.winnerrecordid = grabcornrecords.id')->leftJoin('users','grabcorns.winneruserid=users.id')->where(['kind'=>$data['kind'],'foruser'=>0]);
+		$dataProvider = new ActiveDataProvider([
+				'query' => $query,
+		]);
+		return $dataProvider;
+	}
 	public function actionSearch()
 	{ 
 // 		$data=Yii::$app->request->post();
