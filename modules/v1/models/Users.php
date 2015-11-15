@@ -30,7 +30,9 @@ use Yii;
  * @property integer $updated_at
  * @property string $channel
  * @property string $platform
- *
+ * 
+ * @property integer $friendcount
+ * @property integer $concerncount
  * @property Usertocards[] $usertocards
  */
 class Users extends \yii\db\ActiveRecord
@@ -51,7 +53,7 @@ class Users extends \yii\db\ActiveRecord
     {
         return [
             [['phone'], 'required'],
-            [[ 'directalliancecount', 'allalliancecount', 'money','corns','envelope','cornsforgrab', 'alliancerewards', 'created_at', 'updated_at'], 'integer'],
+            [[ 'directalliancecount', 'allalliancecount', 'money','corns','envelope','cornsforgrab', 'alliancerewards', 'created_at', 'updated_at','friendcount','concerncount'], 'integer'],
             [['fatherid','phone', 'pwd', 'authKey', 'thumb', 'gender', 'area', 'job', 'hobby', 'signature', 'channel', 'platform'], 'string', 'max' => 255],
             [['nickname'], 'string', 'max' => 20],
             [['phone'], 'unique']

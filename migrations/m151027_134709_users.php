@@ -32,6 +32,9 @@ class m151027_134709_users extends Migration
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
     			'updated_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
     			
+    			'friendcount' =>Schema::TYPE_INTEGER . ' DEFAULT 0',
+    			'concerncount' =>Schema::TYPE_INTEGER . ' DEFAULT 0',
+    			
     			'channel'=> Schema::TYPE_STRING . ' DEFAULT "" ',
     			'platform' => Schema::TYPE_STRING . ' DEFAULT "" ',
     			],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');

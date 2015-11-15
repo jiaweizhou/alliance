@@ -28,6 +28,13 @@ class m151107_113049_grabcorns extends Migration
     			'winnerrecordid' => Schema::TYPE_BIGINT . ' DEFAULT 0',
     			'winnernumber' => Schema::TYPE_BIGINT . ' DEFAULT 0',
     			'foruser' =>Schema::TYPE_INTEGER . ' DEFAULT 0',
+    			
+    			'picture1'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'picture2'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'picture3'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'picture4'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'picture5'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'picture6'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
     	],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
     	//$this->createIndex('user', 'user', 'user',true);
     	//$this->createIndex('phone', 'users', 'phone',true);

@@ -7,7 +7,9 @@ $config = [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
 	'modules' => [
-			'v1' => 'app\modules\v1\alliance'  // 后台模块引用
+			'v1' => 'app\modules\v1\alliance',  // 后台模块引用
+			
+			//'v1talkbar'=>'app\modules\v1\controllers\talkbar',
 	],
     'components' => [
         'request' => [
@@ -44,6 +46,8 @@ $config = [
         	'enablePrettyUrl' => true,
         	'showScriptName' => false,
         	'rules' => [
+        		///"/v1/talkbar/<controller:\w+>/<action:\w+>/<id:\d+>"=>"/app/modules/v1/controllers/talkbar/<controller>/<action>",
+        		//"<module:\w+>/<module1:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>" => "<module>/<controller>/<action>",
         		"<module:\w+>/<controller:\w+>/<action:\w+>/<id:\d+>" => "<module>/<controller>/<action>",
         		"<controller:\w+>/<action:\w+>/<id:\d+>" => "<controller>/<action>",
         		"<controller:\w+>/<action:\w+>" => "<controller>/<action>",
