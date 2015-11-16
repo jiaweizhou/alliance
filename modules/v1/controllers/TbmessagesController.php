@@ -3,6 +3,7 @@
 namespace app\modules\v1\controllers;
 
 use Yii;
+use Exception;
 use yii\rest\Controller;
 //use yii\filters\AccessControl;
 use app\modules\v1\models\Tbmessages;
@@ -11,6 +12,7 @@ use app\modules\v1\models\Tbzans;
 //use app\modules\v1\models\Notify;
 use yii\data\ActiveDataProvider;
 use app\modules\v1\models\Tbreplys;
+use app\modules\v1\models\Tblikes;
 //use app\modules\v1\models\Appcomments;
 
 // require dirname ( dirname ( dirname ( __FILE__ ) ) ) . '/../vendor/pushserver/sdk.php';
@@ -60,12 +62,14 @@ class TbmessagesController extends Controller {
 					'user2.phone as tophone' 
 			] )->from ( 'tbreplys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = tbreplys.fromid and tbreplys.tbmessageid = :id', [ 
 					':id' => $tbmessage['id'] 
-			] )->join ( 'Left JOIN', 'users user2', 'user2.id = tbreplys.toid' )->orderBy ( "tbreplys.created_at" )->all ();
+			] )->join ( 'Left JOIN', 'users user2', 'user2.id = tbreplys.toid' )->orderBy ( "tbreplys.created_at" )->limit(20)->all ();
 			
-// 			$info['zan']=(new \yii\db\Query())
-// 			->select('u.phone,u.nickname')->from('tbzans z')
-// 			->join('INNER JOIN','users u','u.id=z.userid and z.tbmessageid=:id',[':id'=>$tbmessage ['id'] ])
-// 			->all();
+			$info['likes']=(new \yii\db\Query())
+			->select('u.phone,u.nickname')->from('tblikes')
+			->join('INNER JOIN','users u','u.id=tblikes.userid and tblikes.tbmessageid=:id',[':id'=>$tbmessage ['id'] ])
+			->orderby('tblikes.created_at desc')
+			->limit(10)
+			->all();
 			//$$dataProvider
 			$tbmessages[$i] = $info;
 			$result ['item'] [] = $info;
@@ -80,6 +84,32 @@ class TbmessagesController extends Controller {
 		return $dataProvider;
 		// return $model;
 	}
+	
+	public function actionMorereplys(){
+		$data = Yii::$app->request->post ();
+		if(!isset($data['tbmessageid']))
+		{
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			); 
+		}
+		$query=(new \yii\db\Query ())->select ( [
+				'tbreplys.*',
+				'user1.nickname as fromnickname',
+				'user1.phone as fromphone',
+				'user2.nickname as tonickname',
+				'user2.phone as tophone'
+				] )->from ( 'tbreplys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = tbreplys.fromid and tbreplys.tbmessageid = :id', [
+						':id' => $data['tbmessageid']
+						] )->join ( 'Left JOIN', 'users user2', 'user2.id = tbreplys.toid' )->orderBy ( "tbreplys.created_at" );
+		
+		$dataProvider=new ActiveDataProvider([
+				'query' => $query,
+				]);
+		return $dataProvider;
+	}
+	
 	public function actionSend() {
 		$data = Yii::$app->request->post ();
 		$msg = new Tbmessages ();
@@ -90,7 +120,7 @@ class TbmessagesController extends Controller {
 		$msg->userid = $phone ['id'];
 		$msg->content = $data ['content'];
 		$msg->created_at = time ();
-	for($i=1;$i<=9;$i++){
+		for($i=1;$i<=9;$i++){
         	$msg->setAttribute('picture'. $i, isset($data['picture' . $i])?$data['picture' . $i]:'');
         }
 		if ($msg->save ()) {
@@ -99,58 +129,96 @@ class TbmessagesController extends Controller {
 					'msg' => 'Send success!'
 			);
 		}else{
-			var_dump($msg->errors);
 			return   array (
+					'error'=>$msg->errors,
 					'flag' => 0,
 					'msg' => 'Send fail!' 
 			);
 		}
 	}
-	public function actionDelete() {
-		$data = Yii::$app->request->post ();
-		$id = $data ['id'];
-		$msg = new Messages ();
-		$msg = Messages::find ()->where(['id' =>$id])->one();
-		if ($msg == null) {
-			return array (
+	public function actionDelete()
+	{
+		$data=Yii::$app->request->post();
+		if(!isset($data['phone'])||!isset($data['tbmessageid'])){
+			return 	array (
 					'flag' => 0,
-					'msg' => 'Message do not exist!'
+					'msg' => 'no enough arg!'
 			);
 		}
-		if ($msg->delete ()) {
-			
-			return array (
-					'flag' => 1,
-					'msg' => 'Delete success!'
-			);
-		} else {
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		$msg=$this->findModel($data['tbmessageid']);
+		if (!$msg||!$user){
 			return  array (
 					'flag' => 0,
-					'msg' => 'Delete failed!'
+					'msg' => 'delete fail!'
+			);
+		}
+		if ($msg->userid == $user->id){
+			if($msg->delete()){
+				return 	array (
+						'flag' => 1,
+						'msg' => 'delete success!'
+				);
+			}else{
+				return 	array (
+						'flag' => 0,
+						'msg' => 'delete fail!'
+				);
+			}
+		}else{
+			return 	array (
+					'flag' => 0,
+					'msg' => 'have no authority!'
 			);
 		}
 	}
-	public function actionZan() {
+	public function actionLike() {
 		$data = Yii::$app->request->post ();
 		$user = new Users ();
-		$phone = $user->find ()->select ( 'id' )->where ( [ 
-				'phone' => $data ['phone'] 
-		] )->one ();
-		$info = Zans::findOne ( [ 
+		$phone=Users::find()->select('id')->where(['phone'=>$data['phone']])->one();
+		$info = Tblikes::findOne ( [ 
 				'userid' => $phone ['id'],
-				'msgid' => $data ['msgid'] 
+				'tbmessageid' => $data ['tbmessageid'] 
 		] );
 		if ($info) {
 			echo json_encode ( array (
 					'flag' => 0,
-					'msg' => 'Already zan!' 
+					'msg' => 'Already like!' 
 			) );
 		} else {
-			$model = new Zans ();
+			$model = new Tblikes ();
 			
 			$model->userid = $phone ['id'];
-			$model->msgid = $data ['msgid'];
+			$model->tbmessageid = $data ['tbmessageid'];
+			$model->created_at = time();
+			
+			
 			$model->save ();
+			
+			$tbmessage = $this->findModel($data['tbmessageid']);
+			$connection = Yii::$app->db;
+			$transaction=$connection->beginTransaction();
+			try {
+					
+				if(!$model->save())
+					throw new Exception("dsfgsdfg");
+				$tbmessage->likecount++;
+				if(!$tbmessage->save())
+					throw new Exception("asdfgsdfg");
+				$transaction->commit();
+			} catch (Exception $e) {
+				$transaction->rollBack();
+				//var_dump("133435465");
+				//Yii::$app->log->logger->
+				return 	array (
+						//'error'=>$e,
+						'flag' => 0,
+						'msg' => 'like fail!'
+				);
+			}
+			
+			
+			
 // 			$to=Message::findOne(['id'=>$data['msgid']]);
 // 			$model2=new Notify();
 // 			$model2->from=$phone['id'];
@@ -161,7 +229,7 @@ class TbmessagesController extends Controller {
 // 			$model2->save();
 			return  array (
 					'flag' => 1,
-					'msg' => 'Zan success!' 
+					'msg' => 'like success!' 
 			);
 		}
 	}
@@ -199,7 +267,7 @@ class TbmessagesController extends Controller {
 		//$user=new Users();
 		$fromphone=Users::find()->select('id')->where(['phone'=>$data['fphone']])->one();
 		//var_dump($fromphone);
-		$model=new Replys();
+		$model=new Tbreplys();
 		if($data['tphone']==''){
 			$model->toid=0;
 		}else{
@@ -207,6 +275,7 @@ class TbmessagesController extends Controller {
 			//var_dump($tophone);
 			$model->toid=$tophone['id'];
 		}
+		
 // 		$to=Messages::findOne(['id'=>$data['msgid']]);
 // 		if($fromphone['id']!=$to['id']){
 // 			$model3=new Notify();
@@ -226,22 +295,37 @@ class TbmessagesController extends Controller {
 // 		}
 		
 		$model->fromid=$fromphone['id'];
-		$model->messageid=$data['msgid'];
+		$model->tbmessageid=$data['tbmessageid'];
 		$model->content=$data['content'];
 		$model->isread=0;
 		$model->created_at=time();
 		//var_dump($model);
-		if($model->save()){
-			return array (
-					'flag' => 1,
-					'msg' => 'Reply success!'
-			);
-		}else{
-			return array (
-					'flag' => 0,
-					'msg' => 'Reply failed!'
-			);
-		}
+		$tbmessage = $this->findModel($data['tbmessageid']);
+		$connection = Yii::$app->db;
+		$transaction=$connection->beginTransaction();
+		try {
+			
+			if(!$model->save())
+				throw new Exception("dsfgsdfg");
+			$tbmessage->replycount++;
+			if(!$tbmessage->save())
+				throw new Exception("asdfgsdfg");
+			$transaction->commit();
+		} catch (Exception $e) {
+    		$transaction->rollBack();
+    		//var_dump("133435465");
+    		//Yii::$app->log->logger->
+    		return 	array (
+    				//'error'=>$e,
+    				'flag' => 0,
+    				'msg' => 'Reply fail!'
+    		);
+    	}
+    	return 	array (
+    			'flag' => 1,
+    			'msg' => 'Reply success!'
+    	);
+
 	}
 	public function actionBeforeSend(){
 		$data=Yii::$app->request->post();
@@ -338,5 +422,13 @@ class TbmessagesController extends Controller {
 		//$dataProvider->setModels($mymodel);
 		//var_dump($dataProvider->models[4]['kind']);
 		//echo $dataProvider->models;
+	}
+	protected function findModel($id)
+	{
+		if (($model = Tbmessages::findOne($id)) !== null) {
+			return $model;
+		}else {
+			return false;
+		}
 	}
 }
