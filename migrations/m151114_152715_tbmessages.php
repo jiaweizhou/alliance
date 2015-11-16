@@ -3,12 +3,12 @@
 use yii\db\Schema;
 use yii\db\Migration;
 
-class m151114_152715_talkbar extends Migration
+class m151114_152715_tbmessages extends Migration
 {
     public function up()
     {
-    	$this->execute("DROP TABLE IF EXISTS talkbar");
-    	$this->createTable('talkbar', [
+    	$this->execute("DROP TABLE IF EXISTS tbmessages");
+    	$this->createTable('tbmessages', [
     			'id' => Schema::TYPE_PK,
     			'userid' => Schema::TYPE_INTEGER . ' NOT NULL',
     			'content' => Schema::TYPE_STRING . ' NOT NULL',
@@ -28,23 +28,17 @@ class m151114_152715_talkbar extends Migration
     			
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL',
     	],"CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB");
-    	$this->createIndex('userid', 'messages', 'userid');
-    	$this->addForeignKey('msguserid', 'messages', 'userid', 'users', 'id','CASCADE','CASCADE');
-    	$this->createTable('messagetopictures', [
-    			'id' => Schema::TYPE_PK,
-    			'messageid' => Schema::TYPE_INTEGER . ' NOT NULL',
-    			'picture' => Schema::TYPE_STRING . ' NOT NULL',
-    	],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
-    	$this->addForeignKey('mpKey', 'messagetopictures', 'messageid', 'messages', 'id','CASCADE','CASCADE');
+    	$this->createIndex('userid', 'tbmessages', 'userid');
+    	$this->addForeignKey('tbmsguserid', 'tbmessages', 'userid', 'users', 'id','CASCADE','CASCADE');
+    	//$this->addForeignKey('mpKey', 'messagetopictures', 'messageid', 'messages', 'id','CASCADE','CASCADE');
     	//$this->addForeignKey('apppid', 'msgtoapp', 'appid', 'app', 'id','CASCADE','CASCADE');
-    	$this->createIndex('msgid', 'messagetopictures', 'messageid');
     }
 
     public function down()
     {
         echo "m151114_152715_talkbar cannot be reverted.\n";
-
-        return false;
+        $this->execute("DROP TABLE IF EXISTS tbmessages");
+        return true;
     }
     
     /*
