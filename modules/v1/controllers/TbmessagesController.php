@@ -25,17 +25,48 @@ class TbmessagesController extends Controller {
 			'class' => 'yii\rest\Serializer',
 			'collectionEnvelope' => 'items' 
 	];
-
-	public function actionSearch() {
-		$data = Yii::$app->request->post ();
+	public function actionNew(){
+		return $this->search(Yii::$app->request->post (),1);
+	}
+	public function actionHot(){
+		return $this->search(Yii::$app->request->post (),2);
+	}
+	public function actionMyconcerns(){
+		return $this->search(Yii::$app->request->post (),3);
+	}
+	public function actionMe(){
+		return $this->search(Yii::$app->request->post (),4);
+	}
+	public function actionMylikes(){
+		return $this->search(Yii::$app->request->post (),5);
+	}
+	public function search($data,$type) {
 		
-		
-		// $data = Message::find ()->select ( 'msg.id' )->join ( 'INNER JOIN', 'friends', ' msg.userid =friends.friendid and msg.userid = :id ', [':id' => Yii::$app->user->id ]);
-		$query = (new \yii\db\Query ())->select('tbmessages.* ,users.phone,users.nickname,users.thumb')->orderBy ( "tbmessages.created_at desc" )->from('tbmessages')->join ( 'INNER JOIN', 'users', 'tbmessages.userid =users.id');
-		if(isset($data)&&isset($data['phone'])){
-			$query=$query->where('users.phone= :phone',[':phone'=>$data['phone']]);
+		if(!(isset($data)&&isset($data['phone'])&&isset($type))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
 		}
-		
+		$user =Users::findOne(['phone'=>$data['phone']]);
+		$query=(new \yii\db\Query ())->select(['tbmessages.*','users.phone','users.nickname','users.thumb','if(isnull(concerns.id),0,1) as isconcerned','if(isnull(tblikes.id),0,1) as isliked'])->from('tbmessages')->join ( 'INNER JOIN', 'users', 'tbmessages.userid =users.id');
+		switch ($type){
+			case 1:
+				$query = $query->orderBy ( "tbmessages.created_at desc" )->join('LEFT JOIN','concerns','tbmessages.userid = concerns.concernid and concerns.myid=:id',[':id'=>$user['id']])->join('LEFT JOIN','tblikes','tblikes.tbmessageid =tbmessages.id and tblikes.userid=:id',[':id'=>$user->id]);
+				break;
+			case 2:
+				$query = $query->orderBy ( "tbmessages.likecount desc" )->join('LEFT JOIN','concerns','tbmessages.userid = concerns.concernid and concerns.myid=:id',[':id'=>$user['id']])->join('LEFT JOIN','tblikes','tblikes.tbmessageid =tbmessages.id and tblikes.userid=:id',[':id'=>$user->id]);
+				break;
+			case 3:
+				$query = $query->orderBy ( "tbmessages.created_at desc" )->join('INNER JOIN','concerns','tbmessages.userid = concerns.concernid and concerns.myid=:id',[':id'=>$user['id']])->join('LEFT JOIN','tblikes','tblikes.tbmessageid =tbmessages.id and tblikes.userid=:id',[':id'=>$user->id]);
+				break;
+			case 4:
+				$query = $query->orderBy ( "tbmessages.created_at desc" )->where(['tbmessages.userid'=>$user->id])->join('LEFT JOIN','concerns','tbmessages.userid = concerns.concernid and concerns.myid=:id',[':id'=>$user['id']])->join('LEFT JOIN','tblikes','tblikes.tbmessageid =tbmessages.id and tblikes.userid=:id',[':id'=>$user->id]);
+				break;
+			case 5:
+				$query = $query->orderBy ( "tbmessages.created_at desc" )->where(['tbmessages.userid'=>$user->id])->join('LEFT JOIN','concerns','tbmessages.userid = concerns.concernid and concerns.myid=:id',[':id'=>$user['id']])->join('INNER JOIN','tblikes','tblikes.tbmessageid =tbmessages.id and tblikes.userid=:id',[':id'=>$user->id]);
+				break;			
+		}
 // 		$dataProvider = new \yii\data\Pagination ( [ 
 // 				'totalCount' => $query->count (),
 // 				'pageSize' => '20' 
@@ -65,7 +96,7 @@ class TbmessagesController extends Controller {
 			] )->join ( 'Left JOIN', 'users user2', 'user2.id = tbreplys.toid' )->orderBy ( "tbreplys.created_at" )->limit(20)->all ();
 			
 			$info['likes']=(new \yii\db\Query())
-			->select('u.phone,u.nickname')->from('tblikes')
+			->select('u.phone,u.nickname,u.thumb')->from('tblikes')
 			->join('INNER JOIN','users u','u.id=tblikes.userid and tblikes.tbmessageid=:id',[':id'=>$tbmessage ['id'] ])
 			->orderby('tblikes.created_at desc')
 			->limit(10)
@@ -176,6 +207,7 @@ class TbmessagesController extends Controller {
 		$data = Yii::$app->request->post ();
 		$user = new Users ();
 		$phone=Users::find()->select('id')->where(['phone'=>$data['phone']])->one();
+		//var_dump(Users::findOne(['phone'=>$data['phone']])['id']);
 		$info = Tblikes::findOne ( [ 
 				'userid' => $phone ['id'],
 				'tbmessageid' => $data ['tbmessageid'] 
@@ -193,9 +225,15 @@ class TbmessagesController extends Controller {
 			$model->created_at = time();
 			
 			
-			$model->save ();
+			//$model->save ();
 			
 			$tbmessage = $this->findModel($data['tbmessageid']);
+			if(!$tbmessage){
+				return array (
+						'flag' => 0,
+						'msg' => 'no tbmessage with this id!'
+				);
+			}
 			$connection = Yii::$app->db;
 			$transaction=$connection->beginTransaction();
 			try {
@@ -233,28 +271,48 @@ class TbmessagesController extends Controller {
 			);
 		}
 	}
-	public function actionCancelzan() {
+	public function actionCancellike() {
 		$data = Yii::$app->request->post ();
+	
 		$user = new Users ();
+		
 		$phone = $user->find ()->select ( 'id' )->where ( [ 
 				'phone' => $data ['phone'] 
-		] )->one ();
-		$info = Zans::findOne ( [ 
+		] )->one();
+		$info = Tblikes::findOne ( [ 
 				'userid' => $phone ['id'],
-				'msgid' => $data ['msgid'] 
+				'tbmessageid' => $data ['tbmessageid'] 
 		] );
+		$tbmessage = $this->findModel($data['tbmessageid']);
+		if(!$tbmessage){
+			return array (
+					'flag' => 0,
+					'msg' => 'no tbmessage with this id!'
+			);
+		}
 		if ($info) {
-			if($info->delete ()){
-				return array (
-						'flag' => 1,
-						'msg' => 'Cancel success!' 
-				);
-			}else{
-				return array (
+			
+			$connection = Yii::$app->db;
+			$transaction=$connection->beginTransaction();
+			try {	
+				if(!$info->delete())
+					throw new Exception("dsfgsdfg");
+				$tbmessage->likecount--;
+				if(!$tbmessage->save())
+					throw new Exception("asdfgsdfg");
+				$transaction->commit();
+			} catch (Exception $e) {
+				$transaction->rollBack();
+				return 	array (
+						//'error'=>$e,
 						'flag' => 0,
 						'msg' => 'Cancel fail!'
 				);
 			}
+			return array (
+					'flag' => 1,
+					'msg' => 'Cancel success'
+			);
 		} else {
 			return array (
 					'flag' => 0,
