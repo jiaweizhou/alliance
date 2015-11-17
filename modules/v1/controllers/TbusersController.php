@@ -35,7 +35,7 @@ class TbusersController extends Controller {
 		}
 		$me =Users::findOne(['phone'=>$data['phone']]);
 		return (new \yii\db\Query ())
-		->select(['users.phone','users.nickname','users.friendcount','users.concerncount','if(isnull(concerns.id),0,1) as isconcerned'])
+		->select(['users.phone','users.nickname','users.signature','users.friendcount','users.concerncount','if(isnull(concerns.id),0,1) as isconcerned'])
 		->from('users')
 		->where(['users.phone'=>$data['herphone']])
 		->join('LEFT JOIN','concerns','concerns.concernid = users.id and concerns.myid = :id',[':id'=>$me->id])
@@ -48,6 +48,9 @@ class TbusersController extends Controller {
 	public function actionMyconcerns(){
 		return $this->search(Yii::$app->request->post (),2);
 	}
+	public function actionMyfans(){
+		return $this->search(Yii::$app->request->post (),3);
+	}
 	public function search($data,$type){
 		if(!(isset($data)&&isset($data['phone'])&&isset($type))){
 			return 	array (
@@ -57,13 +60,17 @@ class TbusersController extends Controller {
 		}
 		$user =Users::findOne(['phone'=>$data['phone']]);
 		$query=(new \yii\db\Query ())
-			->select(['users.phone','users.nickname','users.concerncount','if(isnull(concerns.id),0,1) as isconcerned'])->from('users');
+			->select(['users.phone','users.nickname','users.signature','users.concerncount','if(isnull(concerns.id),0,1) as isconcerned'])->from('users');
 		switch ($type){
 			case 1:
 				$query = $query->orderBy('users.concerncount desc')->join('LEFT JOIN','concerns','concerns.concernid = users.id and concerns.myid = :id',[':id'=>$user->id]);
 				break;
 			case 2:
 				$query = $query->orderBy('concerns.created_at desc')->join('INNER JOIN','concerns','concerns.concernid = users.id and concerns.myid = :id',[':id'=>$user->id]);
+				break;
+			case 3:
+				$query = $query->orderBy('concerns.created_at desc')->join('INNER JOIN','concerns c','c.concernid = :id and c.myid = users.id',[':id'=>$user->id])->join('LEFT JOIN','concerns','concerns.concernid = users.id and concerns.myid = :id',[':id'=>$user->id]);
+				break;
 		}
 		$dataProvider=new ActiveDataProvider([
 				'query' => $query,
