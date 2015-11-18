@@ -14,15 +14,7 @@ use Yii;
  * @property integer $location
  * @property string $sellerphone
  * @property string $reason
- * @property string $picture1
- * @property string $picture2
- * @property string $picture3
- * @property string $picture4
- * @property string $picture5
- * @property string $picture6
- * @property string $picture7
- * @property string $picture8
- * @property string $picture9
+ * @property string $pictures
  * @property integer $created_at
  *
  * @property Recommendationcomments[] $recommendationcomments
@@ -47,7 +39,7 @@ class Recommendations extends \yii\db\ActiveRecord
         return [
             [['userid', 'kindid', 'location', 'created_at'], 'integer'],
             [['title', 'kindid', 'location'], 'required'],
-            [['picture1', 'picture2', 'picture3', 'picture4', 'picture5', 'picture6', 'picture7', 'picture8', 'picture9'], 'string'],
+            [['pictures'], 'string'],
             [['title', 'sellerphone', 'reason'], 'string', 'max' => 255]
         ];
     }

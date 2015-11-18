@@ -13,15 +13,7 @@ class m151114_152715_tbmessages extends Migration
     			'userid' => Schema::TYPE_INTEGER . ' NOT NULL',
     			'content' => Schema::TYPE_STRING . ' NOT NULL',
     			
-    			'picture1'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
-    			'picture2'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
-    			'picture3'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
-    			'picture4'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
-    			'picture5'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
-    			'picture6'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
-    			'picture7'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
-    			'picture8'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
-    			'picture9'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
+    			'pictures'=>Schema::TYPE_STRING .'(2550) '. ' NOT NULL DEFAULT ""',
     			
     			'likecount'=>Schema::TYPE_INTEGER . ' DEFAULT 0',
     			'replycount'=>Schema::TYPE_INTEGER . ' DEFAULT 0',

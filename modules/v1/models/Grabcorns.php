@@ -21,12 +21,7 @@ use Yii;
  * @property integer $winnerrecordid
  * @property integer $winnernumber
  * 
- * @property string $picture1
- * @property string $picture2
- * @property string $picture3
- * @property string $picture4
- * @property string $picture5
- * @property string $picture6
+ * @property string $pictures
  * @property integer $foruser
  * @property integer $kind
  */
@@ -48,7 +43,8 @@ class Grabcorns extends \yii\db\ActiveRecord
         return [
             [['title', 'version', 'needed', 'remain', 'created_at', 'date', 'end_at','kind'], 'required'],
             [['needed', 'remain', 'created_at', 'date', 'end_at', 'islotteried', 'winneruserid','winnerrecordid','winnernumber','foruser','kind'], 'integer'],
-            [['picture', 'title', 'version','picture1','picture2','picture3','picture4','picture5','picture6'], 'string', 'max' => 255]
+            [['picture', 'title', 'version'], 'string', 'max' => 255],
+        	[['pictures'], 'string', 'max' => 2550]
         ];
     }
 

@@ -150,10 +150,11 @@ class TbmessagesController extends Controller {
 		// $msg->userid = Yii::$app->user->id;
 		$msg->userid = $phone ['id'];
 		$msg->content = $data ['content'];
+		$msg->pictures = $data['pictures'];
 		$msg->created_at = time ();
-		for($i=1;$i<=9;$i++){
-        	$msg->setAttribute('picture'. $i, isset($data['picture' . $i])?$data['picture' . $i]:'');
-        }
+// 		for($i=1;$i<=9;$i++){
+//         	$msg->setAttribute('picture'. $i, isset($data['picture' . $i])?$data['picture' . $i]:'');
+//         }
 		if ($msg->save ()) {
 			return array (
 					'flag' => 1,
