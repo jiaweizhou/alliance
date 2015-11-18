@@ -100,9 +100,9 @@ class Panel extends Component
      */
     public function getUrl()
     {
-        return Url::toRoute(['/' . $this->module->id . '/default/view',
+       /* return Url::toRoute(['/' . $this->module->id . '/default/view',
             'panel' => $this->id,
             'tag' => $this->tag,
-        ]);
+        ]);*/
     }
 }

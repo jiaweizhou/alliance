@@ -17,6 +17,7 @@
         "php": ">=5.4.0",
         "yiisoft/yii2": ">=2.0.4",
         "yiisoft/yii2-bootstrap": "*",
+        "qiniu/php-sdk": "7.*",
         "yiisoft/yii2-swiftmailer": "*"
     },
     "require-dev": {

@@ -7,17 +7,7 @@ use yii\rest\Controller;
 use Qiniu\Auth;
 
 class UsersController extends Controller {
-	// for user to upload icon
-	public function actionToken() {
-		$accessKey = '6dnAU0jREe7QO0nD1ujr6CizVZ87HGhivNS1W9hR';
-		$secretKey = 'RYuzaeIJDvFb8KOa9OSlsmlVs7j9A6oFbzwjh9Z0';
-		$auth = new Auth ( $accessKey, $secretKey );
-		$bucket = 'alliance';
-		$token = $auth->uploadToken ( $bucket );
-		echo json_encode(array(
-				'token'=>$token
-		));
-	}
+
 	public function actionTest(){
 		//$model = Users::find()->where('id = 1')->one();
 		$data = Yii::$app->request->post();
@@ -86,5 +76,15 @@ class UsersController extends Controller {
 			return array('flag'=>0,'msg'=> 'can not find the user');
 		}
 		
+	}
+	public function actionToken() {
+		$accessKey = 'xcKDqVaZ6kg0GJL7F0XoJejA-bKuHeDFByLWtp5t';
+		$secretKey = 'ccns4VlA6Zy21PPQn_1N7wgSlU0WYSf9n7TQ4l2f';
+		$auth = new Auth ( $accessKey, $secretKey );
+		$bucket = 'allpeopleleague';
+		$token = $auth->uploadToken ( $bucket );
+		echo json_encode(array(
+				'token'=>$token
+		));
 	}
 }

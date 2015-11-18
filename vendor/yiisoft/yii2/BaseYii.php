@@ -93,7 +93,7 @@ class BaseYii
      */
     public static function getVersion()
     {
-        return '2.0.4';
+        return '2.0.5';
     }
 
     /**
@@ -464,7 +464,7 @@ class BaseYii
      */
     public static function powered()
     {
-        return 'Powered by <a href="http://www.yiiframework.com/" rel="external">Yii Framework</a>';
+        return 'Powered by <a href="http://www.sel.zju.edu.cn" rel="external">SEL</a>';
     }
 
     /**
