@@ -113,6 +113,7 @@ class ApplyjobsController extends Controller
         } else {
         	//var_dump($model->errors);
             return 	array (
+            		'error'=>$model->errors,
         			'flag' => 0,
         			'msg' => 'create job applying fail!'
         	);

@@ -48,7 +48,7 @@ class GrabcommoditiesController extends Controller
 			}else if($data['type']==1){
 				$query->where('grabcommodities.islotteried = 0 and end_at != 0 and foruser = 0');
 			}else if($data['type']==2){
-				$query->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0');
+				$query->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0')->orderBy ( "grabcommodities.end_at desc" );
 			}
 		}
 		
