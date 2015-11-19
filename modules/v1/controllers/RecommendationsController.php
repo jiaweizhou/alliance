@@ -107,8 +107,10 @@ class RecommendationsController extends Controller
         $model->kindid = $data['kindid'];
         $model->location = $data['location'];
         $model->sellerphone = isset($data['sellerphone'])?$data['sellerphone']:'';
-        $model->reason = isset($data['reason'])?$data['reason']:'';
+        $model->reason = $data['reason'];
         $model->pictures = isset($data['pictures'])?$data['pictures']:'';
+        $model->longitude = isset($data['longitude'])?$data['longitude']:0;
+        $model->latitude = isset($data['latitude'])?$data['latitude']:0;
 //         $i=0;
 //         for($i=1;$i<=9;$i++){
 //         	$model->setAttribute('picture'. $i, isset($data['picture' . $i])?$data['picture' . $i]:'');

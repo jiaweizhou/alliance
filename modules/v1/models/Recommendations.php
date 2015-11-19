@@ -11,7 +11,9 @@ use Yii;
  * @property integer $userid
  * @property string $title
  * @property integer $kindid
- * @property integer $location
+ * @property string $location
+ * @property integer $longitude
+ * @property integer $latitude
  * @property string $sellerphone
  * @property string $reason
  * @property string $pictures
@@ -37,10 +39,10 @@ class Recommendations extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userid', 'kindid', 'location', 'created_at'], 'integer'],
+            [['userid', 'kindid','longitude','latitude', 'created_at'], 'integer'],
             [['title', 'kindid', 'location'], 'required'],
             [['pictures'], 'string'],
-            [['title', 'sellerphone', 'reason'], 'string', 'max' => 255]
+            [['title', 'sellerphone', 'location',  'reason'], 'string', 'max' => 255]
         ];
     }
 
