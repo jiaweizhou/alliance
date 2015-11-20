@@ -89,8 +89,10 @@ class TbmessagesController extends Controller {
 					'tbreplys.*',
 					'user1.nickname as fromnickname',
 					'user1.phone as fromphone',
+					'user1.thumb as fromthumb',
 					'user2.nickname as tonickname',
-					'user2.phone as tophone' 
+					'user2.phone as tophone' ,
+					'user2.thumb as tothumb',
 			] )->from ( 'tbreplys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = tbreplys.fromid and tbreplys.tbmessageid = :id', [ 
 					':id' => $tbmessage['id'] 
 			] )->join ( 'Left JOIN', 'users user2', 'user2.id = tbreplys.toid' )->orderBy ( "tbreplys.created_at" )->limit(20)->all ();
@@ -129,8 +131,10 @@ class TbmessagesController extends Controller {
 				'tbreplys.*',
 				'user1.nickname as fromnickname',
 				'user1.phone as fromphone',
+				'user1.thumb as fromthumb',
 				'user2.nickname as tonickname',
-				'user2.phone as tophone'
+				'user2.phone as tophone',
+				'user2.thumb as tothumb',
 				] )->from ( 'tbreplys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = tbreplys.fromid and tbreplys.tbmessageid = :id', [
 						':id' => $data['tbmessageid']
 						] )->join ( 'Left JOIN', 'users user2', 'user2.id = tbreplys.toid' )->orderBy ( "tbreplys.created_at" );
