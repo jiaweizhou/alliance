@@ -11,6 +11,7 @@ class m151114_152715_tbmessages extends Migration
     	$this->createTable('tbmessages', [
     			'id' => Schema::TYPE_PK,
     			'userid' => Schema::TYPE_INTEGER . ' NOT NULL',
+    			'title' => Schema::TYPE_STRING . ' NOT NULL',
     			'content' => Schema::TYPE_STRING . ' NOT NULL',
     			
     			'pictures'=>Schema::TYPE_STRING .'(2550) '. ' NOT NULL DEFAULT ""',

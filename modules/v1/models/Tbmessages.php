@@ -9,6 +9,7 @@ use Yii;
  *
  * @property integer $id
  * @property integer $userid
+ * @property string $title
  * @property string $content
  * @property string $pictures
  * @property integer $likecount
@@ -34,9 +35,9 @@ class Tbmessages extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userid', 'content', 'created_at'], 'required'],
+            [['userid', 'content',  'title', 'created_at'], 'required'],
             [['userid', 'likecount', 'replycount', 'created_at'], 'integer'],
-            [['content'], 'string', 'max' => 255],
+            [['content','title'], 'string', 'max' => 255],
         	[['pictures'], 'string', 'max' => 2550]
         ];
     }
