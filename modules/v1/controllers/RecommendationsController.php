@@ -36,7 +36,19 @@ class RecommendationsController extends Controller
 		
 		if(!empty($data)){
 			if(isset($data['recommendationid'])){
-				return $this->findModel($data['recommendationid']);
+				$model = $query->where(['id'=>$data['recommendationid']])->one();
+				//$model=$this->findModel($data['recommendationid']);
+				$comments = (new \yii\db\Query ())->select ( [
+                                        'recommendationcomments.*',
+                                        'users.phone',
+                                        'users.nickname',
+                                        'users.thumb'
+                                        ] )->orderBy('recommendationcomments.created_at desc')->from ( 'recommendationcomments' )->join ( 'INNER JOIN', 'users', 'recommendationcomments.userid = users.id and recommendationcomments.recommendationid = :id', [
+                                                ':id' => $model ['id']
+                                        ] )->all ();
+                        	$model['comments'] = $comments;
+				return  $model;
+
 			}
 			if(isset($data['phone'])){
 					$query->andFilterWhere(['users.phone' => $data['phone']]);
