@@ -35,6 +35,9 @@ class RecommendationsController extends Controller
 // 		]);
 		
 		if(!empty($data)){
+			if(isset($data['recommendationid'])){
+				return $this->findModel($data['recommendationid']);
+			}
 			if(isset($data['phone'])){
 					$query->andFilterWhere(['users.phone' => $data['phone']]);
 			}
@@ -59,7 +62,7 @@ class RecommendationsController extends Controller
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
-					] )->from ( 'recommendationcomments' )->join ( 'INNER JOIN', 'users', 'recommendationcomments.userid = users.id and recommendationcomments.recommendationid = :id', [
+					] )->orderBy('recommendationcomments.created_at desc')->from ( 'recommendationcomments' )->join ( 'INNER JOIN', 'users', 'recommendationcomments.userid = users.id and recommendationcomments.recommendationid = :id', [
 						':id' => $model ['id']
 					] )->all ();
 			$model['comments'] = $comments;
