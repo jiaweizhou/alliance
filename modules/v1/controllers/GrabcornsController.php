@@ -27,7 +27,24 @@ class GrabcornsController extends Controller
      * Lists all Applyjobs models.
      * @return mixed
      */
-
+	public function actionTest(){
+		$data=Yii::$app->request->post();
+		$dirname = '/home/zjw/alliance/random/grabcorns';
+		if(!is_dir($dirname))
+			mkdir($dirname,0777,true);
+		$handle = fopen($dirname .'/'. $data['id'], "w+");
+		$numbers = range (1,42);
+		shuffle ($numbers);
+		$string['numbers'] = $numbers;
+		$string['begin']=0;
+		$string = json_encode($string);
+		fwrite($handle, $string);
+		return 	array (
+					'flag' => 1,
+					'msg' => 'no enough arg!'
+			);
+		
+	}
 	public function actionGetthree(){
 		$data=Yii::$app->request->post();
 		return  (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns')->where('grabcorns.islotteried = 0 and end_at = 0 and foruser = 0')->limit(3)->all();
