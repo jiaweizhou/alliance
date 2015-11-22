@@ -31,7 +31,13 @@ class GrabcornrecordsController extends Controller
 	public function actionList()
 	{ 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,users.nickname,users.phone,users.thumb')->from('grabcornrecords')->orderBy('grabcornrecords.created_at desc')->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')->join('INNER JOIN','users','grabcornrecords.userid = users.id');
+		$query = (new \yii\db\Query ())
+		->select('grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,g2.count as winnercount,users.nickname,users.phone,users.thumb')
+		->from('grabcornrecords')
+		->orderBy('grabcornrecords.created_at desc')
+		->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')
+		->join('INNER JOIN','users','grabcornrecords.userid = users.id')
+		->join('LEFT JOIN','grabcornrecords g2','grabcorns.winnerrecordid = g2.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);

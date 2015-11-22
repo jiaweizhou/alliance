@@ -31,7 +31,13 @@ class GrabcommodityrecordsController extends Controller
 	public function actionList()
 	{ 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('grabcommodityrecords.*,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.number,grabcommodities.end_at,grabcommodities.islotteried,users.nickname,users.thumb')->from('grabcommodityrecords')->orderBy('grabcommodityrecords.created_at desc')->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id')->join('INNER JOIN','users','grabcommodityrecords.userid = users.id');
+		$query = (new \yii\db\Query ())
+		->select('grabcommodityrecords.*,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.number,grabcommodities.end_at,grabcommodities.islotteried,g2.count as winnercount,users.nickname,users.thumb')
+		->from('grabcommodityrecords')
+		->orderBy('grabcommodityrecords.created_at desc')
+		->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id')
+		->join('INNER JOIN','users','grabcommodityrecords.userid = users.id')
+		->join('LEFT JOIN','grabcommodityrecords g2','grabcommodities.winnerrecordid = g2.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
@@ -57,7 +63,12 @@ class GrabcommodityrecordsController extends Controller
 	public function actionWin()
 	{
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('grabcommodityrecords.*,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.number,grabcommodities.end_at,grabcommodities.islotteried,users.nickname,users.thumb')->from('grabcommodityrecords')->orderBy('grabcommodityrecords.created_at desc')->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id and winnerrecordid = grabcommodityrecords.id')->join('INNER JOIN','users','grabcommodityrecords.userid = users.id');
+		$query = (new \yii\db\Query ())
+		->select('grabcommodityrecords.*,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.number,grabcommodities.end_at,grabcommodities.islotteried,users.nickname,users.thumb')
+		->from('grabcommodityrecords')
+		->orderBy('grabcommodityrecords.created_at desc')
+		->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id and winnerrecordid = grabcommodityrecords.id')
+		->join('INNER JOIN','users','grabcommodityrecords.userid = users.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
