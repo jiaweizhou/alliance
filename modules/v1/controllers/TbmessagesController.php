@@ -297,7 +297,8 @@ class TbmessagesController extends Controller {
 			);
 		}
 		if ($info) {
-			
+			//var_dump($tbmessage);
+				
 			$connection = Yii::$app->db;
 			$transaction=$connection->beginTransaction();
 			try {	

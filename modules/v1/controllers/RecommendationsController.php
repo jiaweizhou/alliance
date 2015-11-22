@@ -36,7 +36,7 @@ class RecommendationsController extends Controller
 		
 		if(!empty($data)){
 			if(isset($data['recommendationid'])){
-				$model = $query->where(['id'=>$data['recommendationid']])->one();
+				$model = $query->where(['recommendations.id'=>$data['recommendationid']])->one();
 				//$model=$this->findModel($data['recommendationid']);
 				$comments = (new \yii\db\Query ())->select ( [
                                         'recommendationcomments.*',
