@@ -40,6 +40,39 @@ class TbmessagesController extends Controller {
 	public function actionMylikes(){
 		return $this->search(Yii::$app->request->post (),5);
 	}
+	public function  actionView(){
+		$data=Yii::$app->request->post ();
+		$user =Users::findOne(['phone'=>$data['phone']]);
+		return $user;
+		$tbmessage=(new \yii\db\Query ())->select(['tbmessages.*','users.phone','users.nickname','users.thumb','if(isnull(concerns.id),0,1) as isconcerned','if(isnull(tblikes.id),0,1) as isliked'])
+		->from('tbmessages')
+		->join ( 'INNER JOIN', 'users', 'tbmessages.userid =users.id')
+		->join('LEFT JOIN','concerns','tbmessages.userid = concerns.concernid and concerns.myid=:id',[':id'=>$user['id']])
+		->join('LEFT JOIN','tblikes','tblikes.tbmessageid =tbmessages.id and tblikes.userid=:id',[':id'=>$user->id])
+		->where(['tbmessages.id'=>$data['tbmessageid']])
+		->one();
+		$info = $tbmessage;
+		$info ['replys'] = (new \yii\db\Query ())->select ( [
+				'tbreplys.*',
+				'user1.nickname as fromnickname',
+				'user1.phone as fromphone',
+				'user1.thumb as fromthumb',
+				'user2.nickname as tonickname',
+				'user2.phone as tophone' ,
+				'user2.thumb as tothumb',
+		] )->from ( 'tbreplys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = tbreplys.fromid and tbreplys.tbmessageid = :id', [
+				':id' => $tbmessage['id']
+		] )->join ( 'Left JOIN', 'users user2', 'user2.id = tbreplys.toid' )->orderBy ( "tbreplys.created_at" )->limit(20)->all ();
+			
+		$info['likes']=(new \yii\db\Query())
+		->select('u.phone,u.nickname,u.thumb')->from('tblikes')
+		->join('INNER JOIN','users u','u.id=tblikes.userid and tblikes.tbmessageid=:id',[':id'=>$tbmessage ['id'] ])
+		->orderby('tblikes.created_at desc')
+		->limit(10)
+		->all();
+		return $tbmessage;
+		
+	}
 	public function search($data,$type) {
 		
 		if(!(isset($data)&&isset($data['phone'])&&isset($type))){
