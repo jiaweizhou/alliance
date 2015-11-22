@@ -64,7 +64,7 @@ class GrabcornrecordsController extends Controller
 	{
 		$data=Yii::$app->request->post();
 		$query = (new \yii\db\Query ())
-		->select('1 flag','grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,users.nickname,users.phone,users.thumb')->from('grabcornrecords')->orderBy('grabcornrecords.created_at desc')->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')->join('INNER JOIN','users','grabcornrecords.userid = users.id and winnerrecordid = grabcornrecords.id');
+		->select('grabcorns.id as flag, grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,users.nickname,users.phone,users.thumb')->from('grabcornrecords')->orderBy('grabcornrecords.created_at desc')->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')->join('INNER JOIN','users','grabcornrecords.userid = users.id and winnerrecordid = grabcornrecords.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
