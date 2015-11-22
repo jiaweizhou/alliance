@@ -32,7 +32,7 @@ class GrabcommodityrecordsController extends Controller
 	{ 
 		$data=Yii::$app->request->post();
 		$query = (new \yii\db\Query ())
-		->select('grabcommodityrecords.*,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.needed,grabcommodities.end_at,grabcommodities.winnernumber,grabcommodities.islotteried,g2.count as winnercount,users.nickname,users.thumb')
+		->select('grabcommodityrecords.*,grabcommodities.picture,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.needed,grabcommodities.end_at,grabcommodities.winnernumber,grabcommodities.islotteried,g2.count as winnercount,users.nickname,users.thumb')
 		->from('grabcommodityrecords')
 		->orderBy('grabcommodityrecords.created_at desc')
 		->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id')
@@ -64,7 +64,7 @@ class GrabcommodityrecordsController extends Controller
 	{
 		$data=Yii::$app->request->post();
 		$query = (new \yii\db\Query ())
-		->select('grabcommodityrecords.*,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.number,grabcommodities.end_at,grabcommodities.islotteried,users.nickname,users.thumb')
+		->select('1 flag,grabcommodityrecords.*,grabcommodities.picture,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.number,grabcommodities.end_at,grabcommodities.islotteried,users.nickname,users.thumb')
 		->from('grabcommodityrecords')
 		->orderBy('grabcommodityrecords.created_at desc')
 		->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id and winnerrecordid = grabcommodityrecords.id')

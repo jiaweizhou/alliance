@@ -32,7 +32,7 @@ class GrabcornrecordsController extends Controller
 	{ 
 		$data=Yii::$app->request->post();
 		$query = (new \yii\db\Query ())
-		->select('grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,g2.count as winnercount,users.nickname,users.phone,users.thumb')
+		->select('grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,g2.count as winnercount,users.nickname,users.phone,users.thumb')
 		->from('grabcornrecords')
 		->orderBy('grabcornrecords.created_at desc')
 		->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')
@@ -63,7 +63,8 @@ class GrabcornrecordsController extends Controller
 	public function actionWin()
 	{
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,users.nickname,users.phone,users.thumb')->from('grabcornrecords')->orderBy('grabcornrecords.created_at desc')->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')->join('INNER JOIN','users','grabcornrecords.userid = users.id and winnerrecordid = grabcornrecords.id');
+		$query = (new \yii\db\Query ())
+		->select('1 flag,grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,users.nickname,users.phone,users.thumb')->from('grabcornrecords')->orderBy('grabcornrecords.created_at desc')->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')->join('INNER JOIN','users','grabcornrecords.userid = users.id and winnerrecordid = grabcornrecords.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
