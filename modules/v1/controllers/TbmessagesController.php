@@ -70,7 +70,7 @@ class TbmessagesController extends Controller {
 		->orderby('tblikes.created_at desc')
 		->limit(10)
 		->all();
-		return $tbmessage;
+		return $info;
 		
 	}
 	public function search($data,$type) {
