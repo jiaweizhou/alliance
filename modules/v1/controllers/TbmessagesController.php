@@ -43,7 +43,7 @@ class TbmessagesController extends Controller {
 	public function  actionView(){
 		$data=Yii::$app->request->post ();
 		$user =Users::findOne(['phone'=>$data['phone']]);
-		return $user;
+		//return $user;
 		$tbmessage=(new \yii\db\Query ())->select(['tbmessages.*','users.phone','users.nickname','users.thumb','if(isnull(concerns.id),0,1) as isconcerned','if(isnull(tblikes.id),0,1) as isliked'])
 		->from('tbmessages')
 		->join ( 'INNER JOIN', 'users', 'tbmessages.userid =users.id')
