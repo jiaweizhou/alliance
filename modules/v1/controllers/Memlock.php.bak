@@ -1,5 +1,6 @@
 <?php
 namespace app\modules\v1\controllers;
+use Yii;
 class MemLock {
 	private static $memcache = null;
 
@@ -11,6 +12,7 @@ class MemLock {
 	public static function getConnection() {
 		if (! isset ( self::$memcache )) {
 			self::$memcache = new Memcache ();
+			
 			self::$memcache->connect ( '127.0.0.1', 11211 );
 		}
 		return self::$memcache;

@@ -8,7 +8,9 @@ use app\modules\v1\models\Grabcorns;
 use yii\data\ActiveDataProvider;
 use yii\rest\Controller;
 use yii\web\NotFoundHttpException;
-use app\modules\v1\controllers\Memlock;
+// require dirname ( __FILE__ ) . '/Cachelock.php';
+// use CacheLock;
+use app\modules\v1\controllers\CacheLock;
 use yii\filters\VerbFilter;
 use app\modules\v1\models\Users;
 use app\modules\v1\models\app\modules\v1\models;
@@ -30,7 +32,17 @@ class GrabcornsController extends Controller
      */
 	public function actionTest(){
 		$data=Yii::$app->request->post();
-		
+		$dirname = '/home/zjw/alliance/random/grabcorns';
+		if(!is_dir($dirname))
+			mkdir($dirname,0777,true);
+		$handle = fopen($dirname .'/'. $data['id'], "w+");
+		$numbers = range (10000001,10000000+$data['count']);
+		shuffle ($numbers);
+		$string['numbers'] = $numbers;
+		$string['begin']=0;
+		$string = json_encode($string);
+		fwrite($handle, $string);
+		fclose($handle);
 		return 	array (
 					'flag' => 1,
 					'msg' => 'no enough arg!'
@@ -41,27 +53,15 @@ class GrabcornsController extends Controller
 		$data=Yii::$app->request->post();
 		$dirname = '/home/zjw/alliance/random/grabcorns';
 		$lockfile = $dirname .'/'. $data['id'];
-		$fp = fopen( $lockfile , "rw" );
-		if (!$fp) {
-			echo "Failed to open the lock file!";
-			exit(1);//异常处理
-		}
-		flock ( $fp, LOCK_EX );
-		$raw=file_get_contents($fp);
-		//return var_dump($raw);
-		rtrim($raw,140);
-		return var_dump($raw);
-		$numbers=json_decode($raw);
-		return $numbers['numbers'];
-		$arr2 = array_splice($numbers['numbers'], $numbers['begin'] , $data['count']);
+		$lock=new CacheLock($data['id'] );
+		$lock->lock();
+		$raw=file_get_contents($lockfile);
+		$numbers=json_decode($raw,true);
+		$arr2 = array_splice($numbers['numbers'],0, $data['count']);
 		$usernumbers = join(' ', $arr2);
-		
-		var_dump($usernumbers);
-		
-		$numbers['begin'] = $numbers['begin']+$data['count'];
-		fwrite($fp, json_encode($numbers));
-		flock ( $fp, LOCK_UN );
-		fclose($fp);
+
+		file_put_contents($lockfile, json_encode($numbers));
+		$lock->unlock();
 		return 	array (
 				'flag' => 1,
 				'msg' => 'no enough arg!'
@@ -103,7 +103,7 @@ class GrabcornsController extends Controller
 			}else if($data['type']==1){
 				$query->where('grabcorns.islotteried = 0 and end_at != 0 and foruser = 0');
 			}else if($data['type']==2){
-				$query->where('grabcorns.islotteried = 1 and end_at != 0 and foruser = 0');
+				$query->where('grabcorns.islotteried = 1 and end_at != 0 and foruser = 0')->join('INNER JOIN','users')->orderBy('end_at desc');
 			}
 		}
 		return $dataProvider;
@@ -229,7 +229,7 @@ class GrabcornsController extends Controller
         	if(!is_dir($dirname))
         		mkdir($dirname,0777,true);
         	$handle = fopen($dirname .'/'. $model['id'], "w+");
-        	$numbers = range (1,$model->needed);
+        	$numbers = range (10000001,10000000+$model->needed);
         	shuffle ($numbers);
         	$string['numbers'] = $numbers;
         	$string['begin']=0;
@@ -366,17 +366,14 @@ class GrabcornsController extends Controller
     	$inserrecord = 0;
     	$updatemoney = 0;
     	$dirname = '/home/zjw/alliance/random/grabcorns';
-    	//$handle = fopen($dirname .'/'. $model['id'], "w+");
-    	$lockfile = $dirname .'/'. $grabcorn['id'];
-    	$fp = fopen( $lockfile , "rw" );
-    	if (!$fp) {
-    		echo "Failed to open the lock file!";
-    		exit(1);//异常处理
-    	}
-    	flock ( $fp, LOCK_EX );
-    	$numbers=json_decode(fpassthru($fp));
-    	$arr2 = array_splice($numbers['numbers'], $numbers['begin'] , $data['count']);
-    	$usernumbers = join(' ', $arr2);
+		$lockfile = $dirname .'/'. $data['grabcornid'];
+		$lock=new CacheLock($data['grabcornid'] );
+		$lock->lock();
+		$raw=file_get_contents($lockfile);
+		$numbers=json_decode($raw,true);
+		$arr2 = array_splice($numbers['numbers'],0, $data['count']);
+		$usernumbers = join(' ', $arr2);
+		
     	$connection = Yii::$app->db;
     	$transaction=$connection->beginTransaction();
     	try {
@@ -384,6 +381,7 @@ class GrabcornsController extends Controller
     		$connection->createCommand('select * from grabcorns where id=:id for update',[':id'=>$data['grabcornid'],':count'=>$data['count']]);
     		$connection->createCommand('select * from users where id=:id for update',[':id'=>$data['grabcornid'],':count'=>$data['count']]);
     		$updatecount=$connection->createCommand('update grabcorns set remain=remain-:count where id=:id and remain>=:count',[':id'=>$data['grabcornid'],':count'=>(int)$data['count']])->execute();
+    		var_dump($updatecount);
     		switch ($data['type']){
     			case 0://yuer
     				$updatemoney=$connection->createCommand('update users set money = money-:count where id = :userid and money>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
@@ -409,20 +407,35 @@ class GrabcornsController extends Controller
     		// ... executing other SQL statements ...
     		$transaction->commit();
     	} catch (Exception $e) {
-    		$transaction->rollBack();
-    		var_dump("133435465");
-    		//Yii::$app->log->logger->
-    		flock ( $fp, LOCK_UN );
-    		fclose($fp);
+    		//file_put_contents($lockfile, json_encode($numbers));
+			$lock->unlock();
     		return 	array (
     				'flag' => 0,
     				'msg' => 'buy fail!'
     		);
     	}
-    	$numbers['begin'] = $numbers['begin']+$data['count'];
-    	fwrite($fp, json_encode($numbers));
-    	flock ( $fp, LOCK_UN );
-    	fclose($fp);
+    	file_put_contents($lockfile, json_encode($numbers));
+		$lock->unlock();
+		$grabcorn = Grabcorns::findOne(['id'=>$data['grabcornid']]);
+		if($grabcorn->remain==0){
+			$grabcorn->end_at = time()+10*60;
+			$grabcorn->save();
+			//curl_setopt ($ch, CURLOPT_URL, "http://127.0.0.1:8888/test");
+			$postdata = http_build_query(
+            	array('grabcornid'=>$grabcorn->id)
+        	);
+        	$opts = array('http' =>
+                      array(
+                          'method'  => 'POST',
+                          'header'  => 'Content-type: application/x-www-form-urlencoded',
+                          'content' => $postdata
+                      )
+ 
+        	);
+        	$context = stream_context_create($opts);
+        	$result = file_get_contents('http://127.0.0.1:8888/cornopen', false, $context);
+			return $result;
+		}
     	return 	array (
     			'flag' => 1,
     			'msg' => 'buy success!'
