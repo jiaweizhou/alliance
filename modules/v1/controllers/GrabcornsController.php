@@ -8,6 +8,7 @@ use app\modules\v1\models\Grabcorns;
 use yii\data\ActiveDataProvider;
 use yii\rest\Controller;
 use yii\web\NotFoundHttpException;
+use app\modules\v1\controllers\Memlock;
 use yii\filters\VerbFilter;
 use app\modules\v1\models\Users;
 use app\modules\v1\models\app\modules\v1\models;
@@ -29,21 +30,42 @@ class GrabcornsController extends Controller
      */
 	public function actionTest(){
 		$data=Yii::$app->request->post();
-		$dirname = '/home/zjw/alliance/random/grabcorns';
-		if(!is_dir($dirname))
-			mkdir($dirname,0777,true);
-		$handle = fopen($dirname .'/'. $data['id'], "w+");
-		$numbers = range (1,42);
-		shuffle ($numbers);
-		$string['numbers'] = $numbers;
-		$string['begin']=0;
-		$string = json_encode($string);
-		fwrite($handle, $string);
+		
 		return 	array (
 					'flag' => 1,
 					'msg' => 'no enough arg!'
 			);
 		
+	}
+	public function actionTestbuy(){
+		$data=Yii::$app->request->post();
+		$dirname = '/home/zjw/alliance/random/grabcorns';
+		$lockfile = $dirname .'/'. $data['id'];
+		$fp = fopen( $lockfile , "rw" );
+		if (!$fp) {
+			echo "Failed to open the lock file!";
+			exit(1);//异常处理
+		}
+		flock ( $fp, LOCK_EX );
+		$raw=file_get_contents($fp);
+		//return var_dump($raw);
+		rtrim($raw,140);
+		return var_dump($raw);
+		$numbers=json_decode($raw);
+		return $numbers['numbers'];
+		$arr2 = array_splice($numbers['numbers'], $numbers['begin'] , $data['count']);
+		$usernumbers = join(' ', $arr2);
+		
+		var_dump($usernumbers);
+		
+		$numbers['begin'] = $numbers['begin']+$data['count'];
+		fwrite($fp, json_encode($numbers));
+		flock ( $fp, LOCK_UN );
+		fclose($fp);
+		return 	array (
+				'flag' => 1,
+				'msg' => 'no enough arg!'
+		);
 	}
 	public function actionGetthree(){
 		$data=Yii::$app->request->post();
@@ -203,6 +225,18 @@ class GrabcornsController extends Controller
         	$model->$item = $data[$item];
         }
         if ($model->save()) {
+        	$dirname = '/home/zjw/alliance/random/grabcorns';
+        	if(!is_dir($dirname))
+        		mkdir($dirname,0777,true);
+        	$handle = fopen($dirname .'/'. $model['id'], "w+");
+        	$numbers = range (1,$model->needed);
+        	shuffle ($numbers);
+        	$string['numbers'] = $numbers;
+        	$string['begin']=0;
+        	$string = json_encode($string);
+        	fwrite($handle, $string);
+        	fclose($handle);
+        	
             return 	array (
 
         			'flag' => 1,
@@ -331,9 +365,18 @@ class GrabcornsController extends Controller
     	$updatecount = 0;
     	$inserrecord = 0;
     	$updatemoney = 0;
-    	for ($i = 0; $i < $data['count']; $i++) {
-    		
+    	$dirname = '/home/zjw/alliance/random/grabcorns';
+    	//$handle = fopen($dirname .'/'. $model['id'], "w+");
+    	$lockfile = $dirname .'/'. $grabcorn['id'];
+    	$fp = fopen( $lockfile , "rw" );
+    	if (!$fp) {
+    		echo "Failed to open the lock file!";
+    		exit(1);//异常处理
     	}
+    	flock ( $fp, LOCK_EX );
+    	$numbers=json_decode(fpassthru($fp));
+    	$arr2 = array_splice($numbers['numbers'], $numbers['begin'] , $data['count']);
+    	$usernumbers = join(' ', $arr2);
     	$connection = Yii::$app->db;
     	$transaction=$connection->beginTransaction();
     	try {
@@ -358,7 +401,7 @@ class GrabcornsController extends Controller
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
     		$inserrecord=$connection->createCommand('insert into grabcornrecords(userid,grabcornid,count,numbers,type,created_at) values (:userid,:grabcornid,:count,:numbers,:type,:created_at)'
-    					,[':userid'=>$user->id,':grabcornid'=>$data['grabcornid'],':count'=>$data['count'],':numbers'=>"",':type'=>$data['type'],':created_at'=>time()])->execute();
+    					,[':userid'=>$user->id,':grabcornid'=>$data['grabcornid'],':count'=>$data['count'],':numbers'=>$usernumbers,':type'=>$data['type'],':created_at'=>time()])->execute();
     		//var_dump($expression)
     		if(!(($data['type']==4||$updatemoney)&&$updatecount&&$inserrecord)){
     			throw new Exception("Value must be 1 or below");
@@ -369,11 +412,17 @@ class GrabcornsController extends Controller
     		$transaction->rollBack();
     		var_dump("133435465");
     		//Yii::$app->log->logger->
+    		flock ( $fp, LOCK_UN );
+    		fclose($fp);
     		return 	array (
     				'flag' => 0,
     				'msg' => 'buy fail!'
     		);
     	}
+    	$numbers['begin'] = $numbers['begin']+$data['count'];
+    	fwrite($fp, json_encode($numbers));
+    	flock ( $fp, LOCK_UN );
+    	fclose($fp);
     	return 	array (
     			'flag' => 1,
     			'msg' => 'buy success!'

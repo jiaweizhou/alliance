@@ -1,0 +1,47 @@
+<?php
+namespace app\modules\v1\controllers;
+class MemLock {
+	private static $memcache = null;
+
+	/**
+	 * 获取memcached连接
+	 *
+	 * @return Memcached
+	 */
+	public static function getConnection() {
+		if (! isset ( self::$memcache )) {
+			self::$memcache = new Memcache ();
+			self::$memcache->connect ( '127.0.0.1', 11211 );
+		}
+		return self::$memcache;
+	}
+
+	/**
+	 * 加锁
+	 *
+	 * @param $key 锁关键字
+	 * @param $expireTime   超时时间， 当进程在锁定后出错，这样永远不会释放锁了，只能等到缓存失效
+	 *
+	 * @return boolean true 成功获取到锁 false 获取锁失败
+	 */
+	public static function addLock($key, $expireTime = 120) {
+		$memcache = self::getConnection ();
+
+		if($memcache->add($key, 1, false, $expireTime)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 释放锁
+	 *
+	 * @param $key 锁关键字
+	 *
+	 * @return boolean true 释放成功 false 释放失败
+	 */
+	public static function releaseLock($key) {
+		$memcache = self::getConnection ();
+		return $memcache->delete ( $key );
+	}
+}
