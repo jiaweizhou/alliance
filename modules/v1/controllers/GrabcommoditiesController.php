@@ -27,6 +27,65 @@ class GrabcommoditiesController extends Controller
      * Lists all Applyjobs models.
      * @return mixed
      */
+	public function actionTest(){
+		$data=Yii::$app->request->post();
+		$dirname = 'random/grabcommodities';
+		if(!is_dir($dirname))
+			mkdir($dirname,0777,true);
+		$handle = fopen($dirname .'/'. $data['id'], "w+");
+		$numbers = range (10000001,10000000+$data['count']);
+		shuffle ($numbers);
+		$string['numbers'] = $numbers;
+		$string['begin']=0;
+		$string = json_encode($string);
+		fwrite($handle, $string);
+		fclose($handle);
+		return 	array (
+				'count'=>$data['count'],
+				'flag' => 1,
+				'msg' => 'no enough arg!'
+		);
+	
+	}
+	public function actionTestopen(){
+		$data=Yii::$app->request->post();
+		$postdata = http_build_query(
+    				array('grabcommodityid'=>$data['id'])
+    		);
+    		$opts = array('http' =>
+    				array(
+    						'method'  => 'POST',
+    						'header'  => 'Content-type: application/x-www-form-urlencoded',
+    						'content' => $postdata
+    				)
+    	
+    		);
+    		$context = stream_context_create($opts);
+    		$result = file_get_contents('http://127.0.0.1:8888/commodityopen', false, $context);
+		return 	array (
+				'flag' => 1,
+				'msg' => 'no enough arg!'
+		);
+	
+	}
+	public function actionTestbuy(){
+		$data=Yii::$app->request->post();
+		$dirname = 'random/grabcommodities';
+		$lockfile = $dirname .'/'. $data['id'];
+		$lock=new CacheLock($data['id'] );
+		$lock->lock();
+		$raw=file_get_contents($lockfile);
+		$numbers=json_decode($raw,true);
+		$arr2 = array_splice($numbers['numbers'],0, $data['count']);
+		$usernumbers = join(' ', $arr2);
+	
+		file_put_contents($lockfile, json_encode($numbers));
+		$lock->unlock();
+		return 	array (
+				'flag' => 1,
+				'msg' => 'no enough arg!'
+		);
+	}
 	public function actionGetthree(){
 		$data=Yii::$app->request->post();
 		return  (new \yii\db\Query ())->orderBy('date desc')->select('id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->from('grabcommodities')->where('grabcommodities.islotteried = 0 and end_at = 0 and foruser = 0')->limit(3)->all();
@@ -49,6 +108,11 @@ class GrabcommoditiesController extends Controller
 				$query->where('grabcommodities.islotteried = 0 and end_at != 0 and foruser = 0');
 			}else if($data['type']==2){
 				$query->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0')->orderBy ( "grabcommodities.end_at desc" );
+				$query->select('grabcommodities.*,users.phone,users.thumb,users.nickname,grabcommodityrecords.count')
+				->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0')
+				->join('INNER JOIN','users','users.id = grabcommodities.winneruserid')
+				->join('INNER JOIN','grabcommodityrecords','grabcommodityrecords.id = grabcommodities.winnerrecordid')
+				->orderBy('end_at desc');
 			}
 		}
 		
@@ -184,6 +248,17 @@ class GrabcommoditiesController extends Controller
         	$model->$item = $data[$item];
         }
         if ($model->save()) {
+        	$dirname = 'random/grabcommodities';
+        	if(!is_dir($dirname))
+        		mkdir($dirname,0777,true);
+        	$handle = fopen($dirname .'/'. $model['id'], "w+");
+        	$numbers = range (10000001,10000000+$model->needed);
+        	shuffle ($numbers);
+        	$string['numbers'] = $numbers;
+        	$string['begin']=0;
+        	$string = json_encode($string);
+        	fwrite($handle, $string);
+        	fclose($handle);
             return 	array (
         			'flag' => 1,
         			'msg' => 'create grabcommodity success!'
@@ -311,9 +386,16 @@ class GrabcommoditiesController extends Controller
     	$updatecount = 0;
     	$inserrecord = 0;
     	$updatemoney = 0;
-    	for ($i = 0; $i < $data['count']; $i++) {
-    		
-    	}
+    	
+    	$dirname = 'random/grabcommodities';
+    	$lockfile = $dirname .'/'. $data['grabcommodityid'];
+    	$lock=new CacheLock('grabcommodity'.$data['grabcommodityid'] );
+    	$lock->lock();
+    	$raw=file_get_contents($lockfile);
+    	$numbers=json_decode($raw,true);
+    	$arr2 = array_splice($numbers['numbers'],0, $data['count']);
+    	$usernumbers = join(' ', $arr2);
+    	
     	$connection = Yii::$app->db;
     	$transaction=$connection->beginTransaction();
     	try {
@@ -340,7 +422,7 @@ class GrabcommoditiesController extends Controller
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
     		$inserrecord=$connection->createCommand('insert into grabcommodityrecords(userid,grabcommodityid,count,numbers,type,created_at) values (:userid,:grabcommodityid,:count,:numbers,:type,:created_at)'
-    					,[':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid'],':count'=>$data['count'],':numbers'=>"",':type'=>$data['type'],':created_at'=>time()])->execute();
+    					,[':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid'],':count'=>$data['count'],':numbers'=>$usernumbers,':type'=>$data['type'],':created_at'=>time()])->execute();
     		//var_dump($expression)
     		if(!(($data['type']==4||$updatemoney)&&$updatecount&&$inserrecord)){
     			throw new Exception("Value must be 1 or below");
@@ -351,10 +433,33 @@ class GrabcommoditiesController extends Controller
     		$transaction->rollBack();
     		var_dump($e->getMessage());
     		//Yii::$app->log->logger->
+    		$lock->unlock();
     		return 	array (
     				'flag' => 0,
     				'msg' => 'buy fail!'
     		);
+    	}
+    	file_put_contents($lockfile, json_encode($numbers));
+    	$lock->unlock();
+    	$grabcommodity = Grabcommodities::findOne(['id'=>$data['grabcommodityid']]);
+    	$result="";
+    	if($grabcommodity->remain==0){
+    		$grabcommodity->end_at = time()+5*60;
+    		$grabcommodity->save();
+    		//curl_setopt ($ch, CURLOPT_URL, "http://127.0.0.1:8888/test");
+    		$postdata = http_build_query(
+    				array('grabcommodityid'=>$grabcommodity->id)
+    		);
+    		$opts = array('http' =>
+    				array(
+    						'method'  => 'POST',
+    						'header'  => 'Content-type: application/x-www-form-urlencoded',
+    						'content' => $postdata
+    				)
+    	
+    		);
+    		$context = stream_context_create($opts);
+    		$result = file_get_contents('http://127.0.0.1:8888/commodityopen', false, $context);
     	}
     	return 	array (
     			'flag' => 1,

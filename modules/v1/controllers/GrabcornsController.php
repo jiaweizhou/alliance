@@ -32,7 +32,7 @@ class GrabcornsController extends Controller
      */
 	public function actionTest(){
 		$data=Yii::$app->request->post();
-		$dirname = '/home/zjw/alliance/random/grabcorns';
+		$dirname = 'random/grabcorns';
 		if(!is_dir($dirname))
 			mkdir($dirname,0777,true);
 		$handle = fopen($dirname .'/'. $data['id'], "w+");
@@ -51,7 +51,7 @@ class GrabcornsController extends Controller
 	}
 	public function actionTestbuy(){
 		$data=Yii::$app->request->post();
-		$dirname = '/home/zjw/alliance/random/grabcorns';
+		$dirname = 'random/grabcorns';
 		$lockfile = $dirname .'/'. $data['id'];
 		$lock=new CacheLock($data['id'] );
 		$lock->lock();
@@ -80,7 +80,7 @@ class GrabcornsController extends Controller
 					'msg' => 'no enough arg!'
 			);
 		}
-		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*,users.phone,users.thumb,grabcornrecords.numbers,grabcornrecords.count')->from('grabcorns')->join('LEFT JOIN', 'grabcornrecords','grabcorns.winnerrecordid = grabcornrecords.id')->leftJoin('users','grabcorns.winneruserid=users.id')->where(['kind'=>$data['kind'],'foruser'=>0]);
+		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*,users.phone,users.nickname,users.thumb,grabcornrecords.numbers,grabcornrecords.count')->from('grabcorns')->join('LEFT JOIN', 'grabcornrecords','grabcorns.winnerrecordid = grabcornrecords.id')->leftJoin('users','grabcorns.winneruserid=users.id')->where(['kind'=>$data['kind'],'foruser'=>0]);
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
@@ -103,7 +103,11 @@ class GrabcornsController extends Controller
 			}else if($data['type']==1){
 				$query->where('grabcorns.islotteried = 0 and end_at != 0 and foruser = 0');
 			}else if($data['type']==2){
-				$query->where('grabcorns.islotteried = 1 and end_at != 0 and foruser = 0')->join('INNER JOIN','users')->orderBy('end_at desc');
+				$query->select('grabcorns.*,users.phone,users.thumb,users.nickname,grabcornrecords.count')
+				->where('grabcorns.islotteried = 1 and end_at != 0 and foruser = 0')
+				->join('INNER JOIN','users','users.id = grabcorns.winneruserid')
+				->join('INNER JOIN','grabcornrecords','grabcornrecords.id = grabcorns.winnerrecordid')
+				->orderBy('end_at desc');
 			}
 		}
 		return $dataProvider;
@@ -225,7 +229,7 @@ class GrabcornsController extends Controller
         	$model->$item = $data[$item];
         }
         if ($model->save()) {
-        	$dirname = '/home/zjw/alliance/random/grabcorns';
+        	$dirname = 'random/grabcorns';
         	if(!is_dir($dirname))
         		mkdir($dirname,0777,true);
         	$handle = fopen($dirname .'/'. $model['id'], "w+");
@@ -365,9 +369,9 @@ class GrabcornsController extends Controller
     	$updatecount = 0;
     	$inserrecord = 0;
     	$updatemoney = 0;
-    	$dirname = '/home/zjw/alliance/random/grabcorns';
+    	$dirname = 'random/grabcorns';
 		$lockfile = $dirname .'/'. $data['grabcornid'];
-		$lock=new CacheLock($data['grabcornid'] );
+		$lock=new CacheLock('grabcorn'.$data['grabcornid'] );
 		$lock->lock();
 		$raw=file_get_contents($lockfile);
 		$numbers=json_decode($raw,true);
@@ -381,7 +385,7 @@ class GrabcornsController extends Controller
     		$connection->createCommand('select * from grabcorns where id=:id for update',[':id'=>$data['grabcornid'],':count'=>$data['count']]);
     		$connection->createCommand('select * from users where id=:id for update',[':id'=>$data['grabcornid'],':count'=>$data['count']]);
     		$updatecount=$connection->createCommand('update grabcorns set remain=remain-:count where id=:id and remain>=:count',[':id'=>$data['grabcornid'],':count'=>(int)$data['count']])->execute();
-    		var_dump($updatecount);
+    		//var_dump($updatecount);
     		switch ($data['type']){
     			case 0://yuer
     				$updatemoney=$connection->createCommand('update users set money = money-:count where id = :userid and money>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
@@ -417,8 +421,9 @@ class GrabcornsController extends Controller
     	file_put_contents($lockfile, json_encode($numbers));
 		$lock->unlock();
 		$grabcorn = Grabcorns::findOne(['id'=>$data['grabcornid']]);
+		$result="";
 		if($grabcorn->remain==0){
-			$grabcorn->end_at = time()+10*60;
+			$grabcorn->end_at = time()+5*60;
 			$grabcorn->save();
 			//curl_setopt ($ch, CURLOPT_URL, "http://127.0.0.1:8888/test");
 			$postdata = http_build_query(
@@ -434,9 +439,10 @@ class GrabcornsController extends Controller
         	);
         	$context = stream_context_create($opts);
         	$result = file_get_contents('http://127.0.0.1:8888/cornopen', false, $context);
-			return $result;
+			//return $result;
 		}
     	return 	array (
+    			'result'=>$result,
     			'flag' => 1,
     			'msg' => 'buy success!'
     	);

@@ -15,7 +15,7 @@ class m151108_073542_grabcommodityrecords extends Migration
     			 
     			'count'=>Schema::TYPE_INTEGER . ' NOT NULL',
     			 
-    			'numbers' =>Schema::TYPE_STRING . ' DEFAULT ""',
+    			'numbers' =>Schema::TYPE_STRING .'(8000) '. ' DEFAULT ""',
     			 
     			'type' => Schema::TYPE_INTEGER . ' NOT NULL',
     			 

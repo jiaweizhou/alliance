@@ -36,7 +36,7 @@ class Grabcornrecords extends \yii\db\ActiveRecord
         return [
             [['userid', 'grabcornid', 'count', 'type', 'created_at'], 'required'],
             [['userid', 'grabcornid', 'count', 'type', 'created_at'], 'integer'],
-            [['numbers'], 'string', 'max' => 255]
+            //[['numbers'], 'string', 'max' => 255]
         ];
     }
 

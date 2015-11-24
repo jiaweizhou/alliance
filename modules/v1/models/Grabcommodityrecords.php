@@ -36,7 +36,7 @@ class Grabcommodityrecords extends \yii\db\ActiveRecord
         return [
             [['userid', 'grabcommodityid', 'count', 'type', 'created_at'], 'required'],
             [['userid', 'grabcommodityid', 'count', 'type', 'created_at'], 'integer'],
-            [['numbers'], 'string', 'max' => 255]
+            //[['numbers'], 'string', 'max' => 255]
         ];
     }
 
