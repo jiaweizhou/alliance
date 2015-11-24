@@ -97,7 +97,7 @@ class GrabcommoditiesController extends Controller
 		//$query = Grabcommodities::find()->where(['islotteried'=>0]);
 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->orderBy ( "grabcommodities.date desc" )->from('grabcommodities');
+		$query = (new \yii\db\Query ())->select('grabcommodities.id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->orderBy ( "grabcommodities.date desc" )->from('grabcommodities');
 		$dataProvider = new ActiveDataProvider([
 			'query' => $query,
 		]);
