@@ -78,23 +78,22 @@ class UsersController extends Controller {
 					'msg' => 'no enough arg!'
 			);
 		}
-		$model=new Users::findone(['phone'=>$data['phone']]);
+		$model=Users::findone(['phone'=>$data['phone']]);
 		
 		foreach ($data as $key=>$value){
-			$model->setAtti
+			$model->$key = $value;
 		}
 		
-		if ($count === 0) {
-			echo json_encode ( array (
-					'flag' => 0,
-					'msg' => 'Modify failed!'
-			)
-			);
-		} else {
-			echo json_encode ( array (
+		if ($model->save()) {
+			return array (
 					'flag' => 1,
 					'msg' => 'Modify success!'
-			) );
+			);
+		} else {
+			return  array (
+					'flag' => 0,
+					'msg' => 'Modify fail!'
+			) ;
 		}
 	}
 	public function actionLogin() {

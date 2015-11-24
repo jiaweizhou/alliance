@@ -24,7 +24,7 @@ class m151027_134709_users extends Migration
     			'alliancerewards'=>Schema::TYPE_BIGINT . ' DEFAULT 0',
     			'nickname' => Schema::TYPE_STRING . '(20) ',
     			'thumb' => Schema::TYPE_STRING. ' DEFAULT "" ',
-    			'gender' => Schema::TYPE_INTEGER. ' DEFAULT "" ',
+    			'gender' => Schema::TYPE_INTEGER. ' DEFAULT 0 ',
     			'area' => Schema::TYPE_STRING. ' DEFAULT "" ',
     			'job' => Schema::TYPE_STRING. ' DEFAULT "" ',
     			'hobby' => Schema::TYPE_STRING. ' DEFAULT "" ',
