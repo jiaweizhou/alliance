@@ -423,7 +423,7 @@ class GrabcornsController extends Controller
 		$grabcorn = Grabcorns::findOne(['id'=>$data['grabcornid']]);
 		$result="";
 		if($grabcorn->remain==0){
-			$grabcorn->end_at = time()+5*60;
+			$grabcorn->end_at = time()+10*60;
 			$grabcorn->save();
 			//curl_setopt ($ch, CURLOPT_URL, "http://127.0.0.1:8888/test");
 			$postdata = http_build_query(
@@ -442,7 +442,7 @@ class GrabcornsController extends Controller
 			//return $result;
 		}
     	return 	array (
-    			'result'=>$result,
+    			
     			'flag' => 1,
     			'msg' => 'buy success!'
     	);

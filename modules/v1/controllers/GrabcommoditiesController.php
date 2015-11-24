@@ -108,7 +108,7 @@ class GrabcommoditiesController extends Controller
 				$query->where('grabcommodities.islotteried = 0 and end_at != 0 and foruser = 0');
 			}else if($data['type']==2){
 				$query->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0')->orderBy ( "grabcommodities.end_at desc" );
-				$query->select('grabcommodities.*,users.phone,users.thumb,users.nickname,grabcommodityrecords.count')
+				$query->select('id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser,users.phone,users.thumb,users.nickname,grabcommodityrecords.count')
 				->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0')
 				->join('INNER JOIN','users','users.id = grabcommodities.winneruserid')
 				->join('INNER JOIN','grabcommodityrecords','grabcommodityrecords.id = grabcommodities.winnerrecordid')
@@ -444,7 +444,7 @@ class GrabcommoditiesController extends Controller
     	$grabcommodity = Grabcommodities::findOne(['id'=>$data['grabcommodityid']]);
     	$result="";
     	if($grabcommodity->remain==0){
-    		$grabcommodity->end_at = time()+5*60;
+    		$grabcommodity->end_at = time()+10*60;
     		$grabcommodity->save();
     		//curl_setopt ($ch, CURLOPT_URL, "http://127.0.0.1:8888/test");
     		$postdata = http_build_query(
