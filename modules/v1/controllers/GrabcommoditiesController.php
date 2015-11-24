@@ -108,7 +108,7 @@ class GrabcommoditiesController extends Controller
 				$query->where('grabcommodities.islotteried = 0 and end_at != 0 and foruser = 0');
 			}else if($data['type']==2){
 				$query->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0')->orderBy ( "grabcommodities.end_at desc" );
-				$query->select('id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser,users.phone,users.thumb,users.nickname,grabcommodityrecords.count')
+				$query->select('grabcommodities.id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser,users.phone,users.thumb,users.nickname,grabcommodityrecords.count')
 				->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0')
 				->join('INNER JOIN','users','users.id = grabcommodities.winneruserid')
 				->join('INNER JOIN','grabcommodityrecords','grabcommodityrecords.id = grabcommodities.winnerrecordid')
