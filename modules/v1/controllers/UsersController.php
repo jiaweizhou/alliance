@@ -5,9 +5,14 @@ use Yii;
 use app\modules\v1\models\Users;
 use yii\rest\Controller;
 use Qiniu\Auth;
-
+use app\modules\v1\models\Easeapi;
+use yii\rest\Serializer;
 class UsersController extends Controller {
-
+	public $modelClass = 'app\modules\v1\models\Users';
+	public $serializer = [
+			'class' => 'yii\rest\Serializer',
+			'collectionEnvelope' => 'items'
+	];
 	public function actionTest(){
 		//$model = Users::find()->where('id = 1')->one();
 		$data = Yii::$app->request->post();
@@ -15,37 +20,126 @@ class UsersController extends Controller {
 		return $user;
 	}
 	//for sign up
+	
 	public function actionSignup() {
 		$model = new Users ();
 		$data = Yii::$app->request->post ();
+		if(empty($data['phone'])||empty($data['pwd'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
 		$model->pwd = md5 ( $data ['pwd'] );
 		$model->phone = $data ['phone'];
-		$userinfo = User::findOne ( [
+		$userinfo = Users::findOne ( [
 				'phone' => $data ['phone']
 		] );
-		if ($userinfo&&$userinfo->blacklist==0) {
-			$userinfo->pwd = md5 ( $data ['pwd'] );
-			$userinfo->save ();
-			echo json_encode ( array (
-					'flag' => 1,
-					'msg' => 'change pwd success!'
-			) );
-		} else if ($userinfo&&$userinfo->blacklist==1){
+		if ($userinfo){
+			return array (
+			'flag' => 0,
+			'msg' => 'already Signup!'
+			) ;
+		}
+		$model->created_at = time ();
+		if($model->save ()){
+			$easeclient=new Easeapi('YXA6halokJDEEeWMRgvYONLZPQ','YXA6pswnZbss8mj351XE3oxuRYm6cek','13022660999','allpeopleleague','file');
+			$result=json_decode($easeclient->curl('/users',array('username'=>$model->id,'password'=>$data ['pwd'])),true);
+			if(isset($result['error'])){
+				$model->delete();
+				return  array (
+					'error'=> $result,
+					'flag' => 0,
+					'msg' => 'Signup fail!'
+				) ;
+			}else{
+				return  array (
+						'flag' => 1,
+						'msg' => 'Signup success!'
+				) ;
+			}
+		}else{
+			return  array (
+				'error'=>$model->errors,
+				'flag' => 0,
+				'msg' => 'Signup fail!'
+			) ;
+		}
+
+	}
+	
+	public function actionModify() {
+		
+		$data = Yii::$app->request->post ();
+		$data=Yii::$app->request->post();
+		if(empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$model=new Users::findone(['phone'=>$data['phone']]);
+		
+		foreach ($data as $key=>$value){
+			$model->setAtti
+		}
+		
+		if ($count === 0) {
 			echo json_encode ( array (
 					'flag' => 0,
-					'msg' => 'Signup failed!'
-			) );
-		} else{
-			$model->created_at = time ();
-			$model->save ();
+					'msg' => 'Modify failed!'
+			)
+			);
+		} else {
 			echo json_encode ( array (
 					'flag' => 1,
-					'msg' => 'Signup success!'
+					'msg' => 'Modify success!'
 			) );
-			// return 1;
-			// return json_encode("sighup success");
 		}
 	}
+	public function actionLogin() {
+		$data=Yii::$app->request->post();
+		if(empty($data['phone'])||empty($data['pwd'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$model=new Users();
+		$info=$model->findOne(['phone'=>$data['phone'],'pwd'=>md5($data['pwd'])]);
+		if($info){
+			echo json_encode ( array (
+					'flag' => 1,
+					'username'=>$info->id,
+					'msg' => 'Login success!'
+			) );
+		}else{
+			echo json_encode ( array (
+					'flag' => 0,
+					'msg' => 'Login failed!'
+			) );
+		}
+	}
+	
+	public function actionLogout() {
+		//Yii::$app->user->logout ();
+		$data=Yii::$app->request->post();
+		$model=new Users();
+		$info=$model->findOne(['phone'=>$data['phone']]);
+		if($info){
+			return array (
+					'flag' => 1,
+					'username'=>$info->id,
+					'msg' => 'Logout success!'
+			);
+		}else{
+			return  array (
+					'flag' => 0,
+					'msg' => 'Logout failed!'
+			);
+		}
+	}
+	
 	public function actionSetfather(){
 		$data = Yii::$app->request->post ();
 		$user=Users::findOne(['phone'=>$data['phone']]);

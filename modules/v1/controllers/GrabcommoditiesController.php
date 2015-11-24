@@ -444,7 +444,7 @@ class GrabcommoditiesController extends Controller
     	$grabcommodity = Grabcommodities::findOne(['id'=>$data['grabcommodityid']]);
     	$result="";
     	if($grabcommodity->remain==0){
-    		$grabcommodity->end_at = time()+10*60;
+    		$grabcommodity->end_at = time()+4*24*60*60;
     		$grabcommodity->save();
     		//curl_setopt ($ch, CURLOPT_URL, "http://127.0.0.1:8888/test");
     		$postdata = http_build_query(

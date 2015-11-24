@@ -1,5 +1,8 @@
 <?php
-class EaseApi {
+
+namespace app\modules\v1\models;
+
+class Easeapi {
 	private $server_url = 'https://a1.easemob.com/';
 	private $client_id;
 	private $client_secret;
