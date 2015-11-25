@@ -23,7 +23,8 @@ use Yii;
  * @property integer $foruser
  * @property integer $kind
  * @property string $pictures
- * 
+ * @property integer $worth
+ * @property integer $isgot
  * @property string $details
  * 
  * @property Grabcommodityrecords[] $grabcommodityrecords

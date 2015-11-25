@@ -234,7 +234,7 @@ class GrabcommoditiesController extends Controller
         $model = new Grabcommodities();
         $data=Yii::$app->request->post();
         //var_dump(isset($date['content']);
-        if(!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['kind']))){
+        if(!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['kind']&&isset($data['worth']))){
         	return 	array (
         			'flag' => 0,
         			'msg' => 'no enough arg!'
@@ -244,6 +244,7 @@ class GrabcommoditiesController extends Controller
         $data['created_at'] = time();
         $data['end_at'] = 0;
         $data['remain'] = $data['needed'];
+        
         foreach ($data as $item=>$value){
         	$model->$item = $data[$item];
         }
@@ -531,7 +532,7 @@ class GrabcommoditiesController extends Controller
     				break;
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
-    		$insertgrab=$connection->createCommand('insert into grabcommodities(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser,kind) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid,kind from grabcommodities where id = :grabcommodityid',[':time'=>$time,':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid']])->execute();
+    		$insertgrab=$connection->createCommand('insert into grabcommodities(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser,kind,pictures,details,worth) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid,kind,pictures,details,worth from grabcommodities where id = :grabcommodityid',[':time'=>$time,':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid']])->execute();
     		//$insertgrabid=mysql_insert_id($connection);
     		$insertgrabid=$connection->getLastInsertID();
     		//var_dump($insertgrab);
