@@ -563,6 +563,139 @@ class GrabcommoditiesController extends Controller
     	//$transaction = $connection->beginTransaction();
     	//Grabcorns::updateAllCounters([left=> -$data['count']],)
     }
+    public function actionGetcommodity(){
+    	$data=Yii::$app->request->post();
+    	if(!(isset($data['phone'])&&isset($data['grabcommodityid']))){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'no enough arg!'
+    		);
+    	}
+    	//Users::findOne(['phone'=>$data['phone']])
+    	$grabcommodity = Grabcorns::findOne(['id'=>$data['grabcommodityid']]);
+    	 
+    	if(!$grabcommodity){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'activity not exist!'
+    		);
+    	}
+    	$user = Users::findOne(['phone'=>$data['phone']]);
+    	if(!$user){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'find user fail!'
+    		);
+    	}
+    	if($grabcommodity->winneruserid !=$user->id){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you are not the winner!'
+    		);
+    	}
+    	 
+    	if($grabcommodity->isgot !=0){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you has got the commodity!'
+    		);
+    	}
+    	 
+    	$connection = Yii::$app->db;
+    	$transaction=$connection->beginTransaction();
+    	$updategrab=0;
+    	try {
+    		$updategrab=$connection->createCommand('update $grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
+    		//$insertwait=$connection->createCommand('update $grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
+    		sdfasdfasdf;
+    		if(!($updategrab)){
+    			throw new Exception("Value must be 1 or below");
+    		}
+    		// ... executing other SQL statements ...
+    		$transaction->commit();
+    
+    	} catch (Exception $e) {
+    		$transaction->rollBack();
+    		//var_dump($e->getMessage());
+    		//Yii::$app->log->logger->
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'get commodity fail!'
+    		);
+    	}
+    	return 	array (
+    			'flag' => 1,
+    			'msg' => 'get commodity success!'
+    	);
+    }
+    
+    public function actionChangetocorns(){
+    	$data=Yii::$app->request->post();
+    	if(!(isset($data['phone'])&&isset($data['grabcommodityid']))){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'no enough arg!'
+    		);
+    	}
+    	//Users::findOne(['phone'=>$data['phone']])
+    	$grabcommodity = Grabcorns::findOne(['id'=>$data['grabcommodityid']]);
+    	 
+    	if(!$grabcommodity){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'activity not exist!'
+    		);
+    	}
+    	$user = Users::findOne(['phone'=>$data['phone']]);
+    	if(!$user){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'find user fail!'
+    		);
+    	}
+    	if($grabcommodity->winneruserid !=$user->id){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you are not the winner!'
+    		);
+    	}
+    	 
+    	if($grabcommodity->isgot !=0){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you has got the corn!'
+    		);
+    	}
+    	 
+    	$connection = Yii::$app->db;
+    	$transaction=$connection->beginTransaction();
+    	$updategrab=0;
+    	try {
+    		//$worth = intval($grabcommodity->worth * 0.9);
+    		$updategrab=$connection->createCommand('update grabcommodities g1,users u1 set g1.isgot=1,u1.corns=u1.corns+g1.worth where g1.id=:id and u1.id = g1.winneruserid',[':id'=>$data['grabcommodityid']])->execute();
+    
+    		if(!($updategrab)){
+    			throw new Exception("Value must be 1 or below");
+    		}
+    		// ... executing other SQL statements ...
+    		$transaction->commit();
+    
+    	} catch (Exception $e) {
+    		$transaction->rollBack();
+    		//var_dump($e->getMessage());
+    		//Yii::$app->log->logger->
+    		return 	array (
+    				'err'=>$e,
+    				'flag' => 0,
+    				'msg' => 'get grabcommodity fail!'
+    		);
+    	}
+    	return 	array (
+    			'c'=>$updategrab,
+    			'flag' => 1,
+    			'msg' => 'get grabcommodity success!'
+    	);
+    }
     
     
     /**

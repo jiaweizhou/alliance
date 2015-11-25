@@ -12,6 +12,7 @@ class m151101_140507_zans extends Migration
     			'id' => Schema::TYPE_PK,
     			'userid' => Schema::TYPE_INTEGER . ' NOT NULL',
     			'msgid' => Schema::TYPE_INTEGER . ' NOT NULL',
+    			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
     			 
     	],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
     	$this->addForeignKey('msgZan', 'zans', 'msgid', 'messages', 'id','CASCADE','CASCADE');

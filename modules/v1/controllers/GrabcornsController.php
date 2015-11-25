@@ -585,7 +585,7 @@ class GrabcornsController extends Controller
     	$transaction=$connection->beginTransaction();
     	$updategrab=0;
     	try {
-    		$updategrab=$connection->createCommand('update grabcorns g1,users u1 set g1.isgot=1,u1.cornsforgrab=u1.cornsforgrab+g1.worth where g1.id=:id and u1.id = g1.winneruserid',['recordid'=>$insertrid,':id'=>$data['grabcornid']])->execute();
+    		$updategrab=$connection->createCommand('update grabcorns g1,users u1 set g1.isgot=1,u1.corns=u1.corns+g1.worth where g1.id=:id and u1.id = g1.winneruserid',[':id'=>$data['grabcornid']])->execute();
     		
     		if(!($updategrab)){
     			throw new Exception("Value must be 1 or below");
@@ -597,6 +597,81 @@ class GrabcornsController extends Controller
     		$transaction->rollBack();
     			//var_dump($e->getMessage());
     			//Yii::$app->log->logger->
+    		return 	array (
+    				'err'=>$e,
+    				'flag' => 0,
+    				'msg' => 'get corn fail!'
+    		);
+    	}
+    	return 	array (
+    			'c'=>$updategrab,
+    			'flag' => 1,
+    			'msg' => 'get corn success!'
+    	);
+    }
+    public function actionGetback(){
+    	$data=Yii::$app->request->post();
+    	if(!(isset($data['phone'])&&isset($data['grabcornid']))){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'no enough arg!'
+    		);
+    	}
+    	//Users::findOne(['phone'=>$data['phone']])
+    	$grabcorn = Grabcorns::findOne(['id'=>$data['grabcornid']]);
+    	 
+    	if(!$grabcorn){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'activity not exist!'
+    		);
+    	}
+    	$user = Users::findOne(['phone'=>$data['phone']]);
+    	if(!$user){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'find user fail!'
+    		);
+    	}
+    	if($grabcorn->winneruserid !=$user->id){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you are not the winner!'
+    		);
+    	}
+    	 
+    	if($grabcorn->isgot !=0){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you has got the corn!'
+    		);
+    	}
+    	 
+    	$back=0;
+    	$back = (new \yii\db\Query ())->select ('SUM(grabcornrecords.count) as back')->from ( 'grabcornrecords' )->where('grabcornrecords.userid = :userid and grabcornrecords.grabcornid = :id and grabcornrecords.isgotback=0', [
+				':id' => $data['grabcornid'],
+    			':userid'=>$user->id,
+		] );
+    	return $back;
+    	
+    	$connection = Yii::$app->db;
+    	$transaction=$connection->beginTransaction();
+    	$updategrab=0;
+    	try {
+    		
+    		$updategrab=$connection->createCommand('update grabcornrecords g1 set g1.isgot=1 where g1.id=:id and u1.id = :userid',[':id'=>$data['grabcornid'],':userid'=>$user->id])->execute();
+    		$updateuser=$connection->createCommand('update users u1  set u1.count = u1.count + :back where v1.id=:id',[':id'=>$user->id,':back'=>intval($back * 0.9)])->execute();
+    		 
+    		if(!($updateuser)){
+    			throw new Exception("Value must be 1 or below");
+    		}
+    		// ... executing other SQL statements ...
+    		$transaction->commit();
+    	
+    	} catch (Exception $e) {
+    		$transaction->rollBack();
+    		//var_dump($e->getMessage());
+    		//Yii::$app->log->logger->
     		return 	array (
     				'err'=>$e,
     				'flag' => 0,

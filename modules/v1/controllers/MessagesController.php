@@ -42,7 +42,7 @@ class MessagesController extends Controller {
 		] );
 		$pages = new \yii\data\Pagination ( [ 
 				'totalCount' => $data->count (),
-				'pageSize' => '10' 
+				'pageSize' => '20' 
 		] );
 		$models = $data->orderBy ( "messages.created_at desc" )->offset ( $pages->offset )->limit ( $pages->limit )->all ();
 		//$models = $data->orderBy ( "msg.created_at desc" )->limit ( $pages->limit )->all ();
@@ -68,18 +68,22 @@ class MessagesController extends Controller {
 			->where(['messageid' => $msg['id']])->all();
 			
 			$info ['replys'] = (new \yii\db\Query ())->select ( [ 
-					'replys.*',
+					'tbreplys.*',
 					'user1.nickname as fromnickname',
 					'user1.phone as fromphone',
+					'user1.thumb as fromthumb',
 					'user2.nickname as tonickname',
-					'user2.phone as tophone' 
+					'user2.phone as tophone' ,
+					'user2.thumb as tothumb',
 			] )->from ( 'replys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = replys.fromid and replys.messageid = :id', [ 
 					':id' => $model ['id'] 
-			] )->join ( 'Left JOIN', 'users user2', 'user2.id = replys.toid' )->orderBy ( "replys.created_at" )->all ();
+			] )->join ( 'Left JOIN', 'users user2', 'user2.id = replys.toid' )->orderBy ( "replys.created_at" )->limit(20)->all ();
 			
 			$info['zan']=(new \yii\db\Query())
 			->select('u.phone,u.nickname')->from('zans z')
 			->join('INNER JOIN','users u','u.id=z.userid and z.msgid=:id',[':id'=>$model ['id'] ])
+			->orderBy('zans.created_at desc')
+			->limit(10)
 			->all();
 			
 			$result ['item'] [] = $info;
@@ -91,6 +95,7 @@ class MessagesController extends Controller {
 		return $result;
 		// return $model;
 	}
+	
 	public function actionSend() {
 		$data = Yii::$app->request->post ();
 		$msg = new Messages ();
@@ -101,16 +106,8 @@ class MessagesController extends Controller {
 		$msg->userid = $phone ['id'];
 		$msg->content = $data ['content'];
 		$msg->created_at = time ();
-		
+		$msg->pictures = $data['pictures'];
 		if ($msg->save ()) {
-			if (isset($data ['pictures'] )){
-				foreach ( $data ['pictures'] as $picture ) {
-					$mp = new Messagetopictures();
-					$mp->messageid = $msg->id;
-					$mp->picture = $picture;
-					$mp->save();	
-				}
-			}
 			return array (
 					'flag' => 1,
 					'msg' => 'Send success!'
@@ -166,6 +163,7 @@ class MessagesController extends Controller {
 			
 			$model->userid = $phone ['id'];
 			$model->msgid = $data ['msgid'];
+			$model->created_at = time();
 			$model->save ();
 // 			$to=Message::findOne(['id'=>$data['msgid']]);
 // 			$model2=new Notify();

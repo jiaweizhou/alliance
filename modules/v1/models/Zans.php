@@ -10,6 +10,7 @@ use Yii;
  * @property integer $id
  * @property integer $userid
  * @property integer $msgid
+ * @property integer $created_at
  *
  * @property Messages $msg
  * @property Users $user
