@@ -24,11 +24,23 @@ class EnvelopesController extends Controller {
 					'msg' => 'no enough arg!'
 			);
 		}
+		$user = Users::findone(['phone'=>$data['phone']]);
+		if(!$user||$user->isdraw>30){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no user or user has drawed before',
+			);
+		}
+		$count=$this->next();
 		
+		$user->cornsforgrab+= $count;
+		$user->isdraw ++;
+		$user->save();
 		
-		
-		
-		return $this->next();
+		return array(
+			'flag'=>1,
+			'count'=>$count,
+		);
 	}
 	
 	private function next(){
@@ -50,9 +62,7 @@ class EnvelopesController extends Controller {
 		file_put_contents($file, json_encode($lucky));
 		$lock->unlock();
 		
-		return array(
-				'count'=>$count[0],
-		);
+		return $count[0];
 		
 		
 		//return ;

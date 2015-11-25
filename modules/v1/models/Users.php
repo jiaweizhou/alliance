@@ -30,7 +30,7 @@ use Yii;
  * @property integer $updated_at
  * @property string $channel
  * @property string $platform
- * 
+ * @property integer $isdraw
  * @property integer $friendcount
  * @property integer $concerncount
  * @property Usertocards[] $usertocards

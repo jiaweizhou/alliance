@@ -34,7 +34,7 @@ class m151027_134709_users extends Migration
     			
     			'friendcount' =>Schema::TYPE_INTEGER . ' DEFAULT 0',
     			'concerncount' =>Schema::TYPE_INTEGER . ' DEFAULT 0',
-    			
+    			'isdraw' =>Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
     			'channel'=> Schema::TYPE_STRING . ' DEFAULT "" ',
     			'platform' => Schema::TYPE_STRING . ' DEFAULT "" ',
     			],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
