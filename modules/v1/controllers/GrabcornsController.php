@@ -390,22 +390,20 @@ class GrabcornsController extends Controller
     			case 0://yuer
     				$updatemoney=$connection->createCommand('update users set money = money-:count where id = :userid and money>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
-    			case 1://duojinbi
-    				$updatemoney=$connection->createCommand('update users set cornsforgrab = cornsforgrab-:count where id = :userid and cornsforgrab>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
+    			case 1://jinbi
+    				$updatemoney=$connection->createCommand('update users set corns = corns-:count where id = :userid and corns>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
-    			case 2://hongbao
-    				$updatemoney=$connection->createCommand('update users set envelope = envelope-:count where id = :userid and envelope>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
+    			case 2://duobaobi
+    				//$updatemoney=$connection->createCommand('update users set envelope = envelope-:count where id = :userid and envelope>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
-    			case 3://jinbi
-    				break;
-    			case 4://zhifupintai
+    			case 3://zhifupintai
     				break;
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
     		$inserrecord=$connection->createCommand('insert into grabcornrecords(userid,grabcornid,count,numbers,type,created_at) values (:userid,:grabcornid,:count,:numbers,:type,:created_at)'
     					,[':userid'=>$user->id,':grabcornid'=>$data['grabcornid'],':count'=>$data['count'],':numbers'=>$usernumbers,':type'=>$data['type'],':created_at'=>time()])->execute();
     		//var_dump($expression)
-    		if(!(($data['type']==4||$updatemoney)&&$updatecount&&$inserrecord)){
+    		if(!(($data['type']==3||$updatemoney)&&$updatecount&&$inserrecord)){
     			throw new Exception("Value must be 1 or below");
     		}
     		// ... executing other SQL statements ...
@@ -502,16 +500,15 @@ class GrabcornsController extends Controller
     			case 0://yuer
     				$updatemoney=$connection->createCommand('update users set money = money-:count where id = :userid and money>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
-    			case 1://duojinbi
-    				$updatemoney=$connection->createCommand('update users set cornsforgrab = cornsforgrab-:count where id = :userid and cornsforgrab>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
+    			case 1://jinbi
+    				$updatemoney=$connection->createCommand('update users set corns = corns-:count where id = :userid and cornsforgrab>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
-    			case 2://hongbao
-    				$updatemoney=$connection->createCommand('update users set envelope = envelope-:count where id = :userid and envelope>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
+    			case 2://duobaobi
+    				//$updatemoney=$connection->createCommand('update users set envelope = envelope-:count where id = :userid and envelope>=:count',[':userid'=>$user->id,':count'=>$data['count']])->execute();
     				break;
-    			case 3://jinbi
+    			case 3://zhifupintai
     				break;
-    			case 4://zhifupintai
-    				break;
+
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
     		$insertgrab=$connection->createCommand('insert into grabcorns(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser,kind) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid,kind from grabcorns where id = :grabcornid',[':time'=>$time,':userid'=>$user->id,':grabcornid'=>$data['grabcornid']])->execute();
@@ -524,7 +521,7 @@ class GrabcornsController extends Controller
     		$insertrid=$connection->getLastInsertID();
     		$updategrab=$connection->createCommand('update grabcorns set winnerrecordid=:recordid where grabcorns.id=:id',['recordid'=>$insertrid,':id'=>$data['grabcornid']])->execute();
     		//var_dump($expression)
-    		if(!(($data['type']==4||$updatemoney)&&$inserrecord&&$insertgrab&&$updategrab)){
+    		if(!(($data['type']==3||$updatemoney)&&$inserrecord&&$insertgrab&&$updategrab)){
     			throw new Exception("Value must be 1 or below");
     		}
     		// ... executing other SQL statements ...
