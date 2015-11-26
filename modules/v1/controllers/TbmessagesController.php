@@ -82,7 +82,15 @@ class TbmessagesController extends Controller {
 			);
 		}
 		$user =Users::findOne(['phone'=>$data['phone']]);
-		$query=(new \yii\db\Query ())->select(['tbmessages.*','users.phone','users.nickname','users.thumb','if(isnull(concerns.id),0,1) as isconcerned','if(isnull(tblikes.id),0,1) as isliked'])->from('tbmessages')->join ( 'INNER JOIN', 'users', 'tbmessages.userid =users.id');
+		$query=(new \yii\db\Query ())
+		->select(['tbmessages.*',
+				'users.phone',
+				'users.nickname',
+				'users.thumb',
+				'if(isnull(concerns.id),0,1) as isconcerned',
+				'if(isnull(tblikes.id),0,1) as isliked'])
+		->from('tbmessages')
+		->join ( 'INNER JOIN', 'users', 'tbmessages.userid =users.id');
 		switch ($type){
 			case 1:
 				$query = $query->orderBy ( "tbmessages.created_at desc" )->join('LEFT JOIN','concerns','tbmessages.userid = concerns.concernid and concerns.myid=:id',[':id'=>$user['id']])->join('LEFT JOIN','tblikes','tblikes.tbmessageid =tbmessages.id and tblikes.userid=:id',[':id'=>$user->id]);
