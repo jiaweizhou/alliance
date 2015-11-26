@@ -640,19 +640,19 @@ class GrabcornsController extends Controller
     		);
     	}
     	 
-    	if($grabcorn->isgot !=0){
-    		return 	array (
-    				'flag' => 0,
-    				'msg' => 'you has got the corn!'
-    		);
-    	}
+//     	if($grabcorn->isgot !=0){
+//     		return 	array (
+//     				'flag' => 0,
+//     				'msg' => 'you has got the corn!'
+//     		);
+//     	}
     	 
     	$back=0;
     	$back = (new \yii\db\Query ())->select ('SUM(grabcornrecords.count) as back')->from ( 'grabcornrecords' )->where('grabcornrecords.userid = :userid and grabcornrecords.grabcornid = :id and grabcornrecords.isgotback=0', [
 				':id' => $data['grabcornid'],
     			':userid'=>$user->id,
-		] );
-    	return $back;
+		] )->one();
+    	$back=$back['back'];
     	
     	$connection = Yii::$app->db;
     	$transaction=$connection->beginTransaction();
@@ -660,7 +660,7 @@ class GrabcornsController extends Controller
     	try {
     		
     		$updategrab=$connection->createCommand('update grabcornrecords g1 set g1.isgot=1 where g1.id=:id and u1.id = :userid',[':id'=>$data['grabcornid'],':userid'=>$user->id])->execute();
-    		$updateuser=$connection->createCommand('update users u1  set u1.count = u1.count + :back where v1.id=:id',[':id'=>$user->id,':back'=>intval($back * 0.9)])->execute();
+    		$updateuser=$connection->createCommand('update users u1  set u1.corns = u1.count + :back where v1.id=:id',[':id'=>$user->id,':back'=>intval($back * 0.9)])->execute();
     		 
     		if(!($updateuser)){
     			throw new Exception("Value must be 1 or below");
