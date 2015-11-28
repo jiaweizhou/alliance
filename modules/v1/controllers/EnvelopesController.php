@@ -63,7 +63,7 @@ class EnvelopesController extends Controller {
 		$raw=file_get_contents($file);
 		$lucky=json_decode($raw,true);
 		if(!count($lucky)){
-			$lucky = array(1,2,3,4,5,6,7,8,9);
+			$lucky = array(0,0,0,1,1,1);
 			shuffle ($lucky);
 		}
 		$count = array_splice($lucky, 0, 1);
