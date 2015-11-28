@@ -33,11 +33,19 @@ class EnvelopesController extends Controller {
 		}
 		$count=$this->next();
 		
-		$user->cornsforgrab+= $count;
+		
+		$type = rand(1,2);
+		switch($type){
+			case 1:
+				$user->corns+= $count;
+			case 2:
+				$user->cornsforgrab+= $count;
+		}
 		$user->isdraw ++;
 		$user->save();
 		
 		return array(
+			'type'=>$type,
 			'flag'=>1,
 			'count'=>$count,
 		);
