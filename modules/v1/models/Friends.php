@@ -10,7 +10,8 @@ use Yii;
  * @property integer $id
  * @property integer $myid
  * @property integer $friendid
- *
+ * @property integer $created_at
+ * 
  * @property Users $friend
  * @property Users $my
  */

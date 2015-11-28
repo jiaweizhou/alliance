@@ -20,7 +20,7 @@ class m151107_123653_grabcronrecords extends Migration
     			'type' => Schema::TYPE_INTEGER . ' NOT NULL',
     			
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL',
-
+    			'isgotback' =>Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
     	],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
     	
     	$this->addForeignKey('recorduidKey', 'grabcornrecords', 'userid', 'users', 'id','CASCADE','CASCADE');

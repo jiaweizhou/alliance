@@ -12,6 +12,7 @@ class m151101_124433_friends extends Migration
     			'id' => Schema::TYPE_PK,
     			'myid'=> Schema::TYPE_INTEGER . ' NOT NULL',
     			'friendid' => Schema::TYPE_INTEGER . ' NOT NULL',
+    			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL',
     	],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
     	//$this->createIndex( 'userid','usertocards', 'userid');
     	$this->addForeignKey('myidKey', 'friends', 'myid', 'users', 'id','CASCADE','CASCADE');

@@ -24,6 +24,10 @@ use Yii;
  * @property string $pictures
  * @property integer $foruser
  * @property integer $kind
+ * @property integer $worth
+ * @property integer $isgot
+
+ * 
  */
 class Grabcorns extends \yii\db\ActiveRecord
 {

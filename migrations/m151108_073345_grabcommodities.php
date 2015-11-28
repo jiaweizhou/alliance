@@ -31,6 +31,10 @@ class m151108_073345_grabcommodities extends Migration
     			'winneruserid' => Schema::TYPE_BIGINT . ' DEFAULT 0',
     			'winnerrecordid' => Schema::TYPE_BIGINT . ' DEFAULT 0',
     			'winnernumber' => Schema::TYPE_BIGINT . ' DEFAULT 0',
+    			
+    			'worth'=>Schema::TYPE_INTEGER . ' DEFAULT 0',
+    			'isgot'=>Schema::TYPE_INTEGER . ' DEFAULT 0',
+    			
     			'foruser' =>Schema::TYPE_INTEGER . ' DEFAULT 0',
     	],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
     }

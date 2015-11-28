@@ -71,7 +71,7 @@ class UsersController extends Controller {
 	public function actionModify() {
 		
 		$data = Yii::$app->request->post ();
-		$data=Yii::$app->request->post();
+		//$data=Yii::$app->request->post();
 		if(empty($data['phone'])){
 			return 	array (
 					'flag' => 0,

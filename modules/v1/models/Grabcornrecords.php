@@ -14,7 +14,7 @@ use Yii;
  * @property string $numbers
  * @property integer $type
  * @property integer $created_at
- *
+ * @property integer $isgotback
  * @property Grabcorns $grabcorn
  * @property Users $user
  */

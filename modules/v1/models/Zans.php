@@ -9,7 +9,8 @@ use Yii;
  *
  * @property integer $id
  * @property integer $userid
- * @property integer $msgid
+ * @property integer $messageid
+ * @property integer $created_at
  *
  * @property Messages $msg
  * @property Users $user
@@ -30,8 +31,8 @@ class Zans extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userid', 'msgid'], 'required'],
-            [['userid', 'msgid'], 'integer']
+            [['userid', 'messageid'], 'required'],
+            [['userid', 'messageid'], 'integer']
         ];
     }
 

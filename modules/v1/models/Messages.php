@@ -10,6 +10,7 @@ use Yii;
  * @property integer $id
  * @property integer $userid
  * @property string $content
+ * @property string $pictures
  * @property integer $created_at
  *
  * @property Users $user

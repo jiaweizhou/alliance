@@ -33,64 +33,90 @@ class MessagesController extends Controller {
 
 	public function actionGet() {
 		$data = Yii::$app->request->post ();
-		$phone = Users::findOne ( [ 
+		$user = Users::findOne ( [ 
 				'phone' => $data ['phone'] 
 		] );
 		// $data = Message::find ()->select ( 'msg.id' )->join ( 'INNER JOIN', 'friends', ' msg.userid =friends.friendid and msg.userid = :id ', [':id' => Yii::$app->user->id ]);
-		$data = Messages::find ()->distinct()->select ('messages.id')->join ( 'INNER JOIN', 'friends', ' messages.userid =friends.friendid and friends.myid = :id  or messages.userid = :id', [ 
-				':id' => $phone ['id'] 
-		] );
-		$pages = new \yii\data\Pagination ( [ 
-				'totalCount' => $data->count (),
-				'pageSize' => '10' 
-		] );
-		$models = $data->orderBy ( "messages.created_at desc" )->offset ( $pages->offset )->limit ( $pages->limit )->all ();
-		//$models = $data->orderBy ( "msg.created_at desc" )->limit ( $pages->limit )->all ();
-		//$models = $data->orderBy ( "msg.created_at desc" )->all ();
+		$query = (new \yii\db\Query ())
+		->distinct()
+		->select ([
+				'messages.*',
+				'users.phone',
+				'users.thumb',
+				'users.nickname',
+				'if(isnull(zans.id),0,1) as iszaned'
+			])
+		->from('messages')
+		->join ( 'INNER JOIN', 'users', 'messages.userid =users.id')
+		->join ( 'INNER JOIN', 'friends', ' messages.userid =friends.friendid and friends.myid = :id  or messages.userid = :id',[':id' => $user ['id'] ] )
+		->join('LEFT JOIN','zans','zans.messageid = messages.id and zans.userid = :id',[':id'=>$user['id']])
+		->orderby('messages.created_at desc');
+		$dataProvider=new ActiveDataProvider([
+				'query' => $query,
+				]);
+		$messages = $dataProvider->getModels();
 		$result = array ();
 		$result ['item'] = array ();
-		foreach ( $models as $model ) {
-			$msg = (new \yii\db\Query ())->select ( [ 
-					'messages.*',
-					'users.phone',
-					'users.nickname',
-					'users.thumb' 
-			] )->from ( 'messages' )->join ( 'INNER JOIN', 'users', 'messages.userid = users.id and messages.id = :id', [ 
-					':id' => $model ['id'] 
-			] )->one ();
-			$info = $msg;
-			//unset($msg['id']);
-			//$info['appkinds'] = explode(" ", $info['appkinds']);msg
-			
-			$info ['pictures'] = (new \yii\db\Query ())->select ( [ 
-					'messagetopictures.picture' 
-			] )->from ('messagetopictures')
-			->where(['messageid' => $msg['id']])->all();
-			
-			$info ['replys'] = (new \yii\db\Query ())->select ( [ 
+		
+		//$tbreplys = (new \yii\db\Query ())->select('tbreplys.*,users.phone,users.nickname,users.thumb')->orderBy ( "tbreplys.created_at desc" )->join ( 'INNER JOIN', 'users', ' tbmessages.userid =users.id ')->where('tbreplys.messageid in ');
+		
+		foreach ( $messages as $i=>$message ) {
+			$info = $message;
+			$info ['replys'] = (new \yii\db\Query ())->select ( [
 					'replys.*',
 					'user1.nickname as fromnickname',
 					'user1.phone as fromphone',
+					'user1.thumb as fromthumb',
 					'user2.nickname as tonickname',
-					'user2.phone as tophone' 
-			] )->from ( 'replys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = replys.fromid and replys.messageid = :id', [ 
-					':id' => $model ['id'] 
-			] )->join ( 'Left JOIN', 'users user2', 'user2.id = replys.toid' )->orderBy ( "replys.created_at" )->all ();
-			
-			$info['zan']=(new \yii\db\Query())
+					'user2.phone as tophone' ,
+					'user2.thumb as tothumb',
+					] )->from ( 'replys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = replys.fromid and replys.messageid = :id', [
+							':id' => $message ['id']
+							] )->join ( 'Left JOIN', 'users user2', 'user2.id = replys.toid' )->orderBy ( "replys.created_at" )->limit(20)->all ();
+				
+			$info['zans']=(new \yii\db\Query())
 			->select('u.phone,u.nickname')->from('zans z')
-			->join('INNER JOIN','users u','u.id=z.userid and z.msgid=:id',[':id'=>$model ['id'] ])
+			->join('INNER JOIN','users u','u.id=z.userid and z.messageid=:id',[':id'=>$message ['id'] ])
+			->orderBy('z.created_at desc')
+			->limit(10)
 			->all();
 			
-			$result ['item'] [] = $info;
+			$messages[$i] = $info;
+			
 		}
-		$result ['_meta'] = array (
-				'pageCount' => $pages->pageCount,
-				'currentPage' => $pages->page + 1 
-		);
-		return $result;
+		$dataProvider->setModels($messages);
+		
+		return $dataProvider;
 		// return $model;
 	}
+	
+	public function actionMorereplys(){
+		$data = Yii::$app->request->post ();
+		if(!isset($data['messageid']))
+		{
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$query=(new \yii\db\Query ())->select ( [
+				'replys.*',
+				'user1.nickname as fromnickname',
+				'user1.phone as fromphone',
+				'user1.thumb as fromthumb',
+				'user2.nickname as tonickname',
+				'user2.phone as tophone',
+				'user2.thumb as tothumb',
+				] )->from ( 'replys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = replys.fromid and replys.messageid = :id', [
+						':id' => $data['messageid']
+						] )->join ( 'Left JOIN', 'users user2', 'user2.id = replys.toid' )->orderBy ( "replys.created_at" );
+	
+		$dataProvider=new ActiveDataProvider([
+				'query' => $query,
+				]);
+		return $dataProvider;
+	}
+	
 	public function actionSend() {
 		$data = Yii::$app->request->post ();
 		$msg = new Messages ();
@@ -101,22 +127,14 @@ class MessagesController extends Controller {
 		$msg->userid = $phone ['id'];
 		$msg->content = $data ['content'];
 		$msg->created_at = time ();
-		
+		$msg->pictures = $data['pictures'];
 		if ($msg->save ()) {
-			if (isset($data ['pictures'] )){
-				foreach ( $data ['pictures'] as $picture ) {
-					$mp = new Messagetopictures();
-					$mp->messageid = $msg->id;
-					$mp->picture = $picture;
-					$mp->save();	
-				}
-			}
 			return array (
 					'flag' => 1,
 					'msg' => 'Send success!'
 			);
 		}else{
-			return   array (
+			return  array (
 					'flag' => 0,
 					'msg' => 'Send fail!' 
 			);
@@ -154,7 +172,7 @@ class MessagesController extends Controller {
 		] )->one ();
 		$info = Zans::findOne ( [ 
 				'userid' => $phone ['id'],
-				'msgid' => $data ['msgid'] 
+				'messageid' => $data ['messageid'] 
 		] );
 		if ($info) {
 			echo json_encode ( array (
@@ -165,7 +183,8 @@ class MessagesController extends Controller {
 			$model = new Zans ();
 			
 			$model->userid = $phone ['id'];
-			$model->msgid = $data ['msgid'];
+			$model->messageid = $data ['messageid'];
+			$model->created_at = time();
 			$model->save ();
 // 			$to=Message::findOne(['id'=>$data['msgid']]);
 // 			$model2=new Notify();
@@ -189,7 +208,7 @@ class MessagesController extends Controller {
 		] )->one ();
 		$info = Zans::findOne ( [ 
 				'userid' => $phone ['id'],
-				'msgid' => $data ['msgid'] 
+				'messageid' => $data ['messageid'] 
 		] );
 		if ($info) {
 			if($info->delete ()){

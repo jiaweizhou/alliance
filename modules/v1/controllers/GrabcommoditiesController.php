@@ -100,6 +100,9 @@ class GrabcommoditiesController extends Controller
 		$query = (new \yii\db\Query ())->select('grabcommodities.id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->orderBy ( "grabcommodities.date desc" )->from('grabcommodities');
 		$dataProvider = new ActiveDataProvider([
 			'query' => $query,
+			'pagination' => [
+					'pagesize'=>5,
+			],
 		]);
 		if(isset($data)&&isset($data['type'])){
 			if($data['type']==0){
@@ -234,7 +237,7 @@ class GrabcommoditiesController extends Controller
         $model = new Grabcommodities();
         $data=Yii::$app->request->post();
         //var_dump(isset($date['content']);
-        if(!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['kind']))){
+        if(!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['kind'])&&isset($data['worth']))){
         	return 	array (
         			'flag' => 0,
         			'msg' => 'no enough arg!'
@@ -244,6 +247,7 @@ class GrabcommoditiesController extends Controller
         $data['created_at'] = time();
         $data['end_at'] = 0;
         $data['remain'] = $data['needed'];
+        
         foreach ($data as $item=>$value){
         	$model->$item = $data[$item];
         }
@@ -531,7 +535,7 @@ class GrabcommoditiesController extends Controller
     				break;
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
-    		$insertgrab=$connection->createCommand('insert into grabcommodities(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser,kind) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid,kind from grabcommodities where id = :grabcommodityid',[':time'=>$time,':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid']])->execute();
+    		$insertgrab=$connection->createCommand('insert into grabcommodities(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser,kind,pictures,details,worth) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid,kind,pictures,details,worth from grabcommodities where id = :grabcommodityid',[':time'=>$time,':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid']])->execute();
     		//$insertgrabid=mysql_insert_id($connection);
     		$insertgrabid=$connection->getLastInsertID();
     		//var_dump($insertgrab);
@@ -561,6 +565,139 @@ class GrabcommoditiesController extends Controller
     	);
     	//$transaction = $connection->beginTransaction();
     	//Grabcorns::updateAllCounters([left=> -$data['count']],)
+    }
+    public function actionGetcommodity(){
+    	$data=Yii::$app->request->post();
+    	if(!(isset($data['phone'])&&isset($data['grabcommodityid']))){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'no enough arg!'
+    		);
+    	}
+    	//Users::findOne(['phone'=>$data['phone']])
+    	$grabcommodity = Grabcorns::findOne(['id'=>$data['grabcommodityid']]);
+    	 
+    	if(!$grabcommodity){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'activity not exist!'
+    		);
+    	}
+    	$user = Users::findOne(['phone'=>$data['phone']]);
+    	if(!$user){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'find user fail!'
+    		);
+    	}
+    	if($grabcommodity->winneruserid !=$user->id){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you are not the winner!'
+    		);
+    	}
+    	 
+    	if($grabcommodity->isgot !=0){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you has got the commodity!'
+    		);
+    	}
+    	 
+    	$connection = Yii::$app->db;
+    	$transaction=$connection->beginTransaction();
+    	$updategrab=0;
+    	try {
+    		$updategrab=$connection->createCommand('update $grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
+    		//$insertwait=$connection->createCommand('update $grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
+    		sdfasdfasdf;
+    		if(!($updategrab)){
+    			throw new Exception("Value must be 1 or below");
+    		}
+    		// ... executing other SQL statements ...
+    		$transaction->commit();
+    
+    	} catch (Exception $e) {
+    		$transaction->rollBack();
+    		//var_dump($e->getMessage());
+    		//Yii::$app->log->logger->
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'get commodity fail!'
+    		);
+    	}
+    	return 	array (
+    			'flag' => 1,
+    			'msg' => 'get commodity success!'
+    	);
+    }
+    
+    public function actionChangetocorns(){
+    	$data=Yii::$app->request->post();
+    	if(!(isset($data['phone'])&&isset($data['grabcommodityid']))){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'no enough arg!'
+    		);
+    	}
+    	//Users::findOne(['phone'=>$data['phone']])
+    	$grabcommodity = Grabcorns::findOne(['id'=>$data['grabcommodityid']]);
+    	 
+    	if(!$grabcommodity){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'activity not exist!'
+    		);
+    	}
+    	$user = Users::findOne(['phone'=>$data['phone']]);
+    	if(!$user){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'find user fail!'
+    		);
+    	}
+    	if($grabcommodity->winneruserid !=$user->id){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you are not the winner!'
+    		);
+    	}
+    	 
+    	if($grabcommodity->isgot !=0){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you has got the corn!'
+    		);
+    	}
+    	 
+    	$connection = Yii::$app->db;
+    	$transaction=$connection->beginTransaction();
+    	$updategrab=0;
+    	try {
+    		//$worth = intval($grabcommodity->worth * 0.9);
+    		$updategrab=$connection->createCommand('update grabcommodities g1,users u1 set g1.isgot=1,u1.corns=u1.corns+g1.worth where g1.id=:id and u1.id = g1.winneruserid',[':id'=>$data['grabcommodityid']])->execute();
+    
+    		if(!($updategrab)){
+    			throw new Exception("Value must be 1 or below");
+    		}
+    		// ... executing other SQL statements ...
+    		$transaction->commit();
+    
+    	} catch (Exception $e) {
+    		$transaction->rollBack();
+    		//var_dump($e->getMessage());
+    		//Yii::$app->log->logger->
+    		return 	array (
+    				'err'=>$e,
+    				'flag' => 0,
+    				'msg' => 'get grabcommodity fail!'
+    		);
+    	}
+    	return 	array (
+    			'c'=>$updategrab,
+    			'flag' => 1,
+    			'msg' => 'get grabcommodity success!'
+    	);
     }
     
     

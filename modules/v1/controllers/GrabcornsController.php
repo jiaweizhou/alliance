@@ -213,7 +213,7 @@ class GrabcornsController extends Controller
         $model = new Grabcorns();
         $data=Yii::$app->request->post();
         //var_dump(isset($date['content']);
-        if(!(isset($data['kind'])&&isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date']))){
+        if(!(isset($data['kind'])&&isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['worth']))){
         	return 	array (
         			'flag' => 0,
         			'msg' => 'no enough arg!'
@@ -511,7 +511,7 @@ class GrabcornsController extends Controller
 
     		}
     		//$updatemoney=$connection->createCommand('update users set ')->execute();
-    		$insertgrab=$connection->createCommand('insert into grabcorns(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser,kind) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid,kind from grabcorns where id = :grabcornid',[':time'=>$time,':userid'=>$user->id,':grabcornid'=>$data['grabcornid']])->execute();
+    		$insertgrab=$connection->createCommand('insert into grabcorns(picture,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,foruser,kind,pictures,worth) select picture,title,version,needed,0,created_at,:time,:time,1,:userid,:userid,kind,pictures,worth from grabcorns where id = :grabcornid',[':time'=>$time,':userid'=>$user->id,':grabcornid'=>$data['grabcornid']])->execute();
     		//$insertgrabid=mysql_insert_id($connection);
     		$insertgrabid=$connection->getLastInsertID();
     		//var_dump($insertgrab);
@@ -543,7 +543,147 @@ class GrabcornsController extends Controller
     	//Grabcorns::updateAllCounters([left=> -$data['count']],)
     }
     
-    
+    public function actionGetcorns(){
+    	$data=Yii::$app->request->post();
+    	if(!(isset($data['phone'])&&isset($data['grabcornid']))){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'no enough arg!'
+    		);
+    	}
+    	//Users::findOne(['phone'=>$data['phone']])
+    	$grabcorn = Grabcorns::findOne(['id'=>$data['grabcornid']]);
+    	
+    	if(!$grabcorn){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'activity not exist!'
+    		);
+    	}
+    	$user = Users::findOne(['phone'=>$data['phone']]);
+    	if(!$user){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'find user fail!'
+    		);
+    	}
+    	if($grabcorn->winneruserid !=$user->id){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you are not the winner!'
+    		);
+    	}
+    	
+    	if($grabcorn->isgot !=0){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you has got the corn!'
+    		);
+    	}
+    	
+    	$connection = Yii::$app->db;
+    	$transaction=$connection->beginTransaction();
+    	$updategrab=0;
+    	try {
+    		$updategrab=$connection->createCommand('update grabcorns g1,users u1 set g1.isgot=1,u1.corns=u1.corns+g1.worth where g1.id=:id and u1.id = g1.winneruserid',[':id'=>$data['grabcornid']])->execute();
+    		
+    		if(!($updategrab)){
+    			throw new Exception("Value must be 1 or below");
+    		}
+    		// ... executing other SQL statements ...
+    		$transaction->commit();
+    		
+    	} catch (Exception $e) {
+    		$transaction->rollBack();
+    			//var_dump($e->getMessage());
+    			//Yii::$app->log->logger->
+    		return 	array (
+    				'err'=>$e,
+    				'flag' => 0,
+    				'msg' => 'get corn fail!'
+    		);
+    	}
+    	return 	array (
+    			'c'=>$updategrab,
+    			'flag' => 1,
+    			'msg' => 'get corn success!'
+    	);
+    }
+    public function actionGetback(){
+    	$data=Yii::$app->request->post();
+    	if(!(isset($data['phone'])&&isset($data['grabcornid']))){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'no enough arg!'
+    		);
+    	}
+    	//Users::findOne(['phone'=>$data['phone']])
+    	$grabcorn = Grabcorns::findOne(['id'=>$data['grabcornid']]);
+    	 
+    	if(!$grabcorn){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'activity not exist!'
+    		);
+    	}
+    	$user = Users::findOne(['phone'=>$data['phone']]);
+    	if(!$user){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'find user fail!'
+    		);
+    	}
+    	if($grabcorn->winneruserid !=$user->id){
+    		return 	array (
+    				'flag' => 0,
+    				'msg' => 'you are not the winner!'
+    		);
+    	}
+    	 
+//     	if($grabcorn->isgot !=0){
+//     		return 	array (
+//     				'flag' => 0,
+//     				'msg' => 'you has got the corn!'
+//     		);
+//     	}
+    	 
+    	$back=0;
+    	$back = (new \yii\db\Query ())->select ('SUM(grabcornrecords.count) as back')->from ( 'grabcornrecords' )->where('grabcornrecords.userid = :userid and grabcornrecords.grabcornid = :id and grabcornrecords.isgotback=0', [
+				':id' => $data['grabcornid'],
+    			':userid'=>$user->id,
+		] )->one();
+    	$back=$back['back'];
+    	
+    	$connection = Yii::$app->db;
+    	$transaction=$connection->beginTransaction();
+    	$updategrab=0;
+    	try {
+    		
+    		$updategrab=$connection->createCommand('update grabcornrecords g1 set g1.isgotback=1 where g1.grabcornid = :id and g1.userid = :userid',[':id'=>$data['grabcornid'],':userid'=>$user->id])->execute();
+    		$updateuser=$connection->createCommand('update users u1  set u1.corns = u1.corns + :back where u1.id=:id',[':id'=>$user->id,':back'=>intval($back * 0.9)])->execute();
+    		 
+    		if(!($updateuser)){
+    			throw new Exception("Value must be 1 or below");
+    		}
+    		// ... executing other SQL statements ...
+    		$transaction->commit();
+    	
+    	} catch (Exception $e) {
+    		$transaction->rollBack();
+    		//var_dump($e->getMessage());
+    		//Yii::$app->log->logger->
+    		return 	array (
+    				'err'=>$e,
+    				'flag' => 0,
+    				'msg' => 'get corn fail!'
+    		);
+    	}
+    	return 	array (
+    			'c'=>$updategrab,
+    			'flag' => 1,
+    			'msg' => 'get corn success!'
+    	);
+    }
     /**
      * Finds the Applyjobs model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
