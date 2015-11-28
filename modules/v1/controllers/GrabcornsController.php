@@ -160,7 +160,7 @@ class GrabcornsController extends Controller
 			);
 		}
 		if($grabcorn['islotteried']){
-			$s = (new \yii\db\Query ())->select('count,users.nikename,users.phone,users.thumb')->from('grabcornrecords,users')->where(['grabcornrecords.id'=>$grabcorn['winnerrecordid'],'users.id'=>$grabcorn['winneruserid']])->one();
+			$s = (new \yii\db\Query ())->select('count,users.nickname,users.phone,users.thumb')->from('grabcornrecords,users')->where(['grabcornrecords.id'=>$grabcorn['winnerrecordid'],'users.id'=>$grabcorn['winneruserid']])->one();
 			$grabcorn=array_merge($grabcorn,$s);
 		}
 		$records = (new \yii\db\Query ())->select ( [
