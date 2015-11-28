@@ -183,6 +183,10 @@ class GrabcommoditiesController extends Controller
 					'msg' => 'no grabcommodity with this id!'
 			);
 		}
+		if($grabcommodity['islotteried']){
+			$s = (new \yii\db\Query ())->select('count,users.nickname,users.phone,users.thumb')->from('grabcommodityrecords,users')->where(['grabcommodityrecords.id'=>$grabcorn['winnerrecordid'],'users.id'=>$grabcorn['winneruserid']])->one();
+			$grabcommodity=array_merge($grabcommodity,$s);
+		}
 		$records = (new \yii\db\Query ())->select ( [
 				'grabcommodityrecords.*',
 				'users.phone',
