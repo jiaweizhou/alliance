@@ -25,9 +25,14 @@ class EnvelopesController extends Controller {
 			);
 		}
 		$user = Users::findone(['phone'=>$data['phone']]);
-		if(!$user||$user->isdraw>30){
+		if(!$user){
 			return 	array (
 					'flag' => 0,
+					'msg' => 'err',
+			);
+		}if ($user->isdraw>30){
+			return 	array (
+					'flag' => 2,
 					'msg' => 'no user or user has drawed before',
 			);
 		}
