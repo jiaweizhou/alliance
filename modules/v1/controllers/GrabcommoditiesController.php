@@ -547,7 +547,7 @@ class GrabcommoditiesController extends Controller
     		$inserrecord=$connection->createCommand('insert into grabcommodityrecords(userid,grabcommodityid,count,numbers,type,created_at) values (:userid,:grabcommodityid,:count,:numbers,:type,:created_at)'
     				,[':userid'=>$user->id,':grabcommodityid'=>$insertgrabid,':count'=>$grabcommodity->needed,':numbers'=>"",':type'=>$data['type'],':created_at'=>time()])->execute();
     		$insertrid=$connection->getLastInsertID();
-    		$updategrab=$connection->createCommand('update grabcommodities set winnerrecordid=:recordid where grabcommodities.id = :id',['recordid'=>$insertrid,':id'=>$data['grabcommodityid']])->execute();
+    		$updategrab=$connection->createCommand('update grabcommodities set winnerrecordid=:recordid where grabcommodities.id = :id',['recordid'=>$insertrid,':id'=>$insertgrabid])->execute();
     		//var_dump($expression)
     		if(!(($data['type']==4||$updatemoney)&&$inserrecord&&$insertgrab&&$updategrab)){
     			throw new Exception("Value must be 1 or below");

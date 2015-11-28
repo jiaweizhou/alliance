@@ -523,7 +523,7 @@ class GrabcornsController extends Controller
     		$inserrecord=$connection->createCommand('insert into grabcornrecords(userid,grabcornid,count,numbers,type,created_at) values (:userid,:grabcornid,:count,:numbers,:type,:created_at)'
     				,[':userid'=>$user->id,':grabcornid'=>$insertgrabid,':count'=>$grabcorn->needed,':numbers'=>"",':type'=>$data['type'],':created_at'=>time()])->execute();
     		$insertrid=$connection->getLastInsertID();
-    		$updategrab=$connection->createCommand('update grabcorns set winnerrecordid=:recordid where grabcorns.id=:id',['recordid'=>$insertrid,':id'=>$data['grabcornid']])->execute();
+    		$updategrab=$connection->createCommand('update grabcorns set winnerrecordid=:recordid where grabcorns.id=:id',['recordid'=>$insertrid,':id'=>$insertgrabid])->execute();
     		//var_dump($expression)
     		if(!(($data['type']==3||$updatemoney)&&$inserrecord&&$insertgrab&&$updategrab)){
     			throw new Exception("Value must be 1 or below");
