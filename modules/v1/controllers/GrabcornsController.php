@@ -214,52 +214,56 @@ class GrabcornsController extends Controller
     public function actionCreate()
     {
     	
-        $model = new Grabcorns();
+        
         $data=Yii::$app->request->post();
+        return $this->create($data);
         //var_dump(isset($date['content']);
-        if(!(isset($data['kind'])&&isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['worth']))){
-        	return 	array (
-        			'flag' => 0,
-        			'msg' => 'no enough arg!'
-        	);
-        }
         
-        $data['created_at'] = time();
-        
-        //var_dump(microtime(true));
-        $data['end_at'] = 0;
-        $data['remain'] = $data['needed'];
-        foreach ($data as $item=>$value){
-        	$model->$item = $data[$item];
-        }
-        if ($model->save()) {
-        	$dirname = 'random/grabcorns';
-        	if(!is_dir($dirname))
-        		mkdir($dirname,0777,true);
-        	$handle = fopen($dirname .'/'. $model['id'], "w+");
-        	$numbers = range (10000001,10000000+$model->needed);
-        	shuffle ($numbers);
-        	$string['numbers'] = $numbers;
-        	$string['begin']=0;
-        	$string = json_encode($string);
-        	fwrite($handle, $string);
-        	fclose($handle);
-        	
-            return 	array (
-
-        			'flag' => 1,
-        			'msg' => 'create grabcorn success!'
-        	);
-        } else {
-        	//var_dump($model->errors);
-            return 	array (
-            		'error'=> $model->errors,
-        			'flag' => 0,
-        			'msg' => 'create grabcorn fail!'
-        	);
-        }
     }
-
+ 	private function create($data){
+ 		$model = new Grabcorns();
+	 	if(!(isset($data['kind'])&&isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['worth']))){
+	 		return 	array (
+	 				'flag' => 0,
+	 				'msg' => 'no enough arg!'
+	 		);
+	 	}
+	 	
+	 	$data['created_at'] = time();
+	 	
+	 	//var_dump(microtime(true));
+	 	$data['end_at'] = 0;
+	 	$data['remain'] = $data['needed'];
+	 	foreach ($data as $item=>$value){
+	 		$model->$item = $data[$item];
+	 	}
+	 	if ($model->save()) {
+	 		$dirname = 'random/grabcorns';
+	 		if(!is_dir($dirname))
+	 			mkdir($dirname,0777,true);
+	 		$handle = fopen($dirname .'/'. $model['id'], "w+");
+	 		$numbers = range (10000001,10000000+$model->needed);
+	 		shuffle ($numbers);
+	 		$string['numbers'] = $numbers;
+	 		$string['begin']=0;
+	 		$string = json_encode($string);
+	 		fwrite($handle, $string);
+	 		fclose($handle);
+	 		 
+	 		return 	array (
+	 	
+	 				'flag' => 1,
+	 				'msg' => 'create grabcorn success!'
+	 		);
+	 	} else {
+	 		//var_dump($model->errors);
+	 		return 	array (
+	 				'error'=> $model->errors,
+	 				'flag' => 0,
+	 				'msg' => 'create grabcorn fail!'
+	 		);
+	 	}
+ 	}
     /**
      * Updates an existing Applyjobs model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -427,6 +431,18 @@ class GrabcornsController extends Controller
 		if($grabcorn->remain==0){
 			$grabcorn->end_at = time()+10*60;
 			$grabcorn->save();
+			
+			$result=$this->create(array(
+					'picture'=>$grabcorn->picture,
+					'pictures'=>$grabcorn->pictures,
+					'title'=>$grabcorn->title,
+					'version'=>strval($grabcorn->version+1),
+					'needed'=>$grabcorn->needed,
+					'date'=>time(),
+					'kind'=>$grabcorn->kind,
+					'worth'=>$grabcorn->worth,
+			));
+			//return $result;
 			//curl_setopt ($ch, CURLOPT_URL, "http://127.0.0.1:8888/test");
 			$postdata = http_build_query(
             	array('grabcornid'=>$grabcorn->id)

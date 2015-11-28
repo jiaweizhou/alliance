@@ -238,49 +238,52 @@ class GrabcommoditiesController extends Controller
     public function actionCreate()
     {
     	
-        $model = new Grabcommodities();
+        
         $data=Yii::$app->request->post();
         //var_dump(isset($date['content']);
-        if(!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['kind'])&&isset($data['worth']))){
-        	return 	array (
-        			'flag' => 0,
-        			'msg' => 'no enough arg!'
-        	);
-        }
-        
-        $data['created_at'] = time();
-        $data['end_at'] = 0;
-        $data['remain'] = $data['needed'];
-        
-        foreach ($data as $item=>$value){
-        	$model->$item = $data[$item];
-        }
-        if ($model->save()) {
-        	$dirname = 'random/grabcommodities';
-        	if(!is_dir($dirname))
-        		mkdir($dirname,0777,true);
-        	$handle = fopen($dirname .'/'. $model['id'], "w+");
-        	$numbers = range (10000001,10000000+$model->needed);
-        	shuffle ($numbers);
-        	$string['numbers'] = $numbers;
-        	$string['begin']=0;
-        	$string = json_encode($string);
-        	fwrite($handle, $string);
-        	fclose($handle);
-            return 	array (
-        			'flag' => 1,
-        			'msg' => 'create grabcommodity success!'
-        	);
-        } else {
-        	//var_dump($model->errors);
-            return 	array (
-            		'error'=> $model->errors,
-        			'flag' => 0,
-        			'msg' => 'create grabcommodity fail!'
-        	);
-        }
+        return $this->create($data);
     }
-
+	private function create($data){
+		$model = new Grabcommodities();
+		if(!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['kind'])&&isset($data['worth']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		
+		$data['created_at'] = time();
+		$data['end_at'] = 0;
+		$data['remain'] = $data['needed'];
+		
+		foreach ($data as $item=>$value){
+			$model->$item = $data[$item];
+		}
+		if ($model->save()) {
+			$dirname = 'random/grabcommodities';
+			if(!is_dir($dirname))
+				mkdir($dirname,0777,true);
+			$handle = fopen($dirname .'/'. $model['id'], "w+");
+			$numbers = range (10000001,10000000+$model->needed);
+			shuffle ($numbers);
+			$string['numbers'] = $numbers;
+			$string['begin']=0;
+			$string = json_encode($string);
+			fwrite($handle, $string);
+			fclose($handle);
+			return 	array (
+					'flag' => 1,
+					'msg' => 'create grabcommodity success!'
+			);
+		} else {
+			//var_dump($model->errors);
+			return 	array (
+					'error'=> $model->errors,
+					'flag' => 0,
+					'msg' => 'create grabcommodity fail!'
+			);
+		}
+	}
     /**
      * Updates an existing Applyjobs model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -450,7 +453,22 @@ class GrabcommoditiesController extends Controller
     	$grabcommodity = Grabcommodities::findOne(['id'=>$data['grabcommodityid']]);
     	$result="";
     	if($grabcommodity->remain==0){
-    		$grabcommodity->end_at = time()+4*24*60*60;
+    		//if(!(isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['kind'])&&isset($data['worth']))){
+    		
+    		$result=$this->create(array(
+    				'picture'=>$grabcommodity->picture,
+    				'details'=>$grabcommodity->details,
+    				'pictures'=>$grabcommodity->pictures,
+    				'title'=>$grabcommodity->title,
+    				'version'=>strval($grabcommodity->version+1),
+    				'needed'=>$grabcommodity->needed,
+    				'date'=>time(),
+    				'kind'=>$grabcommodity->kind,
+    				'worth'=>$grabcommodity->worth,
+    		));
+    		
+    		//return $result;
+    		$grabcommodity->end_at = time()+10*60;
     		$grabcommodity->save();
     		//curl_setopt ($ch, CURLOPT_URL, "http://127.0.0.1:8888/test");
     		$postdata = http_build_query(
