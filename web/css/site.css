@@ -2,7 +2,14 @@ html,
 body {
     height: 100%;
 }
-
+h1,h2,h3,h4,h5,h6{font-family: "microsoft yahei", "黑体"}
+.main{padding: 30px 10px;}
+.main h1,.main h2{font-family: "microsoft yahei", "黑体";margin-bottom: 1.5em;font-size: medium;font-weight: bold}
+.main .nickname{text-indent: 0.5em;margin-top: 1em;}
+.main .tool{margin: 2em 1em}
+.main p.content{text-indent: 3em;}
+.main p.content .pull{margin-right: 3em;}
+#msgnum{background:#B90505 }
 .wrap {
     min-height: 100%;
     height: auto;
@@ -89,3 +96,6 @@ a.desc:after {
     padding: 10px 20px;
     margin: 0 0 15px 0;
 }
+
+.tx{width: 80px;height: 80px;cursor: pointer}
+

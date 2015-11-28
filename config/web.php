@@ -57,6 +57,7 @@ $config = [
         'db' => require(__DIR__ . '/db.php'),
     ],
     'params' => $params,
+    'language' => 'zh-CN',
 ];
 
 if (YII_ENV_DEV) {
