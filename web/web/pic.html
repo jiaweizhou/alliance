@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <link rel="stylesheet" type="text/css" href="./css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="./css/bottom.css"/>
+    <link rel="stylesheet" href="./css/jquery.mobile-1.3.2.min.css">
+    <title></title>
+    <style>
+
+
+        /*slide*/
+        .swipe {
+            overflow: hidden;
+            /*visibility: hidden;*/
+            position: relative;
+        }
+
+        .swipe-wrap {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .swipe-wrap > div {
+            float: left;
+            width: 100%;
+            position: relative;
+        }
+
+        .swipe-wrap > div {
+            height: 154px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .swipe-wrap img {
+            height: 380px;
+	    text-align: center;
+        }
+
+        #slide {
+            height: 154px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        #pointer {
+            position: absolute;
+            bottom: 0;
+            overflow: hidden;
+            width: 100%;
+            text-align: center;
+        }
+
+        .title {
+            margin: 0 10px;
+            display: -webkit-box;
+            line-height: 50px;
+            height: 50px;
+            border-bottom: 1px solid #EDEDED;
+        }
+
+        .title div:last-child {
+            color: #3BBB65;
+            width: 50px;
+            margin-right: 10px;
+        }
+
+        .time {
+            background-image: url("./image/departureTimeLogo@2x.png");
+            background-position-x: left;
+            background-position-y: center;;
+            background-repeat: no-repeat no-repeat;
+            background-size: 20px;
+            padding-left: 23px;
+            -webkit-box-flex: 1;
+        }
+
+        .tour-type {
+            margin-left: 5px !important;
+            margin-top: 15px;
+            height: 20px;
+            line-height: 20px;
+            border-left: 5px solid #3BBB65;
+            -webkit-box-flex: 1;
+            padding-left: 5px;
+        }
+
+        .right-lable {
+            text-align: end;
+            padding-left: 0;
+            padding-right: 5px;
+        }
+
+	p {
+	    margin: 3px 10px 3px 10px;
+	}
+	p b {
+	    font-size: 18px;
+	}
+	hr {
+	    border-bottom:2px solid grey;
+	    margin: 3px 10px 3px 10px;
+	}
+        .desc {
+            overflow: hidden;
+            color: #333;
+            padding: 10px 0;
+            line-height: 20px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            white-space: normal;
+            text-align: left;
+            border-bottom: 1px solid #EDEDED;
+        }
+
+        .price-desc {
+            color: #333;
+        }
+
+        .newPrice {
+            color: #ff7c70;
+            font-size: 25px
+        }
+
+        .bottom {
+            display: -webkit-box;
+        }
+
+        .left {
+            margin-top: 20px;
+            line-height: 30px;
+            width: 30%;
+            text-align: center;
+            border-right: 1px solid #EDEDED;
+        }
+
+        .right {
+            padding: 5px;
+            -webkit-box-flex: 1;
+            line-height: 20px;
+        }
+
+        .right del {
+            font-size: 14px;
+            color: #333;
+            margin-right: 10px;
+        }
+
+        .right > span {
+            font-size: 14px;
+        }
+
+        .right > span > span {
+            color: #ff7c70;
+        }
+
+        .right-desc {
+            color: #8C8C8C;
+            font-size: 14px;
+            text-overflow: ellipsis;
+            line-height: 20px;
+        }
+
+        #slide {
+            margin: 10px;
+        }
+
+        #slide, .swipe-wrap > div {
+            height: 325px;
+        }
+
+        #pointer div {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 10px;
+            margin-right: 6px;
+            background-color: #999999;
+        }
+
+        #pointer div.active {
+            background-color: #ff7c70;
+        }
+
+        .slide-img {
+            position: relative;
+        }
+
+        .cut {
+            background-color: #DAD9DA;
+            height: 10px;
+            border-top: 1px solid #EDEDED;
+            border-bottom: 1px solid #EDEDED;
+        }
+
+        .boxWrap {
+            padding: 10px;
+        }
+
+        .img-box {
+            width: 100%;
+            display: -webkit-box;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ededed;
+        }
+
+        .img-box-2, .img-box-3, .img-box-4 {
+            overflow: hidden;
+            position: relative;
+            -webkit-box-flex: 1;
+        }
+
+        .img-box-1, .img-box-34 .img-box-3 {
+            margin-right: 1%;
+        }
+
+        .img-box-2 {
+            margin-bottom: 1%;
+        }
+
+        .img-box-234 .img-box-2 .gray-lable {
+            bottom: 2px;
+        }
+
+        .img-box-1 {
+            overflow: hidden;
+            position: relative;
+            display: -webkit-box;
+        }
+
+        .img-box-23, .img-box-234, .img-box-34 {
+            -webkit-box-flex: 1;
+            display: -webkit-box;
+        }
+
+        .img-box-23, .img-box-234 {
+            -webkit-box-orient: vertical;
+        }
+
+        .for3 .img-box-1 {
+            width: 49%;
+        }
+
+        .for4 .img-box-1 {
+            width: 30%;
+        }
+
+        /*list列表*/
+        .content li {
+            margin: 10px 0 10px 0;
+            border-bottom: 1px solid #D8D8D8;
+        }
+
+        .tab-content li {
+            margin: 10px 5px;
+            padding: 10px;
+            font-size: 14px;
+            border-bottom: 1px solid #DBDBDB;
+        }
+
+        .item, .text {
+            display: -webkit-box;
+        }
+
+        .img {
+            width: 80px;
+            height: 80px;
+        }
+
+        img {
+            width: 60%;
+	    margin: 2px 20% 10px 20%;
+	    text-align: center;
+        }
+        ul li img {
+            width: 60px;
+	    height: 60px;
+        }
+
+        .text {
+            -webkit-box-flex: 1;
+            -webkit-box-orient: vertical;
+            margin: 10px 0 5px 10px;
+	   font-size: 18px;
+        }
+
+        .text1 {
+            -webkit-box-flex: 1;
+            -webkit-box-orient: vertical;
+            margin: 14px 0 5px 10px;
+	   font-size: 20px;
+	   padding:10px;
+        }
+	
+	.text1 p {
+	   color: black;
+	}
+
+        .price span {
+            color: #FC6B32;
+            font-size: 25px;
+        }
+
+        .icon {
+            background-size: 12px;
+            background-position: center center;;
+            background-repeat: no-repeat no-repeat;
+            display: inline-block;
+            height: 12px;
+            width: 12px;
+        }
+
+        .icon-people {
+            background-image: url("./image/dock_icon_my_tuniu@2x.png");
+        }
+
+        .icon-heart {
+            background-image: url("./image/heart@2x.png");
+        }
+
+        .text-title {
+            font-size: 16px;
+            line-height: 17px;
+	    margin: 2px 0 3px 0;
+        }
+
+        .text-price {
+            padding: 2px 0;
+        }
+
+        .new-price {
+            font-size: 20px;
+            color: #ff7c70;
+            font-family: Impact, Arail, sans-serif;
+            font-weight: bold;
+        }
+
+        .text-price del, .icon-heart {
+            margin-left: 15px;
+        }
+
+        .text-price del, .icon-people + span, .icon-heart + span {
+            color: #8c8c8c;
+            font-size: 10px;
+        }
+
+        .red-lable {
+            width: 70px;
+            background-color: #FD7D73;
+            position: absolute;
+            left: 5px;
+            height: 40px;
+            line-height: 40px;
+            color: #fff;
+            -webkit-box-sizing: border-box;
+            text-align: center;
+        }
+
+        .red-lable-top {
+            top: 0;
+        }
+
+        .red-lable-bottom {
+            bottom: 0;
+        }
+
+        .gray-lable {
+            background-image: -webkit-linear-gradient(top, rgba(59, 59, 59, .6), rgba(27, 27, 27, .6), rgba(50, 50, 50, .4), rgba(31, 31, 31, .4));
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            padding-left: 20px;
+            display: block;
+            color: #fff;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+
+        .right-lable {
+            text-align: end;
+            padding-left: 0;
+            padding-right: 5px;
+        }
+
+        .place-lable {
+            height: 25px;
+            line-height: 25px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<ul class="content">
+    <li >
+        <div class="item">
+            <div class="img">
+                <img id='appicon'>
+            </div>
+            <div class="text">
+                <div class="text-title" id="appname"></div>
+                <div class="text-title" id="status"></div>
+            </div>
+            <div class="text1">
+        	<a id="downloadurl"><div class="bottom-btn">下载</div></a>
+            </div>
+        </div>
+    </li>
+</ul>
+<hr/>
+<div id='slide' class='swipe'>
+    <div class='swipe-wrap' id="banner-content">
+    </div>
+    <div id="pointer">
+    </div>
+</div>
+<hr/>
+<p><b>应用描述</b></p>
+<p id="intro"></p>
+<hr/>
+<p><b>更新日志</b></p>
+<p id="logtime"></p>
+<p id="log"></p>
+<hr/>
+<div class="bottomAD" id="bottomAD">
+    <div class="bottom-con">
+        <div class="bottom-pic">
+            <img src="http://firicon.fir.im/c3be24d46a466acf44842d107c68bdffacc0a7d4" width="60" height="60" alt="" />
+        </div>
+        <div class="bottom-text" id="bottomText">马上查看更多详情</div>
+        <div class="bottom-btn">下载</div>
+    </div>
+    <a id="bottomLink" href="http://fir.im/p352"></a>
+    </div>
+    <div class="bottom-close-pic">        
+	<img src="./close.png" onclick="close1()" alt="" />
+    </div>
+</div>
+<script type="text/javascript" src="./script/zepto.min.js"></script>
+<script type="text/javascript" src="./script/swipe.js"></script>
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+<script  src="http://libs.baidu.com/jquerymobile/1.3.0/jquery.mobile-1.3.0.min.js"></script>
+<script>
+$(document).ready(function(){
+ // initSlide();
+	});
+    function close1(){
+	$("#bottomAD").hide();
+	$(".bottom-close-pic").hide();
+    }
+	console.log(getUrlParam("appid"));
+	$.post("http://120.26.218.252:8080/v1/app/getapp",{appid:getUrlParam("appid")},function(data){
+	basic = data.basic;
+	urls = data.picture_urls;
+	console.log(basic.icon);
+	console.log(basic.android_url);
+	$("#downloadurl").attr("href",basic.android_url);
+	$("#appicon").attr("src",basic.icon);
+	$("#appname").text(basic.name);
+	downloads=basic.downloadcount;
+	console.log(parseInt(downloads/10000));
+	if(downloads>=10000)
+		$("#status").text(basic.stars+"分 "+parseInt(downloads/10000)+"万人下载");
+	else
+		$("#status").text(basic.stars+"分 "+downloads+"人下载");
+	for(var i=0; i<urls.length; i++)
+	{
+		$("#banner-content").append("<div class=\"slide-img\"><img src="+urls[i].picture+"></div>");
+		if(i==0)
+			$("#pointer").append("<div class=\"active\"></div>")
+		else
+			$("#pointer").append("<div></div>");
+		console.log(urls[i].picture);
+ 	}
+	comments=data.comments;
+	for(var i=0; i<urls.length; i++)
+	{
+		//$("#comments").append("<li> <img src="+comments[i].userthumb+" /><h3>"+comments[i].usernickname+"</h3><p>"+comments[i].comments+"</p></li>"); 
+	}
+        $("#intro").text(basic.introduction);
+	console.log(urls);
+	console.log(urls.length);
+	updatetime=new Date(basic.updated_at*1000);
+	$("#logtime").text((updatetime.getYear()+1900)+"年"+updatetime.getMonth()+"月"+updatetime.getDate()+"日");
+	$("#log").text(basic.updated_log);
+  initSlide();
+},"json");
+    function initSlide() {
+        var $slide = $('#slide');
+        var $pointer = $('#pointer').find("div");
+        window.mySlide = Swipe(slide, {
+            startSlide: 1,
+            auto: 3000,
+            continuous: true,
+            disableScroll: true,
+            stopPropagation: true,
+            callback: function (index, element) {
+                var $actPoint = $('#pointer').find('div.active');
+                $actPoint.removeClass('active');
+                $pointer.eq(index).addClass('active');
+            },
+            transitionEnd: function (index, element) {
+
+            }
+        });
+    }
+    //获取url中的参数
+    function getUrlParam(name){
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null)
+                 return unescape(r[2]);
+        return null; //返回参数值
+    } 
+
+</script>
+</body>
+</html>

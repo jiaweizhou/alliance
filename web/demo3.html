@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css">
+<script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+<script src="//unslider.com/unslider.js"></script>
+<style>
+.banner { position: relative; overflow: auto; }
+.banner li { list-style: none; }
+.banner ul li { float: left; }
+</style>
+</head>
+<body>
+<div data-role="page" id="pageone">
+<div class="banner">
+    <ul>
+        <li>This is a slide.</li>
+        <li>This is another slide.</li>
+        <li>This is a final slide.</li>
+    </ul>
+</div>
+</div>
+</body>
+<script>
+//$("#p").text("I love");
+//$("#p").html("<b>I love</b>");
+$(function() {
+    $('.banner').unslider();
+});
+</script>
+</html>
