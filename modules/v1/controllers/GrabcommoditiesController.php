@@ -100,6 +100,9 @@ class GrabcommoditiesController extends Controller
 		$query = (new \yii\db\Query ())->select('grabcommodities.id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->orderBy ( "grabcommodities.date desc" )->from('grabcommodities');
 		$dataProvider = new ActiveDataProvider([
 			'query' => $query,
+			'pagination' => [
+					'pagesize'=>5,
+			],
 		]);
 		if(isset($data)&&isset($data['type'])){
 			if($data['type']==0){
