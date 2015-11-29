@@ -213,7 +213,7 @@ class GrabcommoditiesController extends Controller
 		foreach ($myrecords as $i=> $item){
 			
 			if(strlen($item['numbers'])>35)
-				$myrecords['numbers'] = substr($myrecords['numbers'],35);
+				$myrecords[$i]['numbers'] = substr($myrecords[$i]['numbers'],35);
 		}
 		$result['detail'] = $grabcommodity;
 		$result['records'] = $records;
