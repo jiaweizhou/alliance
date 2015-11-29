@@ -165,7 +165,7 @@ class GrabcommoditiesController extends Controller
 		->from('grabcommodities')
 		->join('LEFT JOIN', 'grabcommodityrecords','grabcommodities.winnerrecordid = grabcommodityrecords.id')
 		->leftJoin('users','grabcommodities.winneruserid=users.id')
-		->orderBy('end_at desc,islotteried')
+		->orderBy('islotteried asc,end_at desc')
 		->where('(islotteried!=0 or end_at=0) and kind = :kind',[':kind'=>$data['kind'],]);
 		
 		$dataProvider = new ActiveDataProvider([
