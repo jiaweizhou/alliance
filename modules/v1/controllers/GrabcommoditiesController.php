@@ -229,7 +229,9 @@ class GrabcommoditiesController extends Controller
 			);
 		}
 		$query=(new \yii\db\Query ())->select ( [
-				'grabcommodityrecords.*',
+				'grabcommodityrecords.count',
+				'grabcommodityrecords.id',
+				'grabcommodityrecords.created_at',
 				'users.phone',
 				'users.nickname',
 				'users.thumb'

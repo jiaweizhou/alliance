@@ -176,7 +176,10 @@ class GrabcornsController extends Controller
 			->limit(5)
 			->all ();
 		$myrecords = (new \yii\db\Query ())->select ( [
-					'grabcornrecords.*',
+					//'grabcornrecords.*',
+					'grabcornrecords.count',
+					'grabcornrecords.id',
+					'grabcornrecords.created_at',
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
@@ -185,6 +188,11 @@ class GrabcornsController extends Controller
 			->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and users.phone = :phone and grabcornrecords.grabcornid = :id', [
 					':id' => $grabcorn['id'],':phone'=>$data['phone']
 			] )->all ();
+			foreach ($myrecords as $i=> $item){
+					
+				if(strlen($item['numbers'])>35)
+					$myrecords[$i]['numbers'] = substr($myrecords[$i]['numbers'],0,35);
+			}
 		$result['detail'] = $grabcorn;
 		$result['records'] = $records;
 		$result['myrecords']=$myrecords;
@@ -199,7 +207,9 @@ class GrabcornsController extends Controller
 			);
 		}
 		$query=(new \yii\db\Query ())->select ( [
-				'grabcornrecords.*',
+				'grabcornrecords.count',
+				'grabcornrecords.id',
+				'grabcornrecords.created_at',
 				'users.phone',
 				'users.nickname',
 				'users.thumb'

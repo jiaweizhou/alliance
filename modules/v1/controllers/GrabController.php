@@ -37,6 +37,9 @@ class GrabController extends Controller
 
 		$data=Yii::$app->request->post();
 		$query = (new \yii\db\Query ())->from('watforopen')->where('islotteried=0 and end_at!=0')->orderBy('end_at desc');
+		$dataProvider = new ActiveDataProvider([
+				'query' => $query,
+		]);
 		return $dataProvider;	
 	}
 
