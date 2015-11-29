@@ -47,7 +47,7 @@ class GrabController extends Controller
 		return $dataProvider;	
 	}
 
-	public function win(){
+	public function actionWin(){
 		$data=Yii::$app->request->post();
 		if(!isset($data['phone'])){
 			return 	array (
