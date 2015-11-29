@@ -54,16 +54,16 @@ class Recommendations extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'userid' => 'Userid',
-            'title' => 'Title',
-            'kindid' => 'Kindid',
-            'location' => 'Location',
-            'sellerphone' => 'Sellerphone',
-            'reason' => 'Reason',
-            'created_at' => 'Created At',
-            'pictures' => 'Pictures',
-            'longitude' => 'Longitude',
-            'latitude' => 'Latitude',
+            'userid' => '用户',
+            'title' => '标题',
+            'kindid' => '类型',
+            'location' => '位置',
+            'sellerphone' => '卖家电话',
+            'reason' => '推荐理由',
+            'created_at' => '创建时间',
+           // 'pictures' => 'Pictures',
+            //'longitude' => 'Longitude',
+            //'latitude' => 'Latitude',
         ];
     }
 

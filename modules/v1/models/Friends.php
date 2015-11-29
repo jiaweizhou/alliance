@@ -43,8 +43,8 @@ class Friends extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'myid' => 'Myid',
-            'friendid' => 'Friendid',
+            'myid' => '自己',
+            'friendid' => '对方',
         ];
     }
 

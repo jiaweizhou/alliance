@@ -6,17 +6,18 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\v1\models\Grabcorns */
 
-$this->title = $model->title;
+$this->title ='';
 $this->params['breadcrumbs'][] = ['label' => 'Grabcorns', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<html lang="en-US" style="padding-left:15px">
 <div class="grabcorns-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+        <?= Html::a('更新', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('删除', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -28,8 +29,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
-            'picture',
+            //'id',
+            [
+        		'attribute'=>'缩略图',
+        				'value'=>$model->picture,
+        				'format' => ['image',['width'=>'100','height'=>'100']],
+        						],
             'title',
             'version',
             'needed',
@@ -43,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'winnernumber',
             'foruser',
             'kind',
-            'pictures',
+            //'pictures',
             'worth',
         ],
     ]) ?>

@@ -49,12 +49,13 @@ class Tbmessages extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'userid' => 'Userid',
-            'content' => 'Content',
-            'pictures' => 'Pictures',
-            'likecount' => 'Likecount',
-            'replycount' => 'Replycount',
-            'created_at' => 'Created At',
+            'userid' => '用户',
+            'content' => '消息内容',
+           // 'pictures' => 'Pictures',
+            'likecount' => '点赞数',
+            'replycount' => '回复数',
+            'created_at' => '创建时间',
+        		'title' => '标题'
         ];
     }
 

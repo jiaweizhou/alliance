@@ -42,8 +42,8 @@ class Concerns extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'myid' => 'Myid',
-            'concernid' => 'Concernid',
+            'myid' => '自己',
+            'concernid' => '对方',
         ];
     }
 

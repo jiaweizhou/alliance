@@ -70,7 +70,7 @@ class Users extends \yii\db\ActiveRecord
             'phone' => '电话',
             'pwd' => 'Pwd',
             'authKey' => 'Auth Key',
-            'fatherid' => 'Fatherid',
+            'fatherid' => '直接上层联盟',
             'directalliancecount' => '直接联盟人数',
             'allalliancecount' => '联盟总人数',
             'corns' => '金币数',
@@ -84,6 +84,9 @@ class Users extends \yii\db\ActiveRecord
             'signature' => '签名',
             'created_at' => '创建时间',
             'updated_at' => '更新时间',
+        		'money' => '钱',
+        		'isdraw' => '当天领红包次数',
+        		'cornsforgrab' =>'夺宝币',
             'channel' => 'Channel',
             'platform' => 'Platform',
         ];

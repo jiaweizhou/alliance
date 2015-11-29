@@ -39,7 +39,7 @@ class Kindsofrecommendation extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'kind' => 'Kind',
+            'kind' => '类型',
         ];
     }
 

@@ -45,10 +45,10 @@ class Recommendationcomments extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'userid' => 'Userid',
-            'recommendationid' => 'Recommendationid',
-            'content' => 'Content',
-            'created_at' => 'Created At',
+            'userid' => '用户',
+            'recommendationid' => '推荐ID',
+            'content' => '回复内容',
+            'created_at' => '创建时间',
         ];
     }
 
