@@ -70,7 +70,7 @@ class GrabController extends Controller
 				->join('INNER JOIN','users','grabcommodityrecords.userid = users.id'),
 				true
 		)
-		->orderBy('created_at desc');
+		->orderBy('created_at des');
 		//var_dump($query);
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
