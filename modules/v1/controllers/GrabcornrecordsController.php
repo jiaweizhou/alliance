@@ -39,7 +39,7 @@ class GrabcornrecordsController extends Controller
 		->orderBy('grabcornrecords.created_at desc')
 		->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')
 		->join('LEFT JOIN','grabcornrecords g2','grabcorns.winnerrecordid = g2.id')
-		->join('INNER JOIN','users','g2.userid = users.id');
+		->join('LEFT JOIN','users','g2.userid = users.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);

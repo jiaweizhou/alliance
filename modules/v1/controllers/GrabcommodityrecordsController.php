@@ -37,7 +37,7 @@ class GrabcommodityrecordsController extends Controller
 		->orderBy('grabcommodityrecords.created_at desc')
 		->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id')
 		->join('LEFT JOIN','grabcommodityrecords g2','grabcommodities.winnerrecordid = g2.id')
-		->join('INNER JOIN','users','g2.userid = users.id');
+		->join('LEFT JOIN','users','g2.userid = users.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
