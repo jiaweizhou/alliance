@@ -168,15 +168,21 @@ class GrabcornsController extends Controller
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
-			] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
+			] )->from ( 'grabcornrecords' )
+			->orderBy('grabcornrecords.created_at desc')
+			->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
 					':id' => $grabcorn['id']
-			] )->all ();
+			] )
+			->limit(5)
+			->all ();
 		$myrecords = (new \yii\db\Query ())->select ( [
 					'grabcornrecords.*',
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
-			] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and users.phone = :phone and grabcornrecords.grabcornid = :id', [
+			] )->from ( 'grabcornrecords' )
+			->orderBy('grabcornrecords.created_at desc')
+			->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and users.phone = :phone and grabcornrecords.grabcornid = :id', [
 					':id' => $grabcorn['id'],':phone'=>$data['phone']
 			] )->all ();
 		$result['detail'] = $grabcorn;
@@ -197,12 +203,17 @@ class GrabcornsController extends Controller
 				'users.phone',
 				'users.nickname',
 				'users.thumb'
-		] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
+		] )->from ( 'grabcornrecords' )
+		->orderBy('grabcornrecords.created_at desc')
+		->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
 				':id' => $data['grabcornid']
 		] );
 		// = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
+				'pagination'=>[
+						'pagesize' => '5',
+				]
 		]);
 		return $dataProvider;
 	}

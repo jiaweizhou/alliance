@@ -10,7 +10,7 @@ class m151128_091557_text extends Migration
     	$this->execute("DROP TABLE IF EXISTS text");
     	$this->createTable('text', [
     			'id' => Schema::TYPE_PK,
-    			'phone' => Schema::TYPE_INTEGER . ' NOT NULL',
+    			'phone' => Schema::TYPE_STRING . ' NOT NULL',
     			'text' => Schema::TYPE_INTEGER . ' NOT NULL',
     			'type' => Schema::TYPE_INTEGER . ' NOT NULL',
     			'created_at' =>Schema::TYPE_BIGINT . ' NOT NULL',
