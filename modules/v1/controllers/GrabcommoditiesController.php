@@ -188,7 +188,9 @@ class GrabcommoditiesController extends Controller
 			$grabcommodity=array_merge($grabcommodity,$s);
 		}
 		$records = (new \yii\db\Query ())->select ( [
-				'grabcommodityrecords.count,grabcommodityrecords.id,grabcommodityrecords.created_at',
+				'grabcommodityrecords.count',
+				'grabcommodityrecords.id',
+				'grabcommodityrecords.created_at',
 				'users.phone',
 				'users.nickname',
 				'users.thumb'
