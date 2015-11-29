@@ -58,14 +58,14 @@ class GrabController extends Controller
 		
 		
 		$query = (new \yii\db\Query ())
-		->select(['grabcorns.id as flag, grabcornrecords.id,grabcornrecords.grabcornid as grabid,grabcornrecords.userid,grabcornrecords.type,grabcornrecords.created_at,grabcornrecords.isgotback,grabcorns.isgot,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,users.nickname,users.phone,users.thumb','0 as tbk'])
+		->select(['grabcorns.id as flag',' grabcornrecords.id','grabcornrecords.grabcornid as grabid','grabcornrecords.userid','grabcornrecords.type','grabcornrecords.created_at','grabcornrecords.isgotback','grabcorns.isgot','grabcorns.picture','grabcorns.title','grabcorns.version','grabcorns.date','grabcorns.needed','grabcorns.end_at','grabcorns.islotteried','grabcorns.winnernumber','users.nickname','users.phone','users.thumb','0 as tbk'])
 		->from('grabcornrecords')
 		->orderBy('grabcornrecords.created_at desc')
 		->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')
 		->join('INNER JOIN','users','grabcornrecords.userid = users.id and winnerrecordid = grabcornrecords.id')
 		->union(
 				(new \yii\db\Query ())
-				->select(['grabcommodityrecords.id as flag,grabcommodityrecords.id,grabcommodityrecords.grabcommodityid as grabid,grabcommodityrecords.userid,grabcommodityrecords.type,grabcommodityrecords.created_at,grabcommodityrecords.isgotback,grabcommodities.isgot,grabcommodities.picture,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.needed,grabcommodities.end_at,grabcommodities.islotteried,grabcommodities.winnernumber,users.nickname,users.phone,users.thumb','1 as tbk'])
+				->select(['grabcommodityrecords.id as flag','grabcommodityrecords.id','grabcommodityrecords.grabcommodityid as grabid','grabcommodityrecords.userid','grabcommodityrecords.type','grabcommodityrecords.created_at','grabcommodityrecords.isgotback','grabcommodities.isgot','grabcommodities.picture','grabcommodities.title','grabcommodities.version','grabcommodities.date','grabcommodities.needed','grabcommodities.end_at','grabcommodities.islotteried','grabcommodities.winnernumber','users.nickname','users.phone','users.thumb','1 as tbk'])
 				->from('grabcommodityrecords')
 				->orderBy('grabcommodityrecords.created_at desc')
 				->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id and winnerrecordid = grabcommodityrecords.id')
