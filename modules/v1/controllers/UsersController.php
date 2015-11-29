@@ -6,6 +6,7 @@ use app\modules\v1\models\Users;
 use yii\rest\Controller;
 use Qiniu\Auth;
 use app\modules\v1\models\Easeapi;
+use app\modules\v1\models\Text;
 use yii\rest\Serializer;
 class UsersController extends Controller {
 	public $modelClass = 'app\modules\v1\models\Users';
@@ -19,8 +20,125 @@ class UsersController extends Controller {
 		$user=Users::find()->where(['phone'=>$data['phone']])->one();
 		return $user;
 	}
-	//for sign up
 	
+	public function actionAllmoney(){
+		$data = Yii::$app->request->post();
+		if(empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		return array(
+				'money'=>$user->money,
+				'corns'=>$user->corns,
+				'cornsforgrab'=>$user->cornsforgrab,
+				
+		);
+	}
+	//for sign up
+	public function actionCheckrgtext(){
+		$data = Yii::$app->request->post();
+		return $this->checktext($data, 0);
+	}
+	public function actionCheckcptext(){
+		$data = Yii::$app->request->post();
+		return $this->checktext($data, 1);
+	}
+	private function checktext($data,$type){
+		if(!(isset($data['phone'])&&isset($data['text']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$text=Text::findOne(['phone'=>$data['phone'],'type'=>$type,'text'=>$data['text']]);
+		
+		if($text&&(time()-$text['created_at'])<10*60){
+			Text::deleteAll(['phone'=>$data['phone'],'type'=>$type]);
+			return array(
+					'flag'=>1,
+					'msg'=>'ok',
+			);
+		}else{
+			Text::deleteAll(['phone'=>$data['phone'],'type'=>$type]);
+			return array(
+					'flag'=>0,
+					'msg'=>'text not',
+			);
+		}
+	}
+	public function actionSendrgtext(){
+		$data = Yii::$app->request->post();
+		if(empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		Text::deleteAll(['phone'=>$data['phone'],'type'=>0]);
+		$random = rand('1000','9999');
+		$model=new Text();
+		$model->phone = $data['phone'];
+		$model->type = 0;
+		$model->text = $random;
+		$model->created_at = time();
+		$model->save();
+		//return $model->errors;
+		//$user = User::findOne(['phone'=>$data['phone']]);
+		$urlf="http://106.ihuyi.cn/webservice/sms.php?method=Submit&account=cf_shhy&password=rjBE4e&mobile=".$data['phone']."&content=".rawurlencode("您的验证码是：".$random."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！");
+		$opts = array('http' =>
+				array(
+						'method'  => 'POST',
+						'header'  => 'Content-type: application/x-www-form-urlencoded',
+						//'content' => $postdata
+				)
+		
+		);
+		$context = stream_context_create($opts);
+		$result = file_get_contents($urlf, false, $context);
+		return array (
+					'flag' => 1,
+					'msg' => 'ok!'
+			);
+	}
+	
+	
+	public function actionSendcptext(){
+		$data = Yii::$app->request->post();
+		if(empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		Text::deleteAll(['phone'=>$data['phone'],'type'=>1]);
+		$random = rand('1000','9999');
+		$model=new Text();
+		$model->phone = $data['phone'];
+		$model->type = 1;
+		$model->text = $random;
+		$model->created_at = time();
+		$model->save();
+		//return $model->errors;
+		//$user = User::findOne(['phone'=>$data['phone']]);
+		$urlf="http://106.ihuyi.cn/webservice/sms.php?method=Submit&account=cf_shhy&password=rjBE4e&mobile=".$data['phone']."&content=".rawurlencode("您的新密码是：".$random."。请及时登录并修改密码。");
+		$opts = array('http' =>
+				array(
+						'method'  => 'POST',
+						'header'  => 'Content-type: application/x-www-form-urlencoded',
+						//'content' => $postdata
+				)
+	
+		);
+		$context = stream_context_create($opts);
+		$result = file_get_contents($urlf, false, $context);
+		return array (
+					'flag' => 1,
+					'msg' => 'ok!'
+			);
+	}
 	public function actionSignup() {
 		$model = new Users ();
 		$data = Yii::$app->request->post ();

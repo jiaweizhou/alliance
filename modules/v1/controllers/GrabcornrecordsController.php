@@ -31,13 +31,15 @@ class GrabcornrecordsController extends Controller
 	public function actionList()
 	{ 
 		$data=Yii::$app->request->post();
+		
+		
 		$query = (new \yii\db\Query ())
-		->select('grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,g2.count as winnercount,users.nickname,users.phone,users.thumb')
+		->select('grabcornrecords.*,grabcorns.winnerrecordid,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,g2.count as winnercount,users.nickname,users.phone,users.thumb')
 		->from('grabcornrecords')
 		->orderBy('grabcornrecords.created_at desc')
 		->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')
-		->join('INNER JOIN','users','grabcornrecords.userid = users.id')
-		->join('LEFT JOIN','grabcornrecords g2','grabcorns.winnerrecordid = g2.id');
+		->join('LEFT JOIN','grabcornrecords g2','grabcorns.winnerrecordid = g2.id')
+		->join('LEFT JOIN','users','g2.userid = users.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
@@ -45,7 +47,8 @@ class GrabcornrecordsController extends Controller
 		//$value = 0;
 		if(!empty($data)){
 			if(isset($data['phone'])){
-					$query->andFilterWhere(['users.phone' => $data['phone']]);
+				$user = Users::findOne(['phone'=>$data['phone']]);
+				$query->andFilterWhere(['grabcornrecords.userid' => $user->id]);
 			}
 			
 // 			if(isset($data['hobbyid'])){
@@ -64,7 +67,11 @@ class GrabcornrecordsController extends Controller
 	{
 		$data=Yii::$app->request->post();
 		$query = (new \yii\db\Query ())
-		->select('grabcorns.id as flag, grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,users.nickname,users.phone,users.thumb')->from('grabcornrecords')->orderBy('grabcornrecords.created_at desc')->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')->join('INNER JOIN','users','grabcornrecords.userid = users.id and winnerrecordid = grabcornrecords.id');
+		->select('grabcorns.id as flag, grabcornrecords.*,grabcorns.id as grabcornid,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,users.nickname,users.phone,users.thumb')
+		->from('grabcornrecords')
+		->orderBy('grabcornrecords.created_at desc')
+		->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')
+		->join('INNER JOIN','users','grabcornrecords.userid = users.id and winnerrecordid = grabcornrecords.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
@@ -72,7 +79,8 @@ class GrabcornrecordsController extends Controller
 		//$value = 0;
 		if(!empty($data)){
 			if(isset($data['phone'])){
-				$query->andFilterWhere(['users.phone' => $data['phone']]);
+				$user = Users::findOne(['phone'=>$data['phone']]);
+				$query->andFilterWhere(['grabcornrecords.userid' => $user->id]);
 			}
 				
 			// 			if(isset($data['hobbyid'])){

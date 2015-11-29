@@ -32,12 +32,12 @@ class GrabcommodityrecordsController extends Controller
 	{ 
 		$data=Yii::$app->request->post();
 		$query = (new \yii\db\Query ())
-		->select('grabcommodityrecords.*,grabcommodities.picture,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.needed,grabcommodities.end_at,grabcommodities.winnernumber,grabcommodities.islotteried,g2.count as winnercount,users.nickname,users.thumb')
+		->select('grabcommodityrecords.*,grabcommodities.picture,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.needed,grabcommodities.end_at,grabcommodities.winnernumber,grabcommodities.islotteried,g2.count as winnercount,users.phone,users.nickname,users.thumb')
 		->from('grabcommodityrecords')
 		->orderBy('grabcommodityrecords.created_at desc')
 		->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id')
-		->join('INNER JOIN','users','grabcommodityrecords.userid = users.id')
-		->join('LEFT JOIN','grabcommodityrecords g2','grabcommodities.winnerrecordid = g2.id');
+		->join('LEFT JOIN','grabcommodityrecords g2','grabcommodities.winnerrecordid = g2.id')
+		->join('LEFT JOIN','users','g2.userid = users.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
@@ -45,7 +45,8 @@ class GrabcommodityrecordsController extends Controller
 		//$value = 0;
 		if(!empty($data)){
 			if(isset($data['phone'])){
-					$query->andFilterWhere(['users.phone' => $data['phone']]);
+				$user = Users::findOne(['phone'=>$data['phone']]);
+				$query->andFilterWhere(['grabcommodityrecords.userid' => $user->id]);
 			}
 			
 // 			if(isset($data['hobbyid'])){

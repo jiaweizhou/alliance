@@ -25,7 +25,11 @@ class RecommendationsController extends Controller
      * Lists all Applyjobs models.
      * @return mixed
      */
-
+	public function actionMoreComments(){
+		$dataProvider = new ActiveDataProvider([
+						'query' => $query,
+				]);
+	}
 	public function actionSearch()
 	{ 
 		$data=Yii::$app->request->post();
@@ -43,7 +47,9 @@ class RecommendationsController extends Controller
                                         'users.phone',
                                         'users.nickname',
                                         'users.thumb'
-                                        ] )->orderBy('recommendationcomments.created_at desc')->from ( 'recommendationcomments' )->join ( 'INNER JOIN', 'users', 'recommendationcomments.userid = users.id and recommendationcomments.recommendationid = :id', [
+                                        ] )->orderBy('recommendationcomments.created_at desc')
+                                        ->from ( 'recommendationcomments' )
+                                        ->join ( 'INNER JOIN', 'users', 'recommendationcomments.userid = users.id and recommendationcomments.recommendationid = :id', [
                                                 ':id' => $model ['id']
                                         ] )->all ();
                         	$model['comments'] = $comments;

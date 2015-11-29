@@ -159,20 +159,30 @@ class GrabcornsController extends Controller
 					'msg' => 'no grabcorn with this id!'
 			);
 		}
+		if($grabcorn['islotteried']){
+			$s = (new \yii\db\Query ())->select('count,users.nickname,users.phone,users.thumb')->from('grabcornrecords,users')->where(['grabcornrecords.id'=>$grabcorn['winnerrecordid'],'users.id'=>$grabcorn['winneruserid']])->one();
+			$grabcorn=array_merge($grabcorn,$s);
+		}
 		$records = (new \yii\db\Query ())->select ( [
 					'grabcornrecords.*',
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
-			] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
+			] )->from ( 'grabcornrecords' )
+			->orderBy('grabcornrecords.created_at desc')
+			->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
 					':id' => $grabcorn['id']
-			] )->all ();
+			] )
+			->limit(5)
+			->all ();
 		$myrecords = (new \yii\db\Query ())->select ( [
 					'grabcornrecords.*',
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
-			] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and users.phone = :phone and grabcornrecords.grabcornid = :id', [
+			] )->from ( 'grabcornrecords' )
+			->orderBy('grabcornrecords.created_at desc')
+			->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and users.phone = :phone and grabcornrecords.grabcornid = :id', [
 					':id' => $grabcorn['id'],':phone'=>$data['phone']
 			] )->all ();
 		$result['detail'] = $grabcorn;
@@ -193,12 +203,17 @@ class GrabcornsController extends Controller
 				'users.phone',
 				'users.nickname',
 				'users.thumb'
-		] )->from ( 'grabcornrecords' )->orderBy('grabcornrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
+		] )->from ( 'grabcornrecords' )
+		->orderBy('grabcornrecords.created_at desc')
+		->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
 				':id' => $data['grabcornid']
 		] );
 		// = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
+				'pagination'=>[
+						'pagesize' => '5',
+				]
 		]);
 		return $dataProvider;
 	}
@@ -210,52 +225,56 @@ class GrabcornsController extends Controller
     public function actionCreate()
     {
     	
-        $model = new Grabcorns();
+        
         $data=Yii::$app->request->post();
+        return $this->create($data);
         //var_dump(isset($date['content']);
-        if(!(isset($data['kind'])&&isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['worth']))){
-        	return 	array (
-        			'flag' => 0,
-        			'msg' => 'no enough arg!'
-        	);
-        }
         
-        $data['created_at'] = time();
-        
-        //var_dump(microtime(true));
-        $data['end_at'] = 0;
-        $data['remain'] = $data['needed'];
-        foreach ($data as $item=>$value){
-        	$model->$item = $data[$item];
-        }
-        if ($model->save()) {
-        	$dirname = 'random/grabcorns';
-        	if(!is_dir($dirname))
-        		mkdir($dirname,0777,true);
-        	$handle = fopen($dirname .'/'. $model['id'], "w+");
-        	$numbers = range (10000001,10000000+$model->needed);
-        	shuffle ($numbers);
-        	$string['numbers'] = $numbers;
-        	$string['begin']=0;
-        	$string = json_encode($string);
-        	fwrite($handle, $string);
-        	fclose($handle);
-        	
-            return 	array (
-
-        			'flag' => 1,
-        			'msg' => 'create grabcorn success!'
-        	);
-        } else {
-        	//var_dump($model->errors);
-            return 	array (
-            		'error'=> $model->errors,
-        			'flag' => 0,
-        			'msg' => 'create grabcorn fail!'
-        	);
-        }
     }
-
+ 	private function create($data){
+ 		$model = new Grabcorns();
+	 	if(!(isset($data['kind'])&&isset($data['picture'])&&isset($data['title'])&&isset($data['version'])&&isset($data['needed'])&&isset($data['date'])&&isset($data['worth']))){
+	 		return 	array (
+	 				'flag' => 0,
+	 				'msg' => 'no enough arg!'
+	 		);
+	 	}
+	 	
+	 	$data['created_at'] = time();
+	 	
+	 	//var_dump(microtime(true));
+	 	$data['end_at'] = 0;
+	 	$data['remain'] = $data['needed'];
+	 	foreach ($data as $item=>$value){
+	 		$model->$item = $data[$item];
+	 	}
+	 	if ($model->save()) {
+	 		$dirname = 'random/grabcorns';
+	 		if(!is_dir($dirname))
+	 			mkdir($dirname,0777,true);
+	 		$handle = fopen($dirname .'/'. $model['id'], "w+");
+	 		$numbers = range (10000001,10000000+$model->needed);
+	 		shuffle ($numbers);
+	 		$string['numbers'] = $numbers;
+	 		$string['begin']=0;
+	 		$string = json_encode($string);
+	 		fwrite($handle, $string);
+	 		fclose($handle);
+	 		 
+	 		return 	array (
+	 	
+	 				'flag' => 1,
+	 				'msg' => 'create grabcorn success!'
+	 		);
+	 	} else {
+	 		//var_dump($model->errors);
+	 		return 	array (
+	 				'error'=> $model->errors,
+	 				'flag' => 0,
+	 				'msg' => 'create grabcorn fail!'
+	 		);
+	 	}
+ 	}
     /**
      * Updates an existing Applyjobs model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -423,6 +442,18 @@ class GrabcornsController extends Controller
 		if($grabcorn->remain==0){
 			$grabcorn->end_at = time()+10*60;
 			$grabcorn->save();
+			
+			$result=$this->create(array(
+					'picture'=>$grabcorn->picture,
+					'pictures'=>$grabcorn->pictures,
+					'title'=>$grabcorn->title,
+					'version'=>strval($grabcorn->version+1),
+					'needed'=>$grabcorn->needed,
+					'date'=>time(),
+					'kind'=>$grabcorn->kind,
+					'worth'=>$grabcorn->worth,
+			));
+			//return $result;
 			//curl_setopt ($ch, CURLOPT_URL, "http://127.0.0.1:8888/test");
 			$postdata = http_build_query(
             	array('grabcornid'=>$grabcorn->id)
@@ -519,7 +550,7 @@ class GrabcornsController extends Controller
     		$inserrecord=$connection->createCommand('insert into grabcornrecords(userid,grabcornid,count,numbers,type,created_at) values (:userid,:grabcornid,:count,:numbers,:type,:created_at)'
     				,[':userid'=>$user->id,':grabcornid'=>$insertgrabid,':count'=>$grabcorn->needed,':numbers'=>"",':type'=>$data['type'],':created_at'=>time()])->execute();
     		$insertrid=$connection->getLastInsertID();
-    		$updategrab=$connection->createCommand('update grabcorns set winnerrecordid=:recordid where grabcorns.id=:id',['recordid'=>$insertrid,':id'=>$data['grabcornid']])->execute();
+    		$updategrab=$connection->createCommand('update grabcorns set winnerrecordid=:recordid where grabcorns.id=:id',['recordid'=>$insertrid,':id'=>$insertgrabid])->execute();
     		//var_dump($expression)
     		if(!(($data['type']==3||$updatemoney)&&$inserrecord&&$insertgrab&&$updategrab)){
     			throw new Exception("Value must be 1 or below");
