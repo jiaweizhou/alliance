@@ -71,7 +71,7 @@ class GrabController extends Controller
 				true
 		)
 		->orderBy('created_at desc');
-		var_dump($query);
+		//var_dump($query);
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
