@@ -47,12 +47,12 @@ class Tbreplys extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'tbmessageid' => 'Tbmessageid',
-            'content' => 'Content',
-            'fromid' => 'Fromid',
-            'toid' => 'Toid',
-            'isread' => 'Isread',
-            'created_at' => 'Created At',
+            'tbmessageid' => '消息ID',
+            'content' => '回复内容',
+            'fromid' => '回复者',
+            'toid' => '回复给',
+            'isread' => '是否已读',
+            'created_at' => '创建时间',
         ];
     }
 

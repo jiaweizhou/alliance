@@ -59,16 +59,23 @@ class Grabcorns extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'picture' => 'Picture',
-            'title' => 'Title',
-            'version' => 'Version',
-            'needed' => 'Needed',
-            'left' => 'Left',
-            'created_at' => 'Created At',
-            'date' => 'Date',
-            'end_at' => 'End At',
-            'islotteried' => 'Islotteried',
-            'winnerid' => 'Winnerid',
+            'picture' => '图片',
+            'title' => '标题',
+            'version' => '期数',
+            'needed' => '需要人次',
+            'left' => '剩余人次',
+        		'remain' => '剩余人次',
+            'created_at' => '创建时间',
+            'date' => '开始时间',
+            'end_at' => '截止时间',
+            'islotteried' => '是否开奖',
+            'winnerid' => '获奖用户',
+        		'winneruserid' => '获奖者',
+        		'winnerrecordid' => '获奖者对应记录',
+        		'winnernumber' => '获奖号码',
+        		'foruser' => '为某一用户',
+        		'isgot' => '是否被领取',
+        		'worth' => '总价值'
         ];
     }
 }

@@ -39,7 +39,7 @@ class Hobbies extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'hobby' => 'Hobby',
+            'hobby' => '爱好',
         ];
     }
 

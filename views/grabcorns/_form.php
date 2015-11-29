@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'picture')->textInput(['maxlength' => true]) ?>
+    <?//= $form->field($model, 'picture')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
@@ -22,28 +22,28 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'remain')->textInput() ?>
 
-    <?= $form->field($model, 'created_at')->textInput() ?>
+    <?//= $form->field($model, 'created_at')->textInput() ?>
 
     <?= $form->field($model, 'date')->textInput() ?>
 
     <?= $form->field($model, 'end_at')->textInput() ?>
 
-    <?= $form->field($model, 'islotteried')->textInput() ?>
+    <?//= $form->field($model, 'islotteried')->textInput() ?>
 
-    <?= $form->field($model, 'winneruserid')->textInput() ?>
+    <?//= $form->field($model, 'winneruserid')->textInput() ?>
 
-    <?= $form->field($model, 'winnerrecordid')->textInput() ?>
+    <?//= $form->field($model, 'winnerrecordid')->textInput() ?>
 
-    <?= $form->field($model, 'winnernumber')->textInput() ?>
+    <?//= $form->field($model, 'winnernumber')->textInput() ?>
 
     <?= $form->field($model, 'foruser')->textInput() ?>
 
-    <?= $form->field($model, 'kind')->textInput() ?>
+    <?//= $form->field($model, 'kind')->textInput() ?>
 
-    <?= $form->field($model, 'pictures')->textInput(['maxlength' => true]) ?>
+    <?//= $form->field($model, 'pictures')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? '创建' : '更新', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

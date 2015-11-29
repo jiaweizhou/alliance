@@ -7,16 +7,17 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\GrabcommoditiesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Grabcommodities';
+$this->title = '';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<html lang="en-US" style="padding-left:15px">
 <div class="grabcommodities-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Grabcommodities', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('创建', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -25,24 +26,29 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'picture',
+           // 'id',
+        		[
+        		'attribute' => 'picture',
+'label'=>'缩略图',
+        		'value'=>'picture',
+				'format' => ['image',['width'=>'60','height'=>'60']],
+        						],
             'title',
             'version',
             'needed',
-            // 'remain',
+             'remain',
             // 'created_at',
-            // 'date',
-            // 'end_at',
-            // 'islotteried',
-            // 'winneruserid',
+             'date',
+             'end_at',
+             'islotteried',
+             'winneruserid',
             // 'winnerrecordid',
-            // 'winnernumber',
-            // 'foruser',
+             'winnernumber',
+             'foruser',
             // 'kind',
             // 'pictures',
             // 'details',
-            // 'worth',
+             'worth',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

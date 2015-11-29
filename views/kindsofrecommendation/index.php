@@ -7,16 +7,17 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\KindsofrecommendationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Kindsofrecommendations';
+$this->title = '';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<html lang="en-US" style="padding-left:15px">
 <div class="kindsofrecommendation-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Kindsofrecommendation', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('创建', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -25,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
+         //   'id',
             'kind',
 
             ['class' => 'yii\grid\ActionColumn'],

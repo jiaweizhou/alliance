@@ -47,12 +47,12 @@ class Grabcommodityrecords extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'userid' => 'Userid',
-            'grabcommodityid' => 'Grabcommodityid',
-            'count' => 'Count',
-            'numbers' => 'Numbers',
-            'type' => 'Type',
-            'created_at' => 'Created At',
+            'userid' => '用户',
+            'grabcommodityid' => '夺宝id',
+            'count' => '购买数量',
+            'numbers' => '开奖号',
+            'type' => '支付方式',
+            'created_at' => '创建时间',
         ];
     }
 

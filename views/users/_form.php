@@ -14,9 +14,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'pwd')->textInput(['maxlength' => true]) ?>
+    <?//= $form->field($model, 'pwd')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'authKey')->textInput(['maxlength' => true]) ?>
+    <?//= $form->field($model, 'authKey')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'fatherid')->textInput(['maxlength' => true]) ?>
 
@@ -28,7 +28,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'money')->textInput() ?>
 
-    <?= $form->field($model, 'envelope')->textInput() ?>
+    <?//= $form->field($model, 'envelope')->textInput() ?>
 
     <?= $form->field($model, 'cornsforgrab')->textInput() ?>
 
@@ -48,20 +48,20 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'signature')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'created_at')->textInput() ?>
+    <?//= $form->field($model, 'created_at')->textInput() ?>
 
-    <?= $form->field($model, 'updated_at')->textInput() ?>
+    <?//= $form->field($model, 'updated_at')->textInput() ?>
 
-    <?= $form->field($model, 'channel')->textInput(['maxlength' => true]) ?>
+    <?//= $form->field($model, 'channel')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'platform')->textInput(['maxlength' => true]) ?>
+    <?//= $form->field($model, 'platform')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'friendcount')->textInput() ?>
+    <?//= $form->field($model, 'friendcount')->textInput() ?>
 
-    <?= $form->field($model, 'concerncount')->textInput() ?>
+    <?//= $form->field($model, 'concerncount')->textInput() ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? '创建' : '更新', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

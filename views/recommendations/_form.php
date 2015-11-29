@@ -24,16 +24,16 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'reason')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'created_at')->textInput() ?>
+    <?//= $form->field($model, 'created_at')->textInput() ?>
 
-    <?= $form->field($model, 'pictures')->textInput(['maxlength' => true]) ?>
+    <?//= $form->field($model, 'pictures')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'longitude')->textInput() ?>
+    <?//= $form->field($model, 'longitude')->textInput() ?>
 
-    <?= $form->field($model, 'latitude')->textInput() ?>
+    <?//= $form->field($model, 'latitude')->textInput() ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($model->isNewRecord ? '创建' : '更新', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

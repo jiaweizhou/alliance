@@ -43,9 +43,9 @@ class Tblikes extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'userid' => 'Userid',
-            'tbmessageid' => 'Tbmessageid',
-            'created_at' => 'Created At',
+            'userid' => '用户',
+            'tbmessageid' => '消息ID',
+            'created_at' => '创建时间',
         ];
     }
 

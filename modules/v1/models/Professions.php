@@ -39,7 +39,7 @@ class Professions extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'profession' => 'Profession',
+            'profession' => '职业类型',
         ];
     }
 

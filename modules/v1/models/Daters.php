@@ -48,13 +48,13 @@ class Daters extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'userid' => 'Userid',
-            'picture' => 'Picture',
-            'sex' => 'Sex',
-            'age' => 'Age',
-            'hobbyid' => 'Hobbyid',
-            'content' => 'Content',
-            'created_at' => 'Created At',
+            'userid' => '用户',
+            'picture' => '图片',
+            'sex' => '性别',
+            'age' => '年龄',
+            'hobbyid' => '爱好',
+            'content' => '内容',
+            'created_at' => '创建时间',
         ];
     }
 

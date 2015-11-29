@@ -6,17 +6,18 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\modules\v1\models\Users */
 
-$this->title = $model->id;
+$this->title = '';
 $this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<html lang="en-US" style="padding-left:15px">
 <div class="users-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+        <?= Html::a('更新', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('删除', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -28,20 +29,25 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
+          //  'id',
             'phone',
-            'pwd',
-            'authKey',
+           // 'pwd',
+            //'authKey',
             'fatherid',
             'directalliancecount',
             'allalliancecount',
             'corns',
             'money',
-            'envelope',
+           // 'envelope',
             'cornsforgrab',
             'alliancerewards',
             'nickname',
-            'thumb',
+            //'thumb',
+        		[
+        		'attribute'=>'头像',
+        				'value'=>$model->thumb,
+        						'format' => ['image',['width'=>'100','height'=>'100']],
+        						],
             'gender',
             'area',
             'job',
@@ -49,10 +55,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'signature',
             'created_at',
             'updated_at',
-            'channel',
-            'platform',
-            'friendcount',
-            'concerncount',
+           // 'channel',
+            //'platform',
+           // 'friendcount',
+            //'concerncount',
             'isdraw',
         ],
     ]) ?>

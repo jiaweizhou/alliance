@@ -45,9 +45,9 @@ class Messages extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'userid' => 'Userid',
-            'content' => 'Content',
-            'created_at' => 'Created At',
+            'userid' => '用户',
+            'content' => '消息内容',
+            'created_at' => '创建时间',
         ];
     }
 

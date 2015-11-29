@@ -51,15 +51,16 @@ class Applyjobs extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'userid' => 'Userid',
-            'jobproperty' => 'Jobproperty',
-            'title' => 'Title',
-            'degree' => 'Degree',
-            'work_at' => 'Work At',
-            'status' => 'Status',
+            'userid' => '用户',
+            'jobproperty' => '工作性质',
+            'title' => '标题',
+            'degree' => '学历',
+            'work_at' => '参加工作时间',
+            'status' => '状态',
             'hidephone' => 'Hidephone',
-            'content' => 'Content',
-            'professionid' => 'Professionid',
+            'content' => '内容',
+            'professionid' => '职业',
+        		'created_at' => '创建时间',
         ];
     }
 

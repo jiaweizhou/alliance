@@ -7,16 +7,17 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\TbmessagesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Tbmessages';
+$this->title = '';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<html lang="en-US" style="padding-left:15px">
 <div class="tbmessages-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Tbmessages', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('创建', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -27,12 +28,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'userid',
+        		'title',
             'content',
-            'pictures',
+           // 'pictures',
             'likecount',
-            // 'replycount',
-            // 'created_at',
-            // 'title',
+             'replycount',
+             'created_at',
+           
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
