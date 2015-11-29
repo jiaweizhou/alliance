@@ -65,7 +65,7 @@ class GrabController extends Controller
 		$query = (new \yii\db\Query ())
 		//->select(['tbk','grabcorns.id as flag','grabcornrecords.id','grabcornrecords.grabcornid as grabid','grabcornrecords.userid','grabcornrecords.type','grabcornrecords.created_at','grabcornrecords.isgotback','grabcorns.isgot','grabcorns.picture','grabcorns.title','grabcorns.version','grabcorns.date','grabcorns.needed','grabcorns.end_at','grabcorns.islotteried','grabcorns.winnernumber','users.nickname','users.phone','users.thumb'])
 		->from('activities')
-		->where('userid=:id',[':userid'=>$user->id])
+		->where('userid=:userid',[':userid'=>$user->id])
 		->orderBy('end_at desc');
 		//->orderBy('created_at des');
 		//var_dump($query);
