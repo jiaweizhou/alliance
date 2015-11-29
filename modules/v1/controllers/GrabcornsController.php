@@ -164,7 +164,9 @@ class GrabcornsController extends Controller
 			$grabcorn=array_merge($grabcorn,$s);
 		}
 		$records = (new \yii\db\Query ())->select ( [
-					'grabcornrecords.*',
+					'grabcornrecords.count',
+					'grabcornrecords.id',
+					'grabcornrecords.created_at',
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
@@ -176,10 +178,7 @@ class GrabcornsController extends Controller
 			->limit(5)
 			->all ();
 		$myrecords = (new \yii\db\Query ())->select ( [
-					//'grabcornrecords.*',
-					'grabcornrecords.count',
-					'grabcornrecords.id',
-					'grabcornrecords.created_at',
+					'grabcornrecords.*',
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
