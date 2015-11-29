@@ -188,7 +188,7 @@ class GrabcommoditiesController extends Controller
 			$grabcommodity=array_merge($grabcommodity,$s);
 		}
 		$records = (new \yii\db\Query ())->select ( [
-				'grabcommodityrecords.*',
+				'grabcommodityrecords.count,grabcommodityrecords.id,grabcommodityrecords.created_at',
 				'users.phone',
 				'users.nickname',
 				'users.thumb'
@@ -208,6 +208,11 @@ class GrabcommoditiesController extends Controller
 		] )->from ( 'grabcommodityrecords' )->orderBy('grabcommodityrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and users.phone = :phone and grabcommodityrecords.grabcommodityid = :id', [
 				':id' => $grabcommodity['id'],':phone'=>$data['phone']
 		] )->all ();
+		foreach ($myrecords as $i=> $item){
+			
+			if(strlen($item['numbers'])>35)
+				$myrecords['numbers'] = substr($str,35);
+		}
 		$result['detail'] = $grabcommodity;
 		$result['records'] = $records;
 		$result['myrecords']=$myrecords;

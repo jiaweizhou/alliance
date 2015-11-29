@@ -36,14 +36,7 @@ class GrabController extends Controller
 		//$query = Grabcorns::find()->where(['islotteried'=>0]);
 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.id,1 as noty,picture,needed,remain,')->from('grabcorns');
-				$dataProvider = new ActiveDataProvider([
-						'query' => $query,
-				]);
-		//var_dump(isset($data['type']));
-		
-		$query->where('grabcorns.islotteried = 0 and end_at != 0 and foruser = 0');
-		
+		$query = (new \yii\db\Query ())->from('watforopen')->where('islotteried=0 and end_at!=0')->orderBy('end_at desc');
 		return $dataProvider;	
 	}
 
