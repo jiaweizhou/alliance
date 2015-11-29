@@ -635,7 +635,6 @@ class GrabcornsController extends Controller
     		);
     	}
     	return 	array (
-    			'c'=>$updategrab,
     			'flag' => 1,
     			'msg' => 'get corn success!'
     	);
