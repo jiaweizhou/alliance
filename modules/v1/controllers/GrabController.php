@@ -65,7 +65,7 @@ class GrabController extends Controller
 		->join('INNER JOIN','users','grabcornrecords.userid = users.id and winnerrecordid = grabcornrecords.id')
 		->union(
 				(new \yii\db\Query ())
-				->select('grabcommodityrecords.id as flag, grabcommodityrecords.id,grabcommodityrecords.grabcommodityid as grabid,grabcommodityrecords.userid,grabcommodityrecords.type,grabcommodityrecords.created_at,grabcommodityrecords.isgotback,grabcommodities.isgot,grabcommodities.picture,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.winnernumber,grabcommodities.end_at,grabcommodities.islotteried,users.nickname,users.thumb')
+				->select('grabcommodityrecords.id as flag, grabcommodityrecords.id,grabcommodityrecords.grabcommodityid as grabid,grabcommodityrecords.userid,grabcommodityrecords.type,grabcommodityrecords.created_at,grabcommodityrecords.isgotback,grabcommodities.isgot,grabcommodities.picture,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.needed,grabcommodities.end_at,grabcommodities.islotteried,grabcommodities.winnernumber,users.nickname,users.phone,users.thumb')
 				->from('grabcommodityrecords')
 				->orderBy('grabcommodityrecords.created_at desc')
 				->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id and winnerrecordid = grabcommodityrecords.id')
