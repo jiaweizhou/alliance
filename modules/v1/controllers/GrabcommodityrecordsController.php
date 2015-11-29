@@ -32,7 +32,7 @@ class GrabcommodityrecordsController extends Controller
 	{ 
 		$data=Yii::$app->request->post();
 		$query = (new \yii\db\Query ())
-		->select('grabcommodityrecords.*,grabcommodities.picture,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.needed,grabcommodities.end_at,grabcommodities.winnernumber,grabcommodities.islotteried,g2.count as winnercount,users.phone,users.nickname,users.thumb')
+		->select('grabcommodityrecords.*,grabcommodities.picture,grabcommodities.title,grabcommodities.id as version,grabcommodities.date,grabcommodities.needed,grabcommodities.end_at,grabcommodities.winnernumber,grabcommodities.islotteried,g2.count as winnercount,users.phone,users.nickname,users.thumb')
 		->from('grabcommodityrecords')
 		->orderBy('grabcommodityrecords.created_at desc')
 		->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id')
@@ -64,15 +64,12 @@ class GrabcommodityrecordsController extends Controller
 	public function actionWin()
 	{
 		$data=Yii::$app->request->post();
-		$cmd = (new \yii\db\Query ())->createCommand(Yii::$app->db);
-		$cmd->setSql('SELECT `grabcorns`.`id` AS `flag`, `grabcornrecords`.`id`, `grabcornrecords`.`grabcornid` AS `grabid`, `grabcornrecords`.`userid`, `grabcornrecords`.`type`, `grabcornrecords`.`created_at`, `grabcornrecords`.`isgotback`, `grabcorns`.`isgot`, `grabcorns`.`picture`, `grabcorns`.`title`, `grabcorns`.`version`, `grabcorns`.`date`, `grabcorns`.`needed`, `grabcorns`.`end_at`, `grabcorns`.`islotteried`, `grabcorns`.`winnernumber`, `users`.`nickname`, `users`.`phone`, `users`.`thumb`, 0 AS tbk FROM `grabcornrecords` INNER JOIN `grabcorns` ON grabcornrecords.grabcornid = grabcorns.id INNER JOIN `users` ON grabcornrecords.userid = users.id and winnerrecordid = grabcornrecords.id WHERE `grabcornrecords`.`userid`=3 UNION ALL SELECT `grabcommodityrecords`.`id` AS `flag`, `grabcommodityrecords`.`id`, `grabcommodityrecords`.`grabcommodityid` AS `grabid`, `grabcommodityrecords`.`userid`, `grabcommodityrecords`.`type`, `grabcommodityrecords`.`created_at`, `grabcommodityrecords`.`isgotback`, `grabcommodities`.`isgot`, `grabcommodities`.`picture`, `grabcommodities`.`title`, `grabcommodities`.`version`, `grabcommodities`.`date`, `grabcommodities`.`needed`, `grabcommodities`.`end_at`, `grabcommodities`.`islotteried`, `grabcommodities`.`winnernumber`, `users`.`nickname`, `users`.`phone`, `users`.`thumb`, 1 AS `tbk` FROM `grabcommodityrecords` INNER JOIN `grabcommodities` ON grabcommodityrecords.grabcommodityid = grabcommodities.id and winnerrecordid = grabcommodityrecords.');
-		
 		$query = (new \yii\db\Query ())
-		->select('grabcommodityrecords.id as flag, grabcommodityrecords.*,grabcommodities.isgot,grabcommodities.picture,grabcommodities.title,grabcommodities.version,grabcommodities.date,grabcommodities.winnernumber,grabcommodities.end_at,grabcommodities.islotteried,users.phone,users.nickname,users.thumb')
+		->select('grabcommodityrecords.id as flag, grabcommodityrecords.*,grabcommodities.isgot,grabcommodities.picture,grabcommodities.title,grabcommodities.id as version,grabcommodities.date,grabcommodities.winnernumber,grabcommodities.end_at,grabcommodities.islotteried,users.phone,users.nickname,users.thumb')
 		->from('grabcommodityrecords')
-		->orderBy('grabcommodityrecords.created_at desc')
 		->join('INNER JOIN','grabcommodities','grabcommodityrecords.grabcommodityid = grabcommodities.id and winnerrecordid = grabcommodityrecords.id')
-		->join('INNER JOIN','users','grabcommodityrecords.userid = users.id');
+		->join('INNER JOIN','users','grabcommodityrecords.userid = users.id')
+		->orderBy('grabcommodities.end_at desc');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);

@@ -88,7 +88,7 @@ class GrabcommoditiesController extends Controller
 	}
 	public function actionGetthree(){
 		$data=Yii::$app->request->post();
-		return  (new \yii\db\Query ())->orderBy('date desc')->select('id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->from('grabcommodities')->where('grabcommodities.islotteried = 0 and end_at = 0 and foruser = 0')->limit(3)->all();
+		return  (new \yii\db\Query ())->orderBy('date desc')->select('id,picture,kind,title,id as version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->from('grabcommodities')->where('grabcommodities.islotteried = 0 and end_at = 0 and foruser = 0')->limit(3)->all();
 	
 	}
 	public function actionSearch()
@@ -97,7 +97,7 @@ class GrabcommoditiesController extends Controller
 		//$query = Grabcommodities::find()->where(['islotteried'=>0]);
 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('grabcommodities.id,picture,kind,title,version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->orderBy ( "grabcommodities.date desc" )->from('grabcommodities');
+		$query = (new \yii\db\Query ())->select('grabcommodities.id,picture,kind,title,grabcommodities.id as version,needed,remain,created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser')->orderBy ( "grabcommodities.date desc" )->from('grabcommodities');
 		$dataProvider = new ActiveDataProvider([
 			'query' => $query,
 			'pagination' => [
@@ -111,7 +111,7 @@ class GrabcommoditiesController extends Controller
 				$query->where('grabcommodities.islotteried = 0 and end_at != 0 and foruser = 0');
 			}else if($data['type']==2){
 				//$query->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0')->orderBy ( "grabcommodities.end_at desc" );
-				$query->select('grabcommodities.id,picture,kind,title,version,needed,remain,grabcommodities.created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser,users.phone,users.thumb,users.nickname,grabcommodityrecords.count')
+				$query->select('grabcommodities.id,picture,kind,title,grabcommodities.id as version,needed,remain,grabcommodities.created_at,date,end_at,islotteried,winneruserid,winnerrecordid,winnernumber,foruser,users.phone,users.thumb,users.nickname,grabcommodityrecords.count')
 				->where('grabcommodities.islotteried = 1 and end_at != 0 and foruser = 0')
 				->join('INNER JOIN','users','users.id = grabcommodities.winneruserid')
 				->join('INNER JOIN','grabcommodityrecords','grabcommodityrecords.id = grabcommodities.winnerrecordid')
@@ -160,7 +160,7 @@ class GrabcommoditiesController extends Controller
 					'msg' => 'no enough arg!'
 			);
 		}
-		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcommodities.*,users.phone,users.thumb,users.nickname,grabcommodityrecords.numbers,grabcommodityrecords.count')->from('grabcommodities')->join('LEFT JOIN', 'grabcommodityrecords','grabcommodities.winnerrecordid = grabcommodityrecords.id')->leftJoin('users','grabcommodities.winneruserid=users.id')->where(['kind'=>$data['kind'],'foruser'=>0]);
+		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcommodities.*,grabcommodities.id as version,users.phone,users.thumb,users.nickname,grabcommodityrecords.numbers,grabcommodityrecords.count')->from('grabcommodities')->join('LEFT JOIN', 'grabcommodityrecords','grabcommodities.winnerrecordid = grabcommodityrecords.id')->leftJoin('users','grabcommodities.winneruserid=users.id')->where(['kind'=>$data['kind']]);
 		
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
@@ -176,7 +176,7 @@ class GrabcommoditiesController extends Controller
 					'msg' => 'no enough arg!'
 			);
 		}
-		$grabcommodity = (new \yii\db\Query ())->select('grabcommodities.*')->from('grabcommodities')->where(['id'=>$data['grabcommodityid']])->one();
+		$grabcommodity = (new \yii\db\Query ())->select('grabcommodities.*,grabcommodities.id as version')->from('grabcommodities')->where(['id'=>$data['grabcommodityid']])->one();
 		if(!$grabcommodity){
 			return 	array (
 					'flag' => 0,

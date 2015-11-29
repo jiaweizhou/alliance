@@ -34,7 +34,7 @@ class GrabcornrecordsController extends Controller
 		
 		
 		$query = (new \yii\db\Query ())
-		->select('grabcornrecords.*,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,g2.count as winnercount,users.nickname,users.phone,users.thumb')
+		->select('grabcornrecords.*,grabcorns.picture,grabcorns.title,grabcorns.id as version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,g2.count as winnercount,users.nickname,users.phone,users.thumb')
 		->from('grabcornrecords')
 		->orderBy('grabcornrecords.created_at desc')
 		->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')
@@ -67,7 +67,7 @@ class GrabcornrecordsController extends Controller
 	{
 		$data=Yii::$app->request->post();
 		$query = (new \yii\db\Query ())
-		->select('grabcorns.id as flag, grabcornrecords.*,grabcorns.isgot,grabcorns.picture,grabcorns.title,grabcorns.version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,users.nickname,users.phone,users.thumb')
+		->select('grabcorns.id as flag, grabcornrecords.*,grabcorns.isgot,grabcorns.picture,grabcorns.title,grabcorns.id as version,grabcorns.date,grabcorns.needed,grabcorns.end_at,grabcorns.islotteried,grabcorns.winnernumber,users.nickname,users.phone,users.thumb')
 		->from('grabcornrecords')
 		->orderBy('grabcornrecords.created_at desc')
 		->join('INNER JOIN','grabcorns','grabcornrecords.grabcornid = grabcorns.id')

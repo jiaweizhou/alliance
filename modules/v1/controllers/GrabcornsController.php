@@ -69,7 +69,7 @@ class GrabcornsController extends Controller
 	}
 	public function actionGetthree(){
 		$data=Yii::$app->request->post();
-		return  (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns')->where('grabcorns.islotteried = 0 and end_at = 0 and foruser = 0')->limit(3)->all();
+		return  (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*,grabcorns.id as version')->from('grabcorns')->where('grabcorns.islotteried = 0 and end_at = 0 and foruser = 0')->limit(3)->all();
 
 	}
 	public function actionFormeractivities(){
@@ -80,7 +80,7 @@ class GrabcornsController extends Controller
 					'msg' => 'no enough arg!'
 			);
 		}
-		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*,users.phone,users.nickname,users.thumb,grabcornrecords.numbers,grabcornrecords.count')->from('grabcorns')->join('LEFT JOIN', 'grabcornrecords','grabcorns.winnerrecordid = grabcornrecords.id')->leftJoin('users','grabcorns.winneruserid=users.id')->where(['kind'=>$data['kind'],'foruser'=>0]);
+		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*,grabcorns.id as version,users.phone,users.nickname,users.thumb,grabcornrecords.numbers,grabcornrecords.count')->from('grabcorns')->join('LEFT JOIN', 'grabcornrecords','grabcorns.winnerrecordid = grabcornrecords.id')->leftJoin('users','grabcorns.winneruserid=users.id')->where(['kind'=>$data['kind']]);
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
@@ -92,7 +92,7 @@ class GrabcornsController extends Controller
 		//$query = Grabcorns::find()->where(['islotteried'=>0]);
 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns');
+		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*,grabcorns.id as version')->from('grabcorns');
 				$dataProvider = new ActiveDataProvider([
 						'query' => $query,
 				]);
@@ -152,7 +152,7 @@ class GrabcornsController extends Controller
 					'msg' => 'no enough arg!'
 			);
 		}
-		$grabcorn = (new \yii\db\Query ())->select('grabcorns.*')->offset ( 0 )->limit(20)->from('grabcorns')->where(['id'=>$data['grabcornid']])->one();
+		$grabcorn = (new \yii\db\Query ())->select('grabcorns.*,grabcorns.id as version')->offset ( 0 )->limit(20)->from('grabcorns')->where(['id'=>$data['grabcornid']])->one();
 		if(!$grabcorn){
 			return 	array (
 					'flag' => 0,
