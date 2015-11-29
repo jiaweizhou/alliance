@@ -185,11 +185,24 @@ class UsersController extends Controller {
 		}
 
 	}
-	
+	public function actionView(){
+		$data = Yii::$app->request->post ();
+		$model=Users::findone(['phone'=>$data['phone']]);
+		return $model;
+	}
 	public function actionModify() {
 		
 		$data = Yii::$app->request->post ();
 		//$data=Yii::$app->request->post();
+		unset($data['corns']);
+		unset($data['cornsforgrab']);
+		unset($data['money']);
+		unset($data['fatherid']);
+		unset($data['directalliancecount']);
+		unset($data['allalliancecount']);
+		unset($data['isdraw']);
+		unset($data['pwd']);
+		
 		if(empty($data['phone'])){
 			return 	array (
 					'flag' => 0,
