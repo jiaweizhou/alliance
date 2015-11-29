@@ -160,7 +160,14 @@ class GrabcommoditiesController extends Controller
 					'msg' => 'no enough arg!'
 			);
 		}
-		$query = (new \yii\db\Query ())->orderBy('date desc')->select('grabcommodities.*,grabcommodities.id as version,users.phone,users.thumb,users.nickname,grabcommodityrecords.numbers,grabcommodityrecords.count')->from('grabcommodities')->join('LEFT JOIN', 'grabcommodityrecords','grabcommodities.winnerrecordid = grabcommodityrecords.id')->leftJoin('users','grabcommodities.winneruserid=users.id')->where(['kind'=>$data['kind']]);
+		$query = (new \yii\db\Query ())->orderBy('date desc')
+		->select('grabcommodities.*,grabcommodities.id as version,users.phone,users.thumb,users.nickname,grabcommodityrecords.numbers,grabcommodityrecords.count')
+		->from('grabcommodities')
+		->join('LEFT JOIN', 'grabcommodityrecords','grabcommodities.winnerrecordid = grabcommodityrecords.id')
+		->leftJoin('users','grabcommodities.winneruserid=users.id')
+		->orderBy('end_at desc')
+		->orderBy('islotteried')
+		->where('(islotteried!=0 or end_at=0) and kind = :kind',[':kind'=>$data['kind'],]);
 		
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
