@@ -98,7 +98,10 @@ class UsersController extends Controller {
 		);
 		$context = stream_context_create($opts);
 		$result = file_get_contents($urlf, false, $context);
-		return $result;
+		return array (
+					'flag' => 1,
+					'msg' => 'ok!'
+			);
 	}
 	
 	
@@ -131,7 +134,10 @@ class UsersController extends Controller {
 		);
 		$context = stream_context_create($opts);
 		$result = file_get_contents($urlf, false, $context);
-		return $result;
+		return array (
+					'flag' => 1,
+					'msg' => 'ok!'
+			);
 	}
 	public function actionSignup() {
 		$model = new Users ();
