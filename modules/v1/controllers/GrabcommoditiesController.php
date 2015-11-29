@@ -192,9 +192,14 @@ class GrabcommoditiesController extends Controller
 				'users.phone',
 				'users.nickname',
 				'users.thumb'
-		] )->from ( 'grabcommodityrecords' )->orderBy('grabcommodityrecords.created_at desc')->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and grabcommodityrecords.grabcommodityid = :id', [
+		] )
+		->from ( 'grabcommodityrecords' )
+		->orderBy('grabcommodityrecords.created_at desc')
+		->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and grabcommodityrecords.grabcommodityid = :id', [
 				':id' => $grabcommodity['id']
-		] )->all ();
+		] )
+		->limit(5)
+		->all ();
 		$myrecords = (new \yii\db\Query ())->select ( [
 				'grabcommodityrecords.*',
 				'users.phone',
@@ -227,6 +232,9 @@ class GrabcommoditiesController extends Controller
 		// = (new \yii\db\Query ())->orderBy('date desc')->select('grabcorns.*')->from('grabcorns');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
+				'pagination'=>[
+						'pagesize' => '5',
+				]
 		]);
 		return $dataProvider;
 	}
