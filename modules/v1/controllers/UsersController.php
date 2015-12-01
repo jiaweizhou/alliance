@@ -8,6 +8,7 @@ use Qiniu\Auth;
 use app\modules\v1\models\Easeapi;
 use app\modules\v1\models\Text;
 use yii\rest\Serializer;
+use app\modules\v1\models\Addresses;
 class UsersController extends Controller {
 	public $modelClass = 'app\modules\v1\models\Users';
 	public $serializer = [
@@ -20,7 +21,65 @@ class UsersController extends Controller {
 		$user=Users::find()->where(['phone'=>$data['phone']])->one();
 		return $user;
 	}
+	public function actionListaddresses(){
+		$data = Yii::$app->request->post();
+		if(empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$addresses = Addresses::find()->join('INNER JOIN', 'users','addresses.userid = users.id and users.phone = :phone',[':phone'=>$data['phone']])->orderBy('isdefault desc,created_at desc')->all();
+		return $addresses;
+	}
 	
+	public function actionSetdefaultaddress(){
+		$data = Yii::$app->request->post();
+		if(!(isset($data['phone'])&&isset($data['addressid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		
+		Addresses::UpdateAll(['isdefault' => 0],['userid'=>$user->id]);
+		
+	}
+	
+	public function actionCreateaddress(){
+		$data = Yii::$app->request->post();
+		if(!(isset($data['phone'])&&isset($data['address'])&&isset($data['name'])&&isset($data['aphone'])&&isset($data['postcode'])&&isset($data['isdefault']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		
+		$address = new Addresses();
+		$address['userid'] = $user->id;
+		$address['address'] = $data['address'];
+		$address['name'] = $data['name'];
+		$address['aphone']=$data['aphone'];
+		$address['postcode']= $data['postcode'];
+		$address['isdefault'] = $data['isdefault'];
+		$address['created_at'] = time();
+		if($address->save()){
+			return array(
+					'flag'=>1,
+					'msg'=>'ok',
+			);
+		}else{
+			return array(
+					'flag'=>0,
+					'err'=>$address->errors,
+					'msg'=>'not ok',
+			);
+		}
+		//addresses:= Addresses::find()->join('INNER JOIN', 'users','addresses.userid = users.id and users.phone = :phone',[':phone'=>$data['phone']]);
+
+	}
 	public function actionAllmoney(){
 		$data = Yii::$app->request->post();
 		if(empty($data['phone'])){
