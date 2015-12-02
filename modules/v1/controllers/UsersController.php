@@ -47,6 +47,31 @@ class UsersController extends Controller {
 		
 	}
 	
+	public function actionDeleteaddress(){
+		$data = Yii::$app->request->post();
+		if(!(isset($data['phone'])&&isset($data['addressid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+	
+		if(Addresses::deleteAll(['userid'=>$user->id,'id'=>$data['addressid']])){
+			return array(
+					'flag'=>1,
+					'msg'=>'ok',
+			);
+		}else{
+			return array(
+					'flag'=>0,
+					//'err'=>$address->errors,
+					'msg'=>'not ok',
+			);
+		}
+	
+	}
+	
 	public function actionCreateaddress(){
 		$data = Yii::$app->request->post();
 		if(!(isset($data['phone'])&&isset($data['address'])&&isset($data['name'])&&isset($data['aphone'])&&isset($data['postcode'])&&isset($data['isdefault']))){
@@ -66,6 +91,8 @@ class UsersController extends Controller {
 		$address['isdefault'] = $data['isdefault'];
 		$address['created_at'] = time();
 		if($address->save()){
+			if($data['isdefault'])
+				Addresses::UpdateAll(['isdefault' => 0],'userid = :userid and id != :id',[':userid'=>$user->id,':id'=>$address->id]);
 			return array(
 					'flag'=>1,
 					'msg'=>'ok',
@@ -80,6 +107,9 @@ class UsersController extends Controller {
 		//addresses:= Addresses::find()->join('INNER JOIN', 'users','addresses.userid = users.id and users.phone = :phone',[':phone'=>$data['phone']]);
 
 	}
+	
+	
+	
 	public function actionAllmoney(){
 		$data = Yii::$app->request->post();
 		if(empty($data['phone'])){
@@ -182,7 +212,7 @@ class UsersController extends Controller {
 		$model->save();
 		//return $model->errors;
 		//$user = User::findOne(['phone'=>$data['phone']]);
-		$urlf="http://106.ihuyi.cn/webservice/sms.php?method=Submit&account=cf_shhy&password=rjBE4e&mobile=".$data['phone']."&content=".rawurlencode("您的新密码是：".$random."。请及时登录并修改密码。");
+		$urlf="http://106.ihuyi.cn/webservice/sms.php?method=Submit&account=cf_shhy&password=rjBE4e&mobile=".$data['phone']."&content=".rawurlencode("您的验证码是：".$random."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！");
 		$opts = array('http' =>
 				array(
 						'method'  => 'POST',

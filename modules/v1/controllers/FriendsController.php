@@ -15,6 +15,29 @@ class FriendsController extends Controller
 	'class' => 'yii\rest\Serializer',
 	'collectionEnvelope' => 'items'
 			];
+	public function actionList(){
+		$data = Yii::$app->request->post ();
+		if(!(isset($data['phone']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		//echo $user;
+		$f = (new \yii\db\Query ())
+		->select('users.id as huanxinid,users.phone,users.thumb,users.nickname')
+		->from('users')
+		->join('INNER JOIN','friends f1','f1.friendid = users.id and f1.myid = :id ',[':id'=>$user->id])
+		->join('INNER JOIN','friends f2','f2.myid = users.id and f2.friendid = :id ',[':id'=>$user->id])
+		->all();
+
+		return $f;
+		//var_dump($f1);
+		//array_intersect($f2, $f2);
+		//var_dump(array_intersect($f1, $f2)) ;
+		//$user = Friends::findAll(['phone'=>$data['phone']]);
+	}
     public function actionApprove(){
     	$data = Yii::$app->request->post ();
     	//var_dump($data);
@@ -85,7 +108,7 @@ class FriendsController extends Controller
     		
     		if(!Friends::findAll(['myid'=>$u1['id'],'friendid'=>$u2['id']]) && !Friends::findAll(['myid'=>$u2['id'],'friendid'=>$u1['id']])){
     			return array (
-    					'flag' => 1,
+    					'flag' => 0,
     					'msg' => 'is already not friend!'
     			);
     		}
