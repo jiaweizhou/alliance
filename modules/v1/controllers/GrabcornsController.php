@@ -173,6 +173,7 @@ class GrabcornsController extends Controller
 					'grabcornrecords.count',
 					'grabcornrecords.id',
 					'grabcornrecords.created_at',
+					'grabcornrecords.type',
 					'users.phone',
 					'users.nickname',
 					'users.thumb'
