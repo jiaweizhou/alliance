@@ -38,6 +38,27 @@ class FriendsController extends Controller
 		//var_dump(array_intersect($f1, $f2)) ;
 		//$user = Friends::findAll(['phone'=>$data['phone']]);
 	}
+	public function actionGetinfobyarray(){
+		$data = Yii::$app->request->post ();
+		if(!(isset($data['huanxinids']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		
+		//var_dump(join($data['huanxinids'], ','));
+		
+		$f = (new \yii\db\Query ())
+		->select('users.id as huanxinid,users.phone,users.thumb,users.nickname')
+		->from('users')
+		->where('id in ('.join($data['huanxinids'], ',').')')
+		//->andFilterWhere(['in','id','('.join($data['huanxinids'], ',').')'])
+		->all();
+		return $f;
+		
+		
+	}
     public function actionApprove(){
     	$data = Yii::$app->request->post ();
     	//var_dump($data);
