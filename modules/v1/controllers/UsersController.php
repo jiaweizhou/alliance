@@ -108,7 +108,42 @@ class UsersController extends Controller {
 
 	}
 	
-	
+	public function actionModifyaddress(){
+		$data = Yii::$app->request->post();
+		if(!(isset($data['phone'])&&isset($data['addressid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		$address = Addresses::findOne(['id'=>$data['addressid']]);
+		unset($data['phone']);
+		unset($data['addressid']);
+		if($address['userid']!= $user['id']){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'not your address!'
+			);
+		}
+		foreach ($data as $item=>$arg ){
+			$address->$item = $arg;
+		}
+		
+        if ($address->save()) {
+            return 	array (
+        			'flag' => 1,
+        			'msg' => 'update address success!'
+        	);
+        } else {
+            return  array (
+    				'flag' => 0,
+    				'msg' => 'update address fail!'
+    		);
+        }
+		
+		
+	}
 	
 	public function actionAllmoney(){
 		$data = Yii::$app->request->post();

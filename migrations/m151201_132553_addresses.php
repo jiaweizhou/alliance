@@ -15,7 +15,7 @@ class m151201_132553_addresses extends Migration
     			'name' => Schema::TYPE_STRING . ' NOT NULL',
     			'aphone' => Schema::TYPE_STRING . ' NOT NULL',
     			'postcode' => Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
-    			'isdefault' => Schema::TYPE_INTEGER . 'NOT NULL DEFAULT 0',
+    			'isdefault' => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
     			'created_at' =>Schema::TYPE_BIGINT . ' NOT NULL',
     			],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
     	$this->addForeignKey('addresuserid', 'addresses', 'userid', 'users', 'id','CASCADE','CASCADE');
