@@ -22,12 +22,12 @@ class m151027_134709_users extends Migration
     			'cornsforgrab' => Schema::TYPE_BIGINT . ' DEFAULT 0',
     			
     			'alliancerewards'=>Schema::TYPE_BIGINT . ' DEFAULT 0',
-    			'nickname' => Schema::TYPE_STRING . '(20) ',
-    			'thumb' => Schema::TYPE_STRING. ' DEFAULT "" ',
-    			'gender' => Schema::TYPE_INTEGER. ' DEFAULT 0 ',
-    			'area' => Schema::TYPE_STRING. ' DEFAULT "" ',
-    			'job' => Schema::TYPE_STRING. ' DEFAULT "" ',
-    			'hobby' => Schema::TYPE_STRING. ' DEFAULT "" ',
+    			'nickname' => Schema::TYPE_STRING . '(20) NOT NULL',
+    			'thumb' => Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
+    			'gender' => Schema::TYPE_INTEGER. ' NOT NULL DEFAULT 0 ',
+    			'area' => Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
+    			'job' => Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
+    			'hobby' => Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
     			'signature' => Schema::TYPE_STRING . ' DEFAULT "" ',
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
     			'updated_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
@@ -35,8 +35,11 @@ class m151027_134709_users extends Migration
     			'friendcount' =>Schema::TYPE_INTEGER . ' DEFAULT 0',
     			'concerncount' =>Schema::TYPE_INTEGER . ' DEFAULT 0',
     			'isdraw' =>Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-    			'channel'=> Schema::TYPE_STRING . ' DEFAULT "" ',
-    			'platform' => Schema::TYPE_STRING . ' DEFAULT "" ',
+    			'channel'=> Schema::TYPE_STRING . ' NOT NULL DEFAULT "" ',
+    			'platform' => Schema::TYPE_STRING . ' NOT NULL DEFAULT "" ',
+    			
+    			'status'=>Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+    			
     			],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
     	//$this->createIndex('user', 'user', 'user',true);
     	$this->createIndex('phone', 'users', 'phone',true);
@@ -46,7 +49,7 @@ class m151027_134709_users extends Migration
     {
         echo "m151027_134709_users cannot be reverted.\n";
         $this->dropTable('users');
-        return false;
+        return true;
     }
     
     /*

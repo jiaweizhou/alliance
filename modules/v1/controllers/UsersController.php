@@ -2,6 +2,7 @@
 namespace app\modules\v1\controllers;
 
 use Yii;
+use Exception;
 use app\modules\v1\models\Users;
 use yii\rest\Controller;
 use Qiniu\Auth;
@@ -9,6 +10,9 @@ use app\modules\v1\models\Easeapi;
 use app\modules\v1\models\Text;
 use yii\rest\Serializer;
 use app\modules\v1\models\Addresses;
+use app\modules\v1\models\Realauth;
+use function Qiniu\json_decode;
+use app\modules\v1\models\app\modules\v1\models;
 class UsersController extends Controller {
 	public $modelClass = 'app\modules\v1\models\Users';
 	public $serializer = [
@@ -21,6 +25,54 @@ class UsersController extends Controller {
 		$user=Users::find()->where(['phone'=>$data['phone']])->one();
 		return $user;
 	}
+	
+	public function actionRealauth(){
+		$data = Yii::$app->request->post();
+		if(empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		if(!$user){
+			return array (
+					'flag' => 0,
+					'msg' => 'no user with phone this!'
+			);
+		}
+		$model = new Realauth();
+		$model['userid'] = $user['id'];
+		$model['realname'] = $data['realname'];
+		$model['idcard'] = $data['idcard'];
+		$model['picture'] = $data['picture'];
+		$model['created_at'] = time();
+		try{
+			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
+				$model->save();
+				if($user['status']!=0)
+					throw new Exception("status is not 0");
+				else {
+					$user['status']=1;
+					$user->save();
+				}
+			});
+		} catch (\Exception $e) {
+			return array (
+					'flag' => 0,
+					'error'=>$e,
+					'msg' => 'checkauth false!'
+			);
+		}
+		return array (
+				'flag' => 1,
+				'msg' => 'checkauth ok!'
+		);
+
+	}
+	
+	
 	public function actionListaddresses(){
 		$data = Yii::$app->request->post();
 		if(empty($data['phone'])){
@@ -265,24 +317,33 @@ class UsersController extends Controller {
 	}
 	public function actionSignup() {
 		$model = new Users ();
+		//$t=Yii::$app->request->params;
+		$t=Yii::$app->request->getQueryParams();
 		$data = Yii::$app->request->post ();
+		//return $t;
 		if(empty($data['phone'])||empty($data['pwd'])){
 			return 	array (
 					'flag' => 0,
 					'msg' => 'no enough arg!'
 			);
 		}
-		$model->pwd = md5 ( $data ['pwd'] );
-		$model->phone = $data ['phone'];
+		
 		$userinfo = Users::findOne ( [
 				'phone' => $data ['phone']
 		] );
 		if ($userinfo){
 			return array (
-			'flag' => 0,
-			'msg' => 'already Signup!'
+					'flag' => 0,
+					'msg' => 'already Signup!'
 			) ;
+				
 		}
+		
+		
+		$model->pwd = md5 ( $data ['pwd'] );
+		$model->phone = $data ['phone'];
+		$model->alliancerewards = 30;
+		
 		$model->created_at = time ();
 		if($model->save ()){
 			$easeclient=new Easeapi('YXA6halokJDEEeWMRgvYONLZPQ','YXA6pswnZbss8mj351XE3oxuRYm6cek','13022660999','allpeopleleague','file');
@@ -295,6 +356,15 @@ class UsersController extends Controller {
 					'msg' => 'Signup fail!'
 				) ;
 			}else{
+				
+				if($t){
+					if(!$this->setfather($model, $t))
+						return array (
+								'flag' => 0,
+								'msg' => 'Modify fail!'
+						);
+				}
+				
 				return  array (
 						'flag' => 1,
 						'msg' => 'Signup success!'
@@ -309,11 +379,41 @@ class UsersController extends Controller {
 		}
 
 	}
+	public function actionGetsignupurl(){
+		$data = Yii::$app->request->post ();
+		$model=Users::findone(['phone'=>$data['phone']]);
+// 		$encode = Users::encrypt(json_encode(array('id'=>$model['id'],'time'=>time())),'E','asdfsgf');
+// 		$decode = Users::encrypt($encode,'D','asdfsgf');
+// 		return array(
+// 				'e'=>$encode,
+// 				'd'=>$decode,
+// 		);
+		return Yii::$app->request->getHostInfo().'/v1/users/signup?fatherid='.Users::encrypt(json_encode(array('id'=>$model['id'],'time'=>time())),'E','asdfsgf');
+	}
 	public function actionView(){
 		$data = Yii::$app->request->post ();
 		$model=Users::findone(['phone'=>$data['phone']]);
 		return $model;
 	}
+	
+	public function actionChangepwd(){
+		$data = Yii::$app->request->post ();
+		$model=Users::findone(['phone'=>$data['phone']]);
+		
+		$model['pwd'] = md5($data['pwd']);
+		if ($model->save()) {
+			return array (
+					'flag' => 1,
+					'msg' => 'Modify success!'
+			);
+		} else {
+			return  array (
+					'flag' => 0,
+					'msg' => 'Modify fail!'
+			);
+		}
+	}
+	
 	public function actionModify() {
 		
 		$data = Yii::$app->request->post ();
@@ -348,7 +448,7 @@ class UsersController extends Controller {
 			return  array (
 					'flag' => 0,
 					'msg' => 'Modify fail!'
-			) ;
+			);
 		}
 	}
 	public function actionLogin() {
@@ -359,14 +459,16 @@ class UsersController extends Controller {
 					'msg' => 'no enough arg!'
 			);
 		}
-		$model=new Users();
-		$info=$model->findOne(['phone'=>$data['phone'],'pwd'=>md5($data['pwd'])]);
+		//$model=new Users();
+		$info=Users::findOne(['phone'=>$data['phone'],'pwd'=>md5($data['pwd'])]);
 		if($info){
-			echo json_encode ( array (
-					'flag' => 1,
-					'username'=>$info->id,
-					'msg' => 'Login success!'
-			) );
+			$r=$info->toArray();
+			unset($r['pwd']);
+			//unset($r['pwd'])
+			$r['huanxinid'] = $r['id'];
+			$r['flag'] =1;
+			
+			echo json_encode ($r);
 		}else{
 			echo json_encode ( array (
 					'flag' => 0,
@@ -394,21 +496,17 @@ class UsersController extends Controller {
 		}
 	}
 	
-	public function actionSetfather(){
-		$data = Yii::$app->request->post ();
-		$user=Users::findOne(['phone'=>$data['phone']]);
-		if ($user){
-			if($user->fatherid!=''){
-				return array('flag'=>0,'msg'=> 'father has been setted');
-			}
-			if($user->setFather($data['fatherphone'])){
-				return array('flag'=>1,'msg'=> 'update father success');
+	public function setfather(&$user,$data){
+		//$data = Yii::$app->request->post ();
+			$info = json_decode(Users::encrypt($data['fatherid'],'D','asdfsgf'),true);
+			//var_dump($info);
+			if($user->setFather($info['id'])){
+				$user->save();
+				return 1;
 			}else{
-				return array('flag'=>0,'msg'=> 'update father fail');
+				return 0;
 			}
-		}else{
-			return array('flag'=>0,'msg'=> 'can not find the user');
-		}
+
 	
 	}
 	public function actionSetchannel(){
@@ -435,4 +533,5 @@ class UsersController extends Controller {
 				'token'=>$token
 		));
 	}
+	
 }

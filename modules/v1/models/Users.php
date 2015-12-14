@@ -34,6 +34,7 @@ use Yii;
  * @property integer $friendcount
  * @property integer $concerncount
  * @property Usertocards[] $usertocards
+ * @property integer $status
  */
 class Users extends \yii\db\ActiveRecord
 {
@@ -53,7 +54,7 @@ class Users extends \yii\db\ActiveRecord
     {
         return [
             [['phone'], 'required'],
-            [[ 'gender','directalliancecount', 'allalliancecount', 'money','corns','envelope','cornsforgrab', 'alliancerewards', 'created_at', 'updated_at','friendcount','concerncount'], 'integer'],
+            [[ 'gender','directalliancecount', 'allalliancecount', 'money','corns','envelope','cornsforgrab', 'alliancerewards', 'created_at', 'updated_at','friendcount','concerncount','status'], 'integer'],
             [['fatherid','phone', 'pwd', 'authKey', 'thumb', 'area', 'job', 'hobby', 'signature', 'channel', 'platform'], 'string', 'max' => 255],
             [['nickname'], 'string', 'max' => 20],
             [['phone'], 'unique']
@@ -103,26 +104,67 @@ class Users extends \yii\db\ActiveRecord
     		return false;
     	}
     }
-    public function setFather($fatherphone){
+    public function setFather($fid){
+    	
     	//$result=$this->find()->select()->join('INNER JOIN','users u1',['u1.phone'=>$fatherphone])->join('LEFT JOIN','users u2','u3.phone = u1.fatherid')->join('Left JOIN','users u3','u3.phone = u2.fatherid')->one();
+    	$f = Users::findOne(['id'=>$fid]);
+    	
+//     	if($f['status']!=2){
+//     		return true;
+//     	}
+    	
     	$result=(new \yii\db\Query())
     		->select('u1.id as f, u2.id as gf ,u3.id as ggf')
-    		->from('users u1')->where('u1.phone=:id',[':id'=>$fatherphone])->join('LEFT JOIN','users u2','u2.phone = u1.fatherid')
-    		->join('Left JOIN','users u3','u3.phone = u2.fatherid')
+    		->from('users u1')->where('u1.id=:id',[':id'=>$fid])->join('LEFT JOIN','users u2','u2.id = u1.fatherid')
+    		->join('Left JOIN','users u3','u3.id = u2.fatherid')
     		->one();
-    	//var_dump($result);
+//     	var_dump($result);
+//     	return true;
     	if($result){
     		
-    		$this->fatherid = $fatherphone;
-    		//var_dump($this);
-    		$this->save();
-    		//var_dump();
-    		Users::updateAllCounters(['directalliancecount'=>1,'allalliancecount'=>1],['id'=>$result['f']]);
-    		Users::updateAllCounters(['allalliancecount'=>1],['id'=>$result['gf']]);
-    		Users::updateAllCounters(['allalliancecount'=>1],['id'=>$result['ggf']]);
+    		$this->fatherid = strval($fid);
+    		
+    		Users::updateAllCounters(['directalliancecount'=>1,'allalliancecount'=>1,'alliancerewards'=>5],['id'=>$result['f']]);
+    		Users::updateAllCounters(['allalliancecount'=>1,'alliancerewards'=>5],['id'=>$result['gf']]);
+    		Users::updateAllCounters(['allalliancecount'=>1,'alliancerewards'=>5],['id'=>$result['ggf']]);
     		return true;
     	}else{
     		return false;
+    	}
+    }
+    function encrypt($string,$operation,$key=''){
+    	$key=md5($key);
+    	$key_length=strlen($key);
+    	$string=$operation=='D'?base64_decode($string):substr(md5($string.$key),0,8).$string;
+    	$string_length=strlen($string);
+    	$rndkey=$box=array();
+    	$result='';
+    	for($i=0;$i<=255;$i++){
+    		$rndkey[$i]=ord($key[$i%$key_length]);
+    		$box[$i]=$i;
+    	}
+    	for($j=$i=0;$i<256;$i++){
+    		$j=($j+$box[$i]+$rndkey[$i])%256;
+    		$tmp=$box[$i];
+    		$box[$i]=$box[$j];
+    		$box[$j]=$tmp;
+    	}
+    	for($a=$j=$i=0;$i<$string_length;$i++){
+    		$a=($a+1)%256;
+    		$j=($j+$box[$a])%256;
+    		$tmp=$box[$a];
+    		$box[$a]=$box[$j];
+    		$box[$j]=$tmp;
+    		$result.=chr(ord($string[$i])^($box[($box[$a]+$box[$j])%256]));
+    	}
+    	if($operation=='D'){
+    		if(substr($result,0,8)==substr(md5(substr($result,8).$key),0,8)){
+    			return substr($result,8);
+    		}else{
+    			return'';
+    		}
+    	}else{
+    		return str_replace('=','',base64_encode($result));
     	}
     }
     public function getUsertocards()
