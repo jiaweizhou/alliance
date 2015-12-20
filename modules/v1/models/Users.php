@@ -124,9 +124,9 @@ class Users extends \yii\db\ActiveRecord
     		
     		$this->fatherid = strval($fid);
     		
-    		Users::updateAllCounters(['directalliancecount'=>1,'allalliancecount'=>1,'alliancerewards'=>5],['id'=>$result['f']]);
-    		Users::updateAllCounters(['allalliancecount'=>1,'alliancerewards'=>5],['id'=>$result['gf']]);
-    		Users::updateAllCounters(['allalliancecount'=>1,'alliancerewards'=>5],['id'=>$result['ggf']]);
+    		Users::updateAllCounters(['directalliancecount'=>1,'allalliancecount'=>1],['id'=>$result['f']]);
+    		Users::updateAllCounters(['allalliancecount'=>1],['id'=>$result['gf']]);
+    		Users::updateAllCounters(['allalliancecount'=>1],['id'=>$result['ggf']]);
     		return true;
     	}else{
     		return false;
