@@ -28,7 +28,43 @@ class UsersController extends Controller {
 	}
 	public function actionSearch(){
 		$data = Yii::$app->request->post();
+		if(empty($data['search'])||empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$me = Users::findOne(['phone'=>$data['phone']]);
 		
+		$users = (new \yii\db\Query ())
+		->select('id,id as huanxinid,phone,nickname,concerncount,thumb')
+		->from('users')
+		->where(['phone'=>$data['search']])
+		->orFilterWhere(['like','nickname',$data['search']])
+		->all();
+		$t = array();
+		foreach ($users as $user){
+			$t[]=$user['id'];
+		}
+		
+		$friendcounts = (new \yii\db\Query ())
+		->select('myid , count(id) as friendcount')
+		->from('friends')
+		->where('myid in ('.join($t, ',').')')
+		->groupBy('myid')
+		->all();
+		$l=array();
+		foreach ($friendcounts as $friendcount){
+			$l[$friendcount['myid']] = $friendcount['friendcount'];
+		}
+		foreach ($users as $i=>$j){
+			$t=$users[$i]['id'];
+			if(isset($l[$t])){
+				$users[$i]['friendcount'] = $l[$t];
+			}
+			//$f[$i]['friendcount'] = $l[];
+		}
+		return $users;
 	}
 	public function actionRealauth(){
 		$data = Yii::$app->request->post();

@@ -5,26 +5,25 @@ namespace app\modules\v1\models;
 use Yii;
 
 /**
- * This is the model class for table "usertocards".
+ * This is the model class for table "tbothers".
  *
  * @property integer $id
  * @property integer $userid
- * @property string $cardnumber
- * @property string $name
- * @property string $idcard
- * @property string $lphone
- * @property string $location
+ * @property string $title
+ * @property string $content
+ * @property string $pictures
+ * @property integer $created_at
  *
  * @property Users $user
  */
-class Usertocards extends \yii\db\ActiveRecord
+class Tbothers extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'usertocards';
+        return 'tbothers';
     }
 
     /**
@@ -33,9 +32,10 @@ class Usertocards extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userid', 'cardnumber', 'name', 'idcard', 'lphone', 'location'], 'required'],
-            [['userid'], 'integer'],
-            [['cardnumber', 'name', 'idcard', 'lphone', 'location'], 'string', 'max' => 255]
+            [['userid', 'title', 'content', 'created_at'], 'required'],
+            [['userid', 'created_at'], 'integer'],
+            [['title', 'content'], 'string', 'max' => 255],
+            [['pictures'], 'string', 'max' => 2550]
         ];
     }
 
@@ -47,11 +47,10 @@ class Usertocards extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'userid' => 'Userid',
-            'cardnumber' => 'Cardnumber',
-            'name' => 'Name',
-            'idcard' => 'Idcard',
-            'lphone' => 'Lphone',
-            'location' => 'Location',
+            'title' => 'Title',
+            'content' => 'Content',
+            'pictures' => 'Pictures',
+            'created_at' => 'Created At',
         ];
     }
 
