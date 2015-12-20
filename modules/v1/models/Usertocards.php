@@ -10,6 +10,10 @@ use Yii;
  * @property integer $id
  * @property integer $userid
  * @property string $cardnumber
+ * @property string $name
+ * @property string $idcard
+ * @property string $phone
+ * @property string $location
  *
  * @property Users $user
  */
@@ -29,9 +33,9 @@ class Usertocards extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userid', 'cardnumber'], 'required'],
+            [['userid', 'cardnumber', 'name', 'idcard', 'phone', 'location'], 'required'],
             [['userid'], 'integer'],
-            [['cardnumber'], 'string', 'max' => 255]
+            [['cardnumber', 'name', 'idcard', 'phone', 'location'], 'string', 'max' => 255]
         ];
     }
 
@@ -42,8 +46,12 @@ class Usertocards extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'userid' => ' 用户',
-            'cardnumber' => '银行卡号',
+            'userid' => 'Userid',
+            'cardnumber' => 'Cardnumber',
+            'name' => 'Name',
+            'idcard' => 'Idcard',
+            'phone' => 'Phone',
+            'location' => 'Location',
         ];
     }
 

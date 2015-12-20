@@ -26,7 +26,10 @@ class UsersController extends Controller {
 		$user=Users::find()->where(['phone'=>$data['phone']])->one();
 		return $user;
 	}
-	
+	public function actionSearch(){
+		$data = Yii::$app->request->post();
+		
+	}
 	public function actionRealauth(){
 		$data = Yii::$app->request->post();
 		if(empty($data['phone'])){
@@ -47,7 +50,7 @@ class UsersController extends Controller {
 		$model['userid'] = $user['id'];
 		$model['realname'] = $data['realname'];
 		$model['idcard'] = $data['idcard'];
-		$model['picture'] = $data['picture'];
+		$model['picture'] = isset($data['picture'])?$data['picture']:'';
 		$model['created_at'] = time();
 		try{
 			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
