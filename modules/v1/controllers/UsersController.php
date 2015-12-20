@@ -356,6 +356,8 @@ class UsersController extends Controller {
 		if($model->save ()){
 			$easeclient=new Easeapi('YXA6halokJDEEeWMRgvYONLZPQ','YXA6pswnZbss8mj351XE3oxuRYm6cek','13022660999','allpeopleleague','file');
 			$result=json_decode($easeclient->curl('/users',array('username'=>$model->id,'password'=>$data ['pwd'])),true);
+			//var_dump($result);
+			$result = json_decode($result['result'],true);
 			if(isset($result['error'])){
 				$model->delete();
 				return  array (
@@ -411,6 +413,18 @@ class UsersController extends Controller {
 		
 		$model['pwd'] = md5($data['pwd']);
 		if ($model->save()) {
+			$easeclient=new Easeapi('YXA6halokJDEEeWMRgvYONLZPQ','YXA6pswnZbss8mj351XE3oxuRYm6cek','13022660999','allpeopleleague','file');
+			$result=$easeclient->curl('/users/'.$model['id'].'/password',array('newpassword'=>$data ['pwd']),'PUT');
+			$status=$result['status'];
+			$result = json_decode($result['result'],true);
+			if($status!=200){
+				//$model->delete();
+				return  array (
+						'error'=> $result,
+						'flag' => 0,
+						'msg' => 'Signup fail!'
+				) ;
+			}
 			return array (
 					'flag' => 1,
 					'msg' => 'Modify success!'

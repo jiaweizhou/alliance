@@ -82,8 +82,10 @@ class Easeapi {
 		curl_setopt ($curl_session, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt ($curl_session, CURLOPT_CUSTOMREQUEST, $type);
 		$result = curl_exec ($curl_session);
+		$ret['status'] = curl_getinfo($curl_session, CURLINFO_HTTP_CODE); 
+		$ret['result'] = $result;
 		curl_close($curl_session);
-		return $result;
+		return $ret;
 	}
 
 }
