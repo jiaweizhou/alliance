@@ -50,11 +50,31 @@ class FriendsController extends Controller
 		//var_dump(join($data['huanxinids'], ','));
 		
 		$f = (new \yii\db\Query ())
-		->select('users.id as huanxinid,users.phone,users.thumb,users.nickname')
+		->select('users.id as huanxinid,users.phone,users.thumb,users.nickname,users.friendcount,users.concerncount')
 		->from('users')
 		->where('id in ('.join($data['huanxinids'], ',').')')
 		//->andFilterWhere(['in','id','('.join($data['huanxinids'], ',').')'])
 		->all();
+		
+		$friendcounts = (new \yii\db\Query ())
+		->select('myid , count(id) as friendcount')
+		->from('friends')
+		->where('myid in ('.join($data['huanxinids'], ',').')')
+		->groupBy('myid')
+		->all();
+		$l=array();
+		foreach ($friendcounts as $friendcount){
+			$l[$friendcount['myid']] = $friendcount['friendcount'];
+		}
+		foreach ($f as $i=>$t){
+			$t=$f[$i]['huanxinid'];
+			if(isset($l[$t])){
+				$f[$i]['friendcount'] = $l[$t];
+			}
+			//$f[$i]['friendcount'] = $l[];
+		}
+		//return $friendcounts;
+		
 		return $f;
 		
 		
