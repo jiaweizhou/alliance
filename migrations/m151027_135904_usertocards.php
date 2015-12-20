@@ -14,7 +14,7 @@ class m151027_135904_usertocards extends Migration
     			'cardnumber' => Schema::TYPE_STRING . ' NOT NULL',
     			'name'=> Schema::TYPE_STRING . ' NOT NULL',
     			'idcard' => Schema::TYPE_STRING . ' NOT NULL',
-    			'phone' => Schema::TYPE_STRING . ' NOT NULL',
+    			'lphone' => Schema::TYPE_STRING . ' NOT NULL',
     			'location' => Schema::TYPE_STRING . ' NOT NULL'
     			],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
     	$this->createIndex( 'userid','usertocards', 'userid');
