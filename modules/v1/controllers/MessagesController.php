@@ -9,6 +9,7 @@ use app\modules\v1\models\Messages;
 use app\modules\v1\models\Messagetopictures;
 use app\modules\v1\models\Users;
 use app\modules\v1\models\Zans;
+use app\modules\v1\models\Collects;
 //use app\modules\v1\models\Notify;
 use yii\data\ActiveDataProvider;
 use app\modules\v1\models\Replys;
@@ -164,6 +165,72 @@ class MessagesController extends Controller {
 			);
 		}
 	}
+	public function actionCollect(){
+		$data = Yii::$app->request->post ();
+		$user = new Users ();
+		$phone = $user->find ()->select ( 'id' )->where ( [
+				'phone' => $data ['phone']
+		] )->one ();
+		$info = Collects::findOne ( [
+				'userid' => $phone ['id'],
+				'messageid' => $data ['messageid']
+		] );
+		if ($info) {
+			echo json_encode ( array (
+					'flag' => 0,
+					'msg' => 'Already collect!'
+			) );
+		} else {
+			$model = new Collects ();
+				
+			$model->userid = $phone ['id'];
+			$model->messageid = $data ['messageid'];
+			$model->created_at = time();
+			$model->save ();
+			// 			$to=Message::findOne(['id'=>$data['msgid']]);
+			// 			$model2=new Notify();
+			// 			$model2->from=$phone['id'];
+			// 			$model2->to=$to['userid'];
+			// 			$model2->kind='点赞';
+			// 			$model2->created_at=time();
+			// 			$model2->msg_id=$data['msgid'];
+			// 			$model2->save();
+			return  array (
+					'flag' => 1,
+					'msg' => 'Collect success!'
+			);
+		}
+	}
+	public function actionCancelcollect() {
+		$data = Yii::$app->request->post ();
+		$user = new Users ();
+		$phone = $user->find ()->select ( 'id' )->where ( [
+				'phone' => $data ['phone']
+		] )->one ();
+		$info = Collects::findOne ( [
+				'userid' => $phone ['id'],
+				'messageid' => $data ['messageid']
+		] );
+		if ($info) {
+			if($info->delete ()){
+				return array (
+						'flag' => 1,
+						'msg' => 'Cancel success!'
+				);
+			}else{
+				return array (
+						'flag' => 0,
+						'msg' => 'Cancel fail!'
+				);
+			}
+		} else {
+			return array (
+					'flag' => 0,
+					'msg' => 'Already Canceled!'
+			);
+		}
+	}
+	
 	public function actionZan() {
 		$data = Yii::$app->request->post ();
 		$user = new Users ();
