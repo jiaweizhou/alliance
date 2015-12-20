@@ -57,6 +57,7 @@ class UsersController extends Controller {
 				else {
 					$user['status']=1;
 					$user->save();
+					var_dump($user->errors);
 				}
 			});
 		} catch (\Exception $e) {
