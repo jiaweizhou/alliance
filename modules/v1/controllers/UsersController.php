@@ -375,6 +375,7 @@ class UsersController extends Controller {
 				
 				return  array (
 						'flag' => 1,
+						'huanxinid'=>$model['id'],
 						'msg' => 'Signup success!'
 				) ;
 			}
