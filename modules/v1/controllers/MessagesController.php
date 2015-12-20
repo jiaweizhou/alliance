@@ -45,12 +45,14 @@ class MessagesController extends Controller {
 				'users.phone',
 				'users.thumb',
 				'users.nickname',
-				'if(isnull(zans.id),0,1) as iszaned'
+				'if(isnull(zans.id),0,1) as iszaned',
+				'if(isnull(collects.id),0,1) as iscollected'
 			])
 		->from('messages')
 		->join ( 'INNER JOIN', 'users', 'messages.userid =users.id')
 		->join ( 'INNER JOIN', 'friends', ' messages.userid =friends.friendid and friends.myid = :id  or messages.userid = :id',[':id' => $user ['id'] ] )
 		->join('LEFT JOIN','zans','zans.messageid = messages.id and zans.userid = :id',[':id'=>$user['id']])
+		->join('LEFT JOIN','collects','collects.messageid = messages.id and collects.userid = :id',[':id'=>$user['id']])
 		->orderby('messages.created_at desc');
 		$dataProvider=new ActiveDataProvider([
 				'query' => $query,

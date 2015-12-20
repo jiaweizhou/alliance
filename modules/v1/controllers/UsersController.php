@@ -243,7 +243,7 @@ class UsersController extends Controller {
 					'msg'=>'ok',
 			);
 		}else{
-			Text::deleteAll(['phone'=>$data['phone'],'type'=>$type]);
+			//Text::deleteAll(['phone'=>$data['phone'],'type'=>$type]);
 			return array(
 					'flag'=>0,
 					'msg'=>'text not right',
@@ -344,7 +344,7 @@ class UsersController extends Controller {
 				
 		}
 		
-		$r=checktext($data,0);
+		$r=$this->checktext($data,0);
 		if($r['flag']==0)
 			return $r;
 		$model->pwd = md5 ( $data ['pwd'] );
