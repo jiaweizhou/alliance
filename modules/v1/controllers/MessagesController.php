@@ -65,6 +65,7 @@ class MessagesController extends Controller {
 		
 		foreach ( $messages as $i=>$message ) {
 			$info = $message;
+			$info['ismy'] = $info['userid']==$user['id']?1:0;
 			$info ['replys'] = (new \yii\db\Query ())->select ( [
 					'replys.*',
 					'user1.nickname as fromnickname',
