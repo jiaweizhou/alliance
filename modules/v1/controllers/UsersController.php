@@ -11,6 +11,7 @@ use app\modules\v1\models\Text;
 use yii\rest\Serializer;
 use app\modules\v1\models\Addresses;
 use app\modules\v1\models\Realauth;
+use app\modules\v1\models\Usertocards;
 use function Qiniu\json_decode;
 use app\modules\v1\models\app\modules\v1\models;
 class UsersController extends Controller {
@@ -206,7 +207,11 @@ class UsersController extends Controller {
 			);
 		}
 		$user = Users::findOne(['phone'=>$data['phone']]);
+		//$cardcount = ()
+		
+		$cardcount = (new \yii\db\Query ())->select('count(id) as cardcount')->from('usertocards')->where(['userid'=>$user['id']])->one();
 		return array(
+				'cardcount'=> $cardcount['cardcount'],
 				'money'=>$user->money,
 				'corns'=>$user->corns,
 				'cornsforgrab'=>$user->cornsforgrab,

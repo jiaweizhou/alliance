@@ -105,7 +105,7 @@ class TbmessagesController extends Controller {
 				$query = $query->orderBy ( "tbmessages.created_at desc" )->where(['tbmessages.userid'=>$user->id])->join('LEFT JOIN','concerns','tbmessages.userid = concerns.concernid and concerns.myid=:id',[':id'=>$user['id']])->join('LEFT JOIN','tblikes','tblikes.tbmessageid =tbmessages.id and tblikes.userid=:id',[':id'=>$user->id]);
 				break;
 			case 5:
-				$query = $query->orderBy ( "tbmessages.created_at desc" )->where(['tbmessages.userid'=>$user->id])->join('LEFT JOIN','concerns','tbmessages.userid = concerns.concernid and concerns.myid=:id',[':id'=>$user['id']])->join('INNER JOIN','tblikes','tblikes.tbmessageid =tbmessages.id and tblikes.userid=:id',[':id'=>$user->id]);
+				$query = $query->orderBy ( "tbmessages.created_at desc" )->join('LEFT JOIN','concerns','tbmessages.userid = concerns.concernid and concerns.myid=:id',[':id'=>$user['id']])->join('INNER JOIN','tblikes','tblikes.tbmessageid =tbmessages.id and tblikes.userid=:id',[':id'=>$user->id]);
 				break;			
 		}
 // 		$dataProvider = new \yii\data\Pagination ( [ 
