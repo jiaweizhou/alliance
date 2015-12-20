@@ -246,7 +246,7 @@ class UsersController extends Controller {
 			Text::deleteAll(['phone'=>$data['phone'],'type'=>$type]);
 			return array(
 					'flag'=>0,
-					'msg'=>'text not',
+					'msg'=>'text not right',
 			);
 		}
 	}
@@ -326,7 +326,7 @@ class UsersController extends Controller {
 		$t=Yii::$app->request->getQueryParams();
 		$data = Yii::$app->request->post ();
 		//return $t;
-		if(empty($data['phone'])||empty($data['pwd'])){
+		if(empty($data['phone'])||empty($data['pwd'])||empty($data['text'])){
 			return 	array (
 					'flag' => 0,
 					'msg' => 'no enough arg!'
@@ -344,7 +344,9 @@ class UsersController extends Controller {
 				
 		}
 		
-		
+		$r=checktext($data,0);
+		if($r['flag']==0)
+			return $r;
 		$model->pwd = md5 ( $data ['pwd'] );
 		$model->phone = $data ['phone'];
 		$model->alliancerewards = 30;
