@@ -32,6 +32,67 @@ class MessagesController extends Controller {
 		return $actions;
 	}
 
+	public function actionGetmycollect(){
+		$data = Yii::$app->request->post ();
+		$user = Users::findOne ( [
+				'phone' => $data ['phone']
+		] );
+		// $data = Message::find ()->select ( 'msg.id' )->join ( 'INNER JOIN', 'friends', ' msg.userid =friends.friendid and msg.userid = :id ', [':id' => Yii::$app->user->id ]);
+		$query = (new \yii\db\Query ())
+		->distinct()
+		->select ([
+				'messages.*',
+				'users.phone',
+				'users.thumb',
+				'users.nickname',
+				'if(isnull(zans.id),0,1) as iszaned',
+				'if(isnull(collects.id),0,1) as iscollected'
+		])
+		->from('messages')
+		->join ( 'INNER JOIN', 'users', 'messages.userid =users.id')
+		->join ( 'INNER JOIN', 'friends', ' messages.userid =friends.friendid and friends.myid = :id  or messages.userid = :id',[':id' => $user ['id'] ] )
+		->join('LEFT JOIN','zans','zans.messageid = messages.id and zans.userid = :id',[':id'=>$user['id']])
+		->join('INNER JOIN','collects','collects.messageid = messages.id and collects.userid = :id',[':id'=>$user['id']])
+		->orderby('collects.created_at desc');
+		$dataProvider=new ActiveDataProvider([
+				'query' => $query,
+		]);
+		$messages = $dataProvider->getModels();
+		$result = array ();
+		$result ['item'] = array ();
+		
+		//$tbreplys = (new \yii\db\Query ())->select('tbreplys.*,users.phone,users.nickname,users.thumb')->orderBy ( "tbreplys.created_at desc" )->join ( 'INNER JOIN', 'users', ' tbmessages.userid =users.id ')->where('tbreplys.messageid in ');
+		
+		foreach ( $messages as $i=>$message ) {
+			$info = $message;
+			$info['ismy'] = $info['userid']==$user['id']?1:0;
+			$info ['replys'] = (new \yii\db\Query ())->select ( [
+					'replys.*',
+					'user1.nickname as fromnickname',
+					'user1.phone as fromphone',
+					'user1.thumb as fromthumb',
+					'user2.nickname as tonickname',
+					'user2.phone as tophone' ,
+					'user2.thumb as tothumb',
+			] )->from ( 'replys' )->join ( 'INNER JOIN', 'users user1', 'user1.id = replys.fromid and replys.messageid = :id', [
+					':id' => $message ['id']
+			] )->join ( 'Left JOIN', 'users user2', 'user2.id = replys.toid' )->orderBy ( "replys.created_at" )->limit(20)->all ();
+		
+			$info['zans']=(new \yii\db\Query())
+			->select('u.phone,u.nickname')->from('zans z')
+			->join('INNER JOIN','users u','u.id=z.userid and z.messageid=:id',[':id'=>$message ['id'] ])
+			->orderBy('z.created_at desc')
+			->limit(10)
+			->all();
+				
+			$messages[$i] = $info;
+				
+		}
+		$dataProvider->setModels($messages);
+		
+		return $dataProvider;
+		// return $model;
+	}
 	public function actionGet() {
 		$data = Yii::$app->request->post ();
 		$user = Users::findOne ( [ 
