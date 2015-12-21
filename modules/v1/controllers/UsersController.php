@@ -137,7 +137,18 @@ class UsersController extends Controller {
 		$user = Users::findOne(['phone'=>$data['phone']]);
 		
 		Addresses::UpdateAll(['isdefault' => 0],['userid'=>$user->id]);
-		
+		$result=Addresses::updateAll(['isdefault'=>1],['id'=>$data['addressid']]);
+		if($result){
+			return array(
+					'flag'=>1,
+					'msg'=>'ok'
+			);
+		}else{
+			return array(
+					'flag'=>0,
+					'msg'=>'false'
+			);
+		}
 	}
 	
 	public function actionDeleteaddress(){
