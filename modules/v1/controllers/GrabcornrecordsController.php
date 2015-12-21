@@ -27,7 +27,22 @@ class GrabcornrecordsController extends Controller
      * Lists all Applyjobs models.
      * @return mixed
      */
-
+	public function actionViewallnumbers(){
+		$data=Yii::$app->request->post();
+		$numbers = Grabcornrecords::findOne(['id'=>$data['grabcornrecordid']]);
+		if($numbers){
+			return array(
+					'flag'=>1,
+					'numbers'=>$numbers['numbers'],
+					'msg'=>'success'
+			);
+		}else{
+			return array(
+					'flag'=>0,
+					'msg'=>'fail'
+			);
+		}
+	}
 	public function actionList()
 	{ 
 		$data=Yii::$app->request->post();
