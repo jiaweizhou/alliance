@@ -445,7 +445,42 @@ class UsersController extends Controller {
 		$model=Users::findone(['phone'=>$data['phone']]);
 		return $model;
 	}
+	public function actionChangepwdbypwd(){
+		$data = Yii::$app->request->post ();
+		$model=Users::findone(['phone'=>$data['phone']]);
+		if($model['pwd']!=md5($data['pwd'])){
+			return  array (
+					'flag' => 0,
+					'msg' => 'pwd error!'
+			) ;
+		}
+		$model['pwd'] = md5($data['newpwd']);	
+		try{
+			$result=$model->getDb()->transaction(function($db) use ($model,$data) {
+				$model->save();
+				$easeclient=new Easeapi('YXA6halokJDEEeWMRgvYONLZPQ','YXA6pswnZbss8mj351XE3oxuRYm6cek','13022660999','allpeopleleague','file');
+				$result=$easeclient->curl('/users/'.$model['id'].'/password',array('newpassword'=>$data ['newpwd']),'PUT');
+				$status=$result['status'];
+				$result = json_decode($result['result'],true);
+				//echo $result;
+				if($status!=200){
+					throw new Exception(json_encode($result));
+				}
+			});
+		} catch (\Exception $e) {
+			return array (
+					'flag' => 0,
+					'error'=>$e,
+					'hh'=>$model->errors,
+					'msg' => 'modifa password false!'
+			);
+		}
+		return array (
+				'flag' => 1,
+				'msg' => 'Modify success!'
+		);
 	
+	}
 	public function actionChangepwd(){
 		$data = Yii::$app->request->post ();
 		$model=Users::findone(['phone'=>$data['phone']]);
