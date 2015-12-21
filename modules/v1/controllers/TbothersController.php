@@ -17,10 +17,18 @@ class TbothersController extends Controller {
 	];
 	
 	public function actionList(){
+		$query=(new \yii\db\Query ())->select('tbothers.*,users.phone,users.thumb,users.nickname')->from('tbothers')->join('INNER JOIN','users','users.id = tbothers.userid')->orderBy('tbothers.created_at desc');
+		$dataProvider=new ActiveDataProvider([
+				'query' => $query,
+		]);
+		return $dataProvider;
+	}
+	
+	public function actionMy(){
 		$data=Yii::$app->request->post ();
 		$user =Users::findOne(['phone'=>$data['phone']]);
 		
-		$query=(new \yii\db\Query ())->select('tbothers.*,users.phone,users.thumb,users.nickname')->from('tbothers')->join('INNER JOIN','users','users.id = tbothers.userid')->orderBy('tbothers.created_at desc');
+		$query=(new \yii\db\Query ())->select('tbothers.*,users.phone,users.thumb,users.nickname')->from('tbothers')->join('INNER JOIN','users','users.id = tbothers.userid and users.id = :id',[':id'=>$user['id']])->orderBy('tbothers.created_at desc');
 		$dataProvider=new ActiveDataProvider([
 				'query' => $query,
 		]);
