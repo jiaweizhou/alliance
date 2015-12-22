@@ -371,6 +371,51 @@ class UsersController extends Controller {
 					'msg' => 'ok!'
 			);
 	}
+	public function actionCode(){
+		$data = Yii::$app->request->post ();
+		return $this->to62(5800235584+$data['id']);
+	}
+	
+	public function actionSetcode(){
+		$data = Yii::$app->request->post ();
+		if(empty($data['phone'])||empty($data['code'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$userinfo = Users::findOne ( [
+				'phone' => $data ['phone']
+		] );
+		if(!$userinfo||!empty($userinfo['fatherid'])){
+			return array (
+					'flag' => 0,
+					'msg' => 'already set'
+			);
+		}
+		
+		$father = Users::findOne(['invitecode'=>$data['code']]);
+		if(!$father){
+			return array (
+					'flag' => 0,
+					'msg' => 'code not exist'
+			);
+		}
+	
+		if($userinfo->setFather($father['id'])){
+				$userinfo->save();
+				return array (
+					'flag' => 1,
+					'msg' => 'set father access'
+			);
+		}else{
+			return array (
+					'flag' => 0,
+					'msg' => 'set failure'
+			);
+		}
+	}
+	
 	public function actionSignup() {
 		$model = new Users ();
 		//$t=Yii::$app->request->params;
@@ -388,6 +433,7 @@ class UsersController extends Controller {
 				'phone' => $data ['phone']
 		] );
 		if ($userinfo){
+			
 			return array (
 					'flag' => 0,
 					'msg' => 'already Signup!'
@@ -404,6 +450,11 @@ class UsersController extends Controller {
 		
 		$model->created_at = time ();
 		if($model->save ()){
+			
+			$model['invitecode'] = $this->to62(5800235584+$userinfo['id']);
+			$model->save();
+			
+			
 			$easeclient=new Easeapi('YXA6halokJDEEeWMRgvYONLZPQ','YXA6pswnZbss8mj351XE3oxuRYm6cek','13022660999','allpeopleleague','file');
 			$result=json_decode($easeclient->curl('/users',array('username'=>$model->id,'password'=>$data ['pwd'])),true);
 			//var_dump($result);
@@ -641,5 +692,14 @@ class UsersController extends Controller {
 				'token'=>$token
 		));
 	}
-	
+	public function to62($num) {
+	  	$to = 62;
+	  	$dict = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	  	$ret = '';
+	  	do {
+	    	$ret = $dict[bcmod($num, $to)] . $ret;
+	    	$num = bcdiv($num, $to);
+	  	} while ($num > 0);
+	 	return ltrim($ret,"0");
+	}
 }
