@@ -27,6 +27,9 @@ class m151027_134709_users extends Migration
     			'gender' => Schema::TYPE_INTEGER. ' NOT NULL DEFAULT 0 ',
     			'area' => Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
     			'job' => Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
+    			
+    			'background'=>Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
+    			
     			'hobby' => Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
     			'signature' => Schema::TYPE_STRING . ' DEFAULT "" ',
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
