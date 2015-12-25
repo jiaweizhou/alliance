@@ -30,6 +30,7 @@ class m151027_134709_users extends Migration
     			
     			'background'=>Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
     			'invitecode'=>Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
+    			'paypwd'=>Schema::TYPE_STRING . ' NOT NULL DEFAULT "" ',
     			
     			'hobby' => Schema::TYPE_STRING. ' NOT NULL DEFAULT "" ',
     			'signature' => Schema::TYPE_STRING . ' DEFAULT "" ',

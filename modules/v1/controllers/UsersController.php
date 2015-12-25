@@ -249,6 +249,50 @@ class UsersController extends Controller {
 		
 	}
 	
+	public function actionSetpaypwd(){
+		$data=Yii::$app->request->post();
+		if(empty($data['phone'])||empty($data['newpaypwd'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		if(!$user){
+			return array (
+					'flag' => 0,
+					'msg' => 'user not exist!'
+			);
+		}
+		if(!empty($user['paypwd'])){
+			if(empty($data['oldpaypwd'])){
+				return array (
+					'flag' => 0,
+					'msg' => 'not oldpaypwd!'
+				);
+			}
+			if($user['paypwd']!=md5($data['oldpaypwd'])){
+				return array (
+						'flag' => 0,
+						'msg' => 'oldpaypwd not right!'
+				);
+			}
+		}
+		$user['paypwd'] = md5($data['newpaypwd']);
+		if($user->save()){
+			return array (
+					'flag' => 1,
+					'msg' => 'set paypwd access!'
+				);
+		}else{
+			return array (
+					'flag' => 0,
+					'msg' => 'set paypwd failure!'
+			);
+		}
+	}
+	
+	
 	public function actionAllmoney(){
 		$data = Yii::$app->request->post();
 		if(empty($data['phone'])){
@@ -451,10 +495,9 @@ class UsersController extends Controller {
 		$model->created_at = time ();
 		if($model->save ()){
 			
-			$model['invitecode'] = $this->to62(5800235584+$userinfo['id']);
+			$model['invitecode'] = $this->to62(5800235584+$model['id']);
 			$model->save();
-			
-			
+
 			$easeclient=new Easeapi('YXA6halokJDEEeWMRgvYONLZPQ','YXA6pswnZbss8mj351XE3oxuRYm6cek','13022660999','allpeopleleague','file');
 			$result=json_decode($easeclient->curl('/users',array('username'=>$model->id,'password'=>$data ['pwd'])),true);
 			//var_dump($result);
@@ -505,6 +548,7 @@ class UsersController extends Controller {
 	public function actionView(){
 		$data = Yii::$app->request->post ();
 		$model=Users::findone(['phone'=>$data['phone']]);
+		unset($model['paypwd']);
 		return $model;
 	}
 	public function actionChangepwdbypwd(){
@@ -573,6 +617,8 @@ class UsersController extends Controller {
 		}
 	}
 	
+
+	
 	public function actionModify() {
 		
 		$data = Yii::$app->request->post ();
@@ -585,7 +631,7 @@ class UsersController extends Controller {
 		unset($data['allalliancecount']);
 		unset($data['isdraw']);
 		unset($data['pwd']);
-		
+		unset($data['paypwd']);
 		if(empty($data['phone'])){
 			return 	array (
 					'flag' => 0,
@@ -623,6 +669,7 @@ class UsersController extends Controller {
 		if($info){
 			$r=$info->toArray();
 			unset($r['pwd']);
+			unset($r['paypwd']);
 			//unset($r['pwd'])
 			$r['huanxinid'] = $r['id'];
 			$r['flag'] =1;
