@@ -416,8 +416,13 @@ class UsersController extends Controller {
 			);
 	}
 	public function actionCode(){
-		$data = Yii::$app->request->post ();
-		return $this->to62(5800235584+$data['id']);
+		//$data = Yii::$app->request->post ();
+		//return $this->to62(5800235584+$data['id']);
+		$users = Users::find()->all();
+		foreach ($users as $user){
+			$user['invitecode'] = $this->to62(5800235584+$user['id']);
+			$user->save();
+		}
 	}
 	
 	public function actionSetcode(){
