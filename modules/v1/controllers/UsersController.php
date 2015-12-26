@@ -504,7 +504,7 @@ class UsersController extends Controller {
 			$model->save();
 
 			$easeclient=new Easeapi('YXA6halokJDEEeWMRgvYONLZPQ','YXA6pswnZbss8mj351XE3oxuRYm6cek','13022660999','allpeopleleague','file');
-			$result=json_decode($easeclient->curl('/users',array('username'=>$model->id,'password'=>$data ['pwd'])),true);
+			$result=$easeclient->curl('/users',array('username'=>$model->id,'password'=>$data ['pwd']));
 			//var_dump($result);
 			$result = json_decode($result['result'],true);
 			if(isset($result['error'])){
