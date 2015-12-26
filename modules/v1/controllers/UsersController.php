@@ -552,8 +552,10 @@ class UsersController extends Controller {
 	}
 	public function actionView(){
 		$data = Yii::$app->request->post ();
-		$model=Users::findone(['phone'=>$data['phone']]);
+		$model=(new \yii\db\Query ())->from('users')->where(['phone'=>$data['phone']])->one();
 		unset($model['paypwd']);
+		unset($model['pwd']);
+		$model['huanxinid'] = $model['id'];
 		return $model;
 	}
 	public function actionChangepwdbypwd(){
