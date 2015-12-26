@@ -510,7 +510,7 @@ class UsersController extends Controller {
 			if(isset($result['error'])){
 				$model->delete();
 				return  array (
-					'error'=> $result,
+					//'error'=> $result,
 					'flag' => 0,
 					'msg' => 'Signup fail!'
 				) ;
@@ -532,7 +532,7 @@ class UsersController extends Controller {
 			}
 		}else{
 			return  array (
-				'error'=>$model->errors,
+				//'error'=>$model->errors,
 				'flag' => 0,
 				'msg' => 'Signup fail!'
 			) ;
