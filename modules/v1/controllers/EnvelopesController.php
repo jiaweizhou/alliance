@@ -5,6 +5,7 @@ use Yii;
 use app\modules\v1\models\Users;
 use yii\rest\Controller;
 use Qiniu\Auth;
+use app\modules\v1\models\Envelopes;
 use app\modules\v1\models\Easeapi;
 use app\modules\v1\controllers\CacheLock;
 use yii\rest\Serializer;
@@ -15,6 +16,14 @@ class EnvelopesController extends Controller {
 			'collectionEnvelope' => 'items'
 	];
 	//public $lucky = array();
+	public function actionList(){
+		return (new \yii\db\Query ())->select('envelopes.*,users.phone,users.nickname,users.nickname,users.thumb')
+			->from('envelopes')
+			->join('INNER JOIN','users','envelopes.userid = users.id')
+			->limit(10)
+			->orderBy('envelopes.count desc')
+			->all();
+	}
 	public function actionDraw(){
 		$data = Yii::$app->request->post ();
 		//$data=Yii::$app->request->post();
@@ -47,6 +56,24 @@ class EnvelopesController extends Controller {
 				$user->cornsforgrab+= $count;
 		}
 		$user->isdraw ++;
+		$enve=new Envelopes();
+		$enve['userid'] = $user['id'];
+		$enve['type'] = $type;
+		$enve['count'] = $count;
+		$enve['created_at'] = time();
+		try{
+			$result=$user->getDb()->transaction(function($db) use ($enve,$user) {
+				$user->save();
+				$enve->save();
+			});
+		} catch (\Exception $e) {
+			return array (
+					//'error'=>$model->errors,
+					'flag' => 0,
+					'msg' => 'failure!'
+			);
+		}
+		
 		$user->save();
 		
 		return array(

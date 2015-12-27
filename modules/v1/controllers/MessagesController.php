@@ -450,7 +450,7 @@ class MessagesController extends Controller {
 // 		}
 		
 		$model->fromid=$fromphone['id'];
-		$model->messageid=$data['msgid'];
+		$model->messageid=$data['messageid'];
 		$model->content=$data['content'];
 		$model->isread=0;
 		$model->created_at=time();
