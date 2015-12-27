@@ -16,6 +16,7 @@ use Yii;
  * @property string $status
  * @property integer $hidephone
  * @property string $content
+ * @property string $herphone
  * @property integer $professionid
  * @property string $created_at
  *
@@ -40,7 +41,7 @@ class Applyjobs extends \yii\db\ActiveRecord
         return [
             [['userid', 'jobproperty', 'degree', 'hidephone', 'professionid','work_at','created_at'], 'integer'],
             [['jobproperty', 'title', 'degree', 'work_at', 'status', 'content'], 'required'],
-            [['title', 'status', 'content'], 'string', 'max' => 255]
+            [['title', 'status', 'content','herphone'], 'string', 'max' => 255]
         ];
     }
 

@@ -16,6 +16,7 @@ class m151103_152426_applyjobs extends Migration
     			'degree' => Schema::TYPE_INTEGER . ' NOT NULL',
     			'work_at' => Schema::TYPE_BIGINT . ' NOT NULL',
 				'status' => Schema::TYPE_STRING . ' NOT NULL',
+    			'herphone' => Schema::TYPE_STRING . ' NOT NULL DEFAULT ""',
     			'hidephone' => Schema::TYPE_INTEGER . ' DEFAULT 0',
     			'content' => Schema::TYPE_STRING . ' NOT NULL',
     			'professionid'=> Schema::TYPE_INTEGER,

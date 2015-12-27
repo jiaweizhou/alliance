@@ -100,6 +100,7 @@ class ApplyjobsController extends Controller
         $model->hidephone = isset($data['hidephone'])?$data['hidephone']:0;
         $model->content = isset($data['content'])?$data['content']:'';
         $model->professionid = isset($data['professionid'])?$data['professionid']:0;
+        $model->herphone = isset($data['herphone'])?$data['herphone']:0;
         
         //$model->load($data);
         $model->userid = $user->id;
