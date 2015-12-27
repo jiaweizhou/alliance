@@ -267,11 +267,18 @@ class MessagesController extends Controller {
 		$data = Yii::$app->request->post ();
 		$id = $data ['messageid'];
 		$msg = new Messages ();
+		$user = Users::findOne(['phone'=>$data['phone']]);
 		$msg = Messages::find ()->where(['id' =>$id])->one();
 		if ($msg == null) {
 			return array (
 					'flag' => 0,
 					'msg' => 'Message do not exist!'
+			);
+		}
+		if($user['id']!=$msg['userid']){
+			return array (
+					'flag' => 0,
+					'msg' => 'you do not own the message!'
 			);
 		}
 		if ($msg->delete ()) {
