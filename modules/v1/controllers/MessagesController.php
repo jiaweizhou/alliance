@@ -265,7 +265,7 @@ class MessagesController extends Controller {
 	}
 	public function actionDelete() {
 		$data = Yii::$app->request->post ();
-		$id = $data ['id'];
+		$id = $data ['messageid'];
 		$msg = new Messages ();
 		$msg = Messages::find ()->where(['id' =>$id])->one();
 		if ($msg == null) {
