@@ -66,6 +66,21 @@ class UsersController extends Controller {
 		}
 		return $users;
 	}
+	
+	public function actionRealinfo(){
+		$data = Yii::$app->request->post();
+		if(empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		return Realauth::findone(['userid'=>$user['id']]);
+		
+	}
+	
+	
 	public function actionRealauth(){
 		$data = Yii::$app->request->post();
 		if(empty($data['phone'])){
