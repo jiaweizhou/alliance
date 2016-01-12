@@ -105,19 +105,20 @@ class UsersController extends Controller {
 		$model['created_at'] = time();
 		try{
 			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
-				$model->save();
+				if(!$model->save()){
+					throw new Exception("status is not 0");
+				}
 				if($user['status']!=0)
 					throw new Exception("status is not 0");
 				else {
 					$user['status']=1;
 					$user->save();
-					var_dump($user->errors);
 				}
 			});
 		} catch (\Exception $e) {
 			return array (
 					'flag' => 0,
-					'error'=>$e,
+					'error'=>$model->errors,
 					'msg' => 'checkauth false!'
 			);
 		}
