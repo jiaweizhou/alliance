@@ -37,7 +37,7 @@ class DatersController extends Controller
 		$query = (new \yii\db\Query ())
 		->select('daters.*,users.phone,users.nickname,users.thumb,hobbies.hobby')
 		->from('daters')
-		->orderBy(sprintf('abs(dater.longitude - %f) + abs(dater.latitude - %f) desc',longitude,latitude))
+		->orderBy(sprintf('abs(dater.longitude - %f) + abs(dater.latitude - %f) desc',$longitude,$latitude))
 		->join('INNER JOIN','users','daters.userid = users.id')
 		->join('INNER JOIN','hobbies','daters.hobbyid = hobbies.id');
 		$dataProvider = new ActiveDataProvider([
