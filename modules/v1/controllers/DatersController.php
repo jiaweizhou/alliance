@@ -37,7 +37,7 @@ class DatersController extends Controller
 		$query = (new \yii\db\Query ())
 		->select('daters.*,users.phone,users.nickname,users.thumb,hobbies.hobby')
 		->from('daters')
-		->orderBy(sprintf('abs(daters.longitude - %f) + abs(daters.latitude - %f) desc',$longitude,$latitude))
+		->orderBy(sprintf('abs(daters.longitude - %f) + abs(daters.latitude - %f)',$longitude,$latitude))
 		->join('INNER JOIN','users','daters.userid = users.id')
 		->join('INNER JOIN','hobbies','daters.hobbyid = hobbies.id');
 		$dataProvider = new ActiveDataProvider([
@@ -105,7 +105,7 @@ class DatersController extends Controller
 		$stepOne = pow(sin($calcLatitude / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($calcLongitude / 2), 2);  $stepTwo = 2 * asin(min(1, sqrt($stepOne)));
 		$calculatedDistance = $earthRadius * $stepTwo;
 	
-		return round($calculatedDistance)/1000;
+		return round($calculatedDistance);
 	}
     /**
      * Creates a new Applyjobs model.
