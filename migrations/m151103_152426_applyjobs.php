@@ -21,8 +21,8 @@ class m151103_152426_applyjobs extends Migration
     			'content' => Schema::TYPE_STRING . ' NOT NULL',
     			'professionid'=> Schema::TYPE_INTEGER,
     			
-    			'longitude' => Schema::TYPE_FLOAT . ' DEFAULT 0',
-    			'latitude' => Schema::TYPE_FLOAT . ' DEFAULT 0',
+    			'longitude' => Schema::TYPE_DOUBLE . ' DEFAULT 0',
+    			'latitude' => Schema::TYPE_DOUBLE . ' DEFAULT 0',
     			
     			//'profession' => Schema::TYPE_STRING . ' NOT NULL',
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
