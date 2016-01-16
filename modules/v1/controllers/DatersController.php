@@ -30,7 +30,12 @@ class DatersController extends Controller
 	public function actionSearch()
 	{ 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('daters.*,users.phone,users.nickname,users.thumb,hobbies.hobby')->from('daters')->orderBy('created_at desc')->join('INNER JOIN','users','daters.userid = users.id')->join('INNER JOIN','hobbies','daters.hobbyid = hobbies.id');
+		$query = (new \yii\db\Query ())
+		->select('daters.*,users.phone,users.nickname,users.thumb,hobbies.hobby')
+		->from('daters')
+		->orderBy(sprintf('abs(dater.longitude - %f) + abs(dater.latitude - %f) desc',longitude,latitude))
+		->join('INNER JOIN','users','daters.userid = users.id')
+		->join('INNER JOIN','hobbies','daters.hobbyid = hobbies.id');
 		$dataProvider = new ActiveDataProvider([
 				'query' => $query,
 		]);
