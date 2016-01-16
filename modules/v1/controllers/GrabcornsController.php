@@ -441,7 +441,7 @@ class GrabcornsController extends Controller
     		
     		if($data['type']==0){
     			$inserttrade = $connection->createCommand('insert into traderecords(userid,count,type,description,cardid,created_at) values (:userid,:count,:type,:description,:cardid,:created_at)'
-    					,[':userid'=>$user->id,':count'=>$data['count'],':type'=>-3,'description'=>'购买' . $grabcommodity->title .'第'.$grabcommodity->version .'期',':cardid'=>0,':created_at'=>time()])->execute();
+    					,[':userid'=>$user->id,':count'=>$data['count'],':type'=>-3,'description'=>'购买' . $grabcorn->title .'第'.$grabcorn->version .'期',':cardid'=>0,':created_at'=>time()])->execute();
     			//var_dump($inserttrade);
     			if(!$inserttrade){
     				throw new Exception("insert trade record fail");
