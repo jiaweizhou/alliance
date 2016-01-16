@@ -67,7 +67,7 @@ class DatersController extends Controller
 		foreach ( $daters as $i=>$dater ) {
 			$info = $dater;
 			
-			$info["distance"] = $this->getDistance(latitude, longitude, $info['latitude'], $info['longitude']);
+			$info["distance"] = $this->getDistance($latitude, $longitude, $info['latitude'], $info['longitude']);
 		
 			$daters[$i] = $info;
 		
