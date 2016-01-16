@@ -47,6 +47,10 @@ class UsersController extends Controller {
 			$t[]=$user['id'];
 		}
 		
+		if(empty($t)){
+			return array();
+		}
+		
 		$friendcounts = (new \yii\db\Query ())
 		->select('myid , count(id) as friendcount')
 		->from('friends')
