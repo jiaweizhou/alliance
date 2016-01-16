@@ -124,6 +124,7 @@ class UsersController extends Controller {
 		$me = Users::findOne(['phone'=>$data['phone']]);
 		
 		$users = (new \yii\db\Query ())
+		->distinct('users.id')
 		->select(['users.id','users.id as huanxinid','phone','nickname','concerncount','thumb','if(isnull(friends.id),0,1) as isfriend'])
 		->from('users')
 		->join('LEFT JOIN','friends','friends.myid = users.id')
