@@ -41,28 +41,36 @@ class UsersController extends Controller {
 		$model =  new Traderecords();
 		$model->userid = $user['id'];
 		$model->type = $data['type'];
+		if($model->type == 1){
+			$model->description = '自己人联盟支付宝充值';
+		}else if($model->type == 2){
+			$model->description = '自己人联盟微信支付充值';
+		}
 		$model->cardid = 0;
 		$model->count = $data['count'];
 		$model->created_at = time();
-// 		try{
-// 			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
-// 				if(!$model->save()){
-// 					throw new Exception("status is not 0");
-// 				}
-// 				if($user['status']!=0)
-// 					throw new Exception("status is not 0");
-// 				else {
-// 					$user['status']=1;
-// 					$user->save();
-// 				}
-// 			});
-// 		} catch (\Exception $e) {
-// 			return array (
-// 					'flag' => 0,
-// 					'error'=>$model->errors,
-// 					'msg' => 'checkauth false!'
-// 			);
-// 		}
+		try{
+			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
+				if(!$model->save()){
+					throw new Exception("save traderecord fail");
+				}
+				$rows = Users::updateAllCounters(['money'=>$model['count']],['id'=>$user['id']]);
+				if($rows != 1){
+					throw new Exception("update user fail");
+				}
+			});
+		} catch (\Exception $e) {
+			return array (
+					'flag' => 0,
+					'error'=>$e->getMessage(),
+					'msg' => 'money in fail!'
+			);
+		}
+		
+		return array(
+				'flag' => 1,
+				'msg' => 'money in success!'
+		);
 	}
 	
 	
