@@ -73,6 +73,44 @@ class UsersController extends Controller {
 		);
 	}
 	
+	public function actionMoneyout(){
+		$data = Yii::$app->request->post();
+		if(empty($data['count'])||empty($data['cardid'])||empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		$model =  new Traderecords();
+		$model->userid = $user['id'];
+		$model->type = -1;
+		$model->cardid = $data['cardid'];
+		$model->count = $data['count'];
+		$model->created_at = time();
+		try{
+			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
+				if(!$model->save()){
+					throw new Exception("save traderecord fail");
+				}
+				$rows = Users::updateAllCounters(['money'=>$model['count']],['id'=>$user['id']]);
+				if($rows != 1){
+					throw new Exception("update user fail");
+				}
+			});
+		} catch (\Exception $e) {
+			return array (
+					'flag' => 0,
+					'error'=>$e->getMessage(),
+					'msg' => 'money out fail!'
+			);
+		}
+	
+		return array(
+				'flag' => 1,
+				'msg' => 'money out success!'
+		);
+	}
 	
 	public function actionSearch(){
 		$data = Yii::$app->request->post();
