@@ -27,7 +27,15 @@ class UsersController extends Controller {
 		return $user;
 	}
 	
-	public function action
+	public function actionMoneyin(){
+		$data = Yii::$app->request->post();
+		if(empty($data['search'])||empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+	}
 	
 	
 	public function actionSearch(){
