@@ -12,6 +12,8 @@ use yii\rest\Serializer;
 use app\modules\v1\models\Addresses;
 use app\modules\v1\models\Realauth;
 use app\modules\v1\models\Usertocards;
+use app\modules\v1\models\Traderecords;
+
 use function Qiniu\json_decode;
 use app\modules\v1\models\app\modules\v1\models;
 class UsersController extends Controller {
@@ -29,12 +31,38 @@ class UsersController extends Controller {
 	
 	public function actionMoneyin(){
 		$data = Yii::$app->request->post();
-		if(empty($data['search'])||empty($data['phone'])){
+		if(empty($data['count'])||empty($data['type'])||empty($data['phone'])){
 			return 	array (
 					'flag' => 0,
 					'msg' => 'no enough arg!'
 			);
 		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		$model =  new Traderecords();
+		$model->userid = $user['id'];
+		$model->type = $data['type'];
+		$model->cardid = 0;
+		$model->count = $data['count'];
+		$model->created_at = time();
+// 		try{
+// 			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
+// 				if(!$model->save()){
+// 					throw new Exception("status is not 0");
+// 				}
+// 				if($user['status']!=0)
+// 					throw new Exception("status is not 0");
+// 				else {
+// 					$user['status']=1;
+// 					$user->save();
+// 				}
+// 			});
+// 		} catch (\Exception $e) {
+// 			return array (
+// 					'flag' => 0,
+// 					'error'=>$model->errors,
+// 					'msg' => 'checkauth false!'
+// 			);
+// 		}
 	}
 	
 	
@@ -49,7 +77,7 @@ class UsersController extends Controller {
 		$me = Users::findOne(['phone'=>$data['phone']]);
 		
 		$users = (new \yii\db\Query ())
-		->select('id,id as huanxinid,phone,nickname,concerncount,thumb,if(isnull(friends.id),0,1) as isfriend')
+		->select(['users.id','users.id as huanxinid','phone','nickname','concerncount','thumb','if(isnull(friends.id),0,1) as isfriend'])
 		->from('users')
 		->join('LEFT JOIN','friends','friends.myid = users.id')
 		->where(['phone'=>$data['search']])
