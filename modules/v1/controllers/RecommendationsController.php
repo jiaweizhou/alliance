@@ -33,7 +33,16 @@ class RecommendationsController extends Controller
 	public function actionSearch()
 	{ 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('recommendations.*,users.phone,users.nickname,users.thumb,kindsofrecommendation.kind')->from('recommendations')->join('INNER JOIN','users','recommendations.userid = users.id')->join('INNER JOIN','kindsofrecommendation','recommendations.kindid = kindsofrecommendation.id');
+		
+		$longitude = $data['longitude'];
+		$latitude = $data['latitude'];
+		
+		$query = (new \yii\db\Query ())
+		->select('recommendations.*,users.phone,users.nickname,users.thumb,kindsofrecommendation.kind')
+		->from('recommendations')
+		->orderBy(sprintf('abs(recommendations.longitude - %f) + abs(recommendations.latitude - %f)',$longitude,$latitude))
+		->join('INNER JOIN','users','recommendations.userid = users.id')
+		->join('INNER JOIN','kindsofrecommendation','recommendations.kindid = kindsofrecommendation.id');
 // 		$dataProvider = new ActiveDataProvider([
 // 				'query' => $query,
 // 		]);
@@ -83,6 +92,8 @@ class RecommendationsController extends Controller
 					] )->orderBy('recommendationcomments.created_at desc')->from ( 'recommendationcomments' )->join ( 'INNER JOIN', 'users', 'recommendationcomments.userid = users.id and recommendationcomments.recommendationid = :id', [
 						':id' => $model ['id']
 					] )->all ();
+					
+			$model['distance'] = $this->getDistance($latitude, $longitude, $model['latitude'], $model['longitude']);
 			$model['comments'] = $comments;
 			$result['items'][]=$model;
 		}

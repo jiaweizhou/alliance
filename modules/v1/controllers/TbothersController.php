@@ -17,7 +17,21 @@ class TbothersController extends Controller {
 	];
 	
 	public function actionList(){
-		$query=(new \yii\db\Query ())->select('tbothers.*,users.phone,users.thumb,users.nickname')->from('tbothers')->join('INNER JOIN','users','users.id = tbothers.userid')->orderBy('tbothers.created_at desc');
+		
+		$data=Yii::$app->request->post();
+		
+		$longitude = $data['longitude'];
+		$latitude = $data['latitude'];
+		$query=(new \yii\db\Query ())
+		->select('tbothers.*,users.phone,users.thumb,users.nickname')
+		->from('tbothers')
+		->orderBy(sprintf('abs(tbothers.longitude - %f) + abs(tbothers.latitude - %f)',$longitude,$latitude))
+		->join('INNER JOIN','users','users.id = tbothers.userid');
+		
+		if(isset($data["content"])){
+			$query = $query->andFilterWhere(['like', 'content',$data['content']]);
+		}
+		
 		$dataProvider=new ActiveDataProvider([
 				'query' => $query,
 		]);
