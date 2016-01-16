@@ -26,6 +26,10 @@ class UsersController extends Controller {
 		$user=Users::find()->where(['phone'=>$data['phone']])->one();
 		return $user;
 	}
+	
+	public function action
+	
+	
 	public function actionSearch(){
 		$data = Yii::$app->request->post();
 		if(empty($data['search'])||empty($data['phone'])){
@@ -37,8 +41,9 @@ class UsersController extends Controller {
 		$me = Users::findOne(['phone'=>$data['phone']]);
 		
 		$users = (new \yii\db\Query ())
-		->select('id,id as huanxinid,phone,nickname,concerncount,thumb')
+		->select('id,id as huanxinid,phone,nickname,concerncount,thumb,if(isnull(friends.id),0,1) as isfriend')
 		->from('users')
+		->join('LEFT JOIN','friends','friends.myid = users.id')
 		->where(['phone'=>$data['search']])
 		->orFilterWhere(['like','nickname',$data['search']])
 		->all();
