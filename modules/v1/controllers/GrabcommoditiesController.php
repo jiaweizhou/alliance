@@ -459,8 +459,8 @@ class GrabcommoditiesController extends Controller
     					,[':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid'],':count'=>$data['count'],':numbers'=>$usernumbers,':type'=>$data['type'],':created_at'=>microtime(true)])->execute();
     		//var_dump($expression)
     		if($data['type']!=3){
-    			$inserttrade = $connection->createCommand('inser into traderecords(userid,count,type,description,cardid,created_at) values (:userid,:count,:type,:description,:cardid,:created_at)'
-    					,['userid'=>$user->id,':count'=>$data['count'],':type'=>-2,'description'=>'购买' . $grabcommodity->title .'第'.$grabcommodity->version .'期',':cardid'=>id,':created_at'=>time()]);
+    			$inserttrade = $connection->createCommand('insert into traderecords(userid,count,type,description,cardid,created_at) values (:userid,:count,:type,:description,:cardid,:created_at)'
+    					,[':userid'=>$user->id,':count'=>$data['count'],':type'=>-2,'description'=>'购买' . $grabcommodity->title .'第'.$grabcommodity->version .'期',':cardid'=>id,':created_at'=>time()]);
     			 if(!$inserttrade){
     			 	throw new Exception("insert trade record fail");
     			 }
