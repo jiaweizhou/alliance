@@ -85,6 +85,7 @@ class UsersController extends Controller {
 		$model =  new Traderecords();
 		$model->userid = $user['id'];
 		$model->type = -1;
+		$model->description = '自己人联盟用户提现';
 		$model->cardid = $data['cardid'];
 		$model->count = $data['count'];
 		$model->created_at = time();
