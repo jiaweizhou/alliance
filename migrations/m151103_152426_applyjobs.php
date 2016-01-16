@@ -20,6 +20,10 @@ class m151103_152426_applyjobs extends Migration
     			'hidephone' => Schema::TYPE_INTEGER . ' DEFAULT 0',
     			'content' => Schema::TYPE_STRING . ' NOT NULL',
     			'professionid'=> Schema::TYPE_INTEGER,
+    			
+    			'longitude' => Schema::TYPE_FLOAT . ' DEFAULT 0',
+    			'latitude' => Schema::TYPE_FLOAT . ' DEFAULT 0',
+    			
     			//'profession' => Schema::TYPE_STRING . ' NOT NULL',
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
     	],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');

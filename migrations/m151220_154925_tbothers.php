@@ -14,6 +14,9 @@ class m151220_154925_tbothers extends Migration
     			'title' => Schema::TYPE_STRING . ' NOT NULL',
     			'content' => Schema::TYPE_STRING . ' NOT NULL',
     			 
+    			'longitude' => Schema::TYPE_FLOAT . ' DEFAULT 0',
+    			'latitude' => Schema::TYPE_FLOAT . ' DEFAULT 0',
+    			
     			'pictures'=>Schema::TYPE_STRING .'(2550) '. ' NOT NULL DEFAULT ""',
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL',
     	],"CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB");

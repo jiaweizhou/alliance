@@ -15,6 +15,8 @@ use Yii;
  * @property integer $hobbyid
  * @property string $content
  * @property integer $created_at
+ * @property double $longitude
+ * @property double $latitude
  *
  * @property Hobbies $hobby
  * @property Users $user

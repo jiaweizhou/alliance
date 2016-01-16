@@ -13,6 +13,8 @@ use Yii;
  * @property string $content
  * @property string $pictures
  * @property integer $created_at
+ * @property double $longitude
+ * @property double $latitude
  *
  * @property Users $user
  */

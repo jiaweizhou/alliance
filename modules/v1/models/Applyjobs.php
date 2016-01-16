@@ -19,6 +19,8 @@ use Yii;
  * @property string $herphone
  * @property integer $professionid
  * @property string $created_at
+ * @property double $longitude
+ * @property double $latitude
  *
  * @property Professions $profession
  * @property Users $user

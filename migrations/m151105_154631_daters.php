@@ -16,6 +16,10 @@ class m151105_154631_daters extends Migration
     			'age'=>Schema::TYPE_INTEGER,
     			'hobbyid' => Schema::TYPE_INTEGER . ' NOT NULL',
     			'content' => Schema::TYPE_STRING . ' NOT NULL',
+    			
+    			'longitude' => Schema::TYPE_FLOAT . ' DEFAULT 0',
+    			'latitude' => Schema::TYPE_FLOAT . ' DEFAULT 0',
+    			
     			//'profession' => Schema::TYPE_STRING . ' NOT NULL',
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
     	],'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
