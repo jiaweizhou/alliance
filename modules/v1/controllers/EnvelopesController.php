@@ -51,7 +51,7 @@ class EnvelopesController extends Controller {
 		$type = rand(1,2);
 		switch($type){
 			case 1:
-				$user->corns+= $count;
+				$user->money += $count;
 			case 2:
 				$user->cornsforgrab+= $count;
 		}
