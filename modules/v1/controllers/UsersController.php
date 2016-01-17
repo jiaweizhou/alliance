@@ -29,7 +29,27 @@ class UsersController extends Controller {
 		return $user;
 	}
 	
-	
+	public function actionTraderecords(){
+		$data = Yii::$app->request->post();
+		if(empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		
+		$query = (new \yii\db\Query ())
+			->from('traderecords')
+			->where('userid = ' . $user->id)
+			->orderBy('created_at desc');
+		$dataProvider = new ActiveDataProvider([
+				'query' => $query,
+		]);
+		
+		return $dataProvider;
+	}
 	
 	public function actionMoneyin(){
 		$data = Yii::$app->request->post();
