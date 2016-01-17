@@ -29,6 +29,8 @@ class UsersController extends Controller {
 		return $user;
 	}
 	
+	
+	
 	public function actionMoneyin(){
 		$data = Yii::$app->request->post();
 		if(empty($data['count'])||empty($data['type'])||empty($data['phone'])){
@@ -666,6 +668,16 @@ class UsersController extends Controller {
 		unset($model['paypwd']);
 		unset($model['pwd']);
 		$model['huanxinid'] = $model['id'];
+		
+		$friendcounts = (new \yii\db\Query ())
+		->select('count(id) as friendcount')
+		->from('friends')
+		->where('myid ='. $model['id'])
+		->One();
+		
+		//var_dump($friendcounts);
+		$model['friendcount'] = $friendcounts['friendcount'];
+		
 		return $model;
 	}
 	public function actionChangepwdbypwd(){

@@ -22,7 +22,7 @@ class m160116_124727_traderecords extends Migration
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL',
     			
     			'ishandled' => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
-    			'handled_at' => Schema::TYPE_BIGINT . ' NOT NULL',
+    			'handled_at' => Schema::TYPE_BIGINT . ' NOT NULL DEFAULT 0',
     			
     	],"CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB");
     	//$this->createIndex('userid', 'tbmessages', 'userid');
