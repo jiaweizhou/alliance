@@ -20,6 +20,10 @@ class m160116_124727_traderecords extends Migration
     			
     			'cardid' => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
     			'created_at' => Schema::TYPE_BIGINT . ' NOT NULL',
+    			
+    			'ishandled' => Schema::TYPE_INTEGER . ' NOT NULL DEFAULT 0',
+    			'handled_at' => Schema::TYPE_BIGINT . ' NOT NULL',
+    			
     	],"CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB");
     	//$this->createIndex('userid', 'tbmessages', 'userid');
     	$this->addForeignKey('recorduserid', 'traderecords', 'userid', 'users', 'id','CASCADE','CASCADE');

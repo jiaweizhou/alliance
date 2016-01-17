@@ -14,6 +14,9 @@ use Yii;
  * @property string $description
  * @property integer $cardid
  * @property integer $created_at
+ * @property integer $ishandled
+ * @property integer $handled_at
+ * 
  */
 class Traderecords extends \yii\db\ActiveRecord
 {
@@ -32,7 +35,7 @@ class Traderecords extends \yii\db\ActiveRecord
     {
         return [
             [['userid', 'created_at'], 'required'],
-            [['userid', 'count', 'type', 'cardid', 'created_at'], 'integer'],
+            [['userid', 'count', 'type', 'cardid', 'created_at','ishandled','handled_at'], 'integer'],
             [['description'], 'string', 'max' => 255]
         ];
     }

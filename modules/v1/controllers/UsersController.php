@@ -88,6 +88,7 @@ class UsersController extends Controller {
 		$model->description = '自己人联盟用户提现';
 		$model->cardid = $data['cardid'];
 		$model->count = $data['count'];
+		$model->ishandled = 1;
 		$model->created_at = time();
 		try{
 			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
