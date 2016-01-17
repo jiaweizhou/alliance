@@ -13,6 +13,7 @@ use app\modules\v1\models\Addresses;
 use app\modules\v1\models\Realauth;
 use app\modules\v1\models\Usertocards;
 use app\modules\v1\models\Traderecords;
+use yii\data\ActiveDataProvider;
 
 use function Qiniu\json_decode;
 use app\modules\v1\models\app\modules\v1\models;
