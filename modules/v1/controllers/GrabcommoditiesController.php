@@ -11,6 +11,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\modules\v1\models\Users;
 use app\modules\v1\models\app\modules\v1\models;
+use app\modules\v1\models\Traderecords;
+use yii\db\yii\db;
 
 /**
  * ApplyjobsController implements the CRUD actions for Applyjobs model.
@@ -456,6 +458,15 @@ class GrabcommoditiesController extends Controller
     		$inserrecord=$connection->createCommand('insert into grabcommodityrecords(userid,grabcommodityid,count,numbers,type,created_at) values (:userid,:grabcommodityid,:count,:numbers,:type,:created_at)'
     					,[':userid'=>$user->id,':grabcommodityid'=>$data['grabcommodityid'],':count'=>$data['count'],':numbers'=>$usernumbers,':type'=>$data['type'],':created_at'=>microtime(true)])->execute();
     		//var_dump($expression)
+    		if($data['type']==0){
+    			$inserttrade = $connection->createCommand('insert into traderecords(userid,count,type,description,cardid,created_at) values (:userid,:count,:type,:description,:cardid,:created_at)'
+    					,[':userid'=>$user->id,':count'=>$data['count'],':type'=>-2,'description'=>'购买' . $grabcommodity->title .'第'.$grabcommodity->version .'期',':cardid'=>0,':created_at'=>time()])->execute();
+    			 //var_dump($inserttrade);
+    			 if(!$inserttrade){
+    			 	throw new Exception("insert trade record fail");
+    			 }
+    		}
+    		
     		if(!(($data['type']==3||$updatemoney)&&$updatecount&&$inserrecord)){
     			throw new Exception("Value must be 1 or below");
     		}

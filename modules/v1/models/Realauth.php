@@ -32,7 +32,7 @@ class Realauth extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userid', 'realname', 'idcard', 'picture', 'created_at'], 'required'],
+            [['userid', 'realname', 'idcard', 'created_at'], 'required'],
             [['userid', 'created_at'], 'integer'],
             [['realname', 'idcard', 'picture'], 'string', 'max' => 255]
         ];

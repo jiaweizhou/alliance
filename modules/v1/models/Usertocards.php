@@ -14,6 +14,8 @@ use Yii;
  * @property string $idcard
  * @property string $lphone
  * @property string $location
+ * @property string $bankname
+ * @property string $bankcode
  *
  * @property Users $user
  */
@@ -33,9 +35,9 @@ class Usertocards extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userid', 'cardnumber', 'name', 'idcard', 'lphone', 'location'], 'required'],
+            [['userid', 'cardnumber', 'name', 'idcard', 'lphone', 'location','bankname','bankcode'], 'required'],
             [['userid'], 'integer'],
-            [['cardnumber', 'name', 'idcard', 'lphone', 'location'], 'string', 'max' => 255]
+            [['cardnumber', 'name', 'idcard', 'lphone', 'location','bankname','bankcode'], 'string', 'max' => 255]
         ];
     }
 

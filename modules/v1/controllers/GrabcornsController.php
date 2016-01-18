@@ -438,6 +438,17 @@ class GrabcornsController extends Controller
     		$inserrecord=$connection->createCommand('insert into grabcornrecords(userid,grabcornid,count,numbers,type,created_at) values (:userid,:grabcornid,:count,:numbers,:type,:created_at)'
     					,[':userid'=>$user->id,':grabcornid'=>$data['grabcornid'],':count'=>$data['count'],':numbers'=>$usernumbers,':type'=>$data['type'],':created_at'=>microtime(true)])->execute();
     		//var_dump($expression)
+    		
+    		if($data['type']==0){
+    			$inserttrade = $connection->createCommand('insert into traderecords(userid,count,type,description,cardid,created_at) values (:userid,:count,:type,:description,:cardid,:created_at)'
+    					,[':userid'=>$user->id,':count'=>$data['count'],':type'=>-3,'description'=>'购买' . $grabcorn->title .'第'.$grabcorn->version .'期',':cardid'=>0,':created_at'=>time()])->execute();
+    			//var_dump($inserttrade);
+    			if(!$inserttrade){
+    				throw new Exception("insert trade record fail");
+    			}
+    		}
+    		
+    		
     		if(!(($data['type']==3||$updatemoney)&&$updatecount&&$inserrecord)){
     			throw new Exception("Value must be 1 or below");
     		}

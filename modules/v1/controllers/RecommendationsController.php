@@ -33,7 +33,16 @@ class RecommendationsController extends Controller
 	public function actionSearch()
 	{ 
 		$data=Yii::$app->request->post();
-		$query = (new \yii\db\Query ())->select('recommendations.*,users.phone,users.nickname,users.thumb,kindsofrecommendation.kind')->from('recommendations')->join('INNER JOIN','users','recommendations.userid = users.id')->join('INNER JOIN','kindsofrecommendation','recommendations.kindid = kindsofrecommendation.id');
+		
+		$longitude = $data['longitude'];
+		$latitude = $data['latitude'];
+		
+		$query = (new \yii\db\Query ())
+		->select('recommendations.*,users.phone,users.nickname,users.thumb,kindsofrecommendation.kind')
+		->from('recommendations')
+		->orderBy(sprintf('abs(recommendations.longitude - %f) + abs(recommendations.latitude - %f)',$longitude,$latitude))
+		->join('INNER JOIN','users','recommendations.userid = users.id')
+		->join('INNER JOIN','kindsofrecommendation','recommendations.kindid = kindsofrecommendation.id');
 // 		$dataProvider = new ActiveDataProvider([
 // 				'query' => $query,
 // 		]);
@@ -83,6 +92,8 @@ class RecommendationsController extends Controller
 					] )->orderBy('recommendationcomments.created_at desc')->from ( 'recommendationcomments' )->join ( 'INNER JOIN', 'users', 'recommendationcomments.userid = users.id and recommendationcomments.recommendationid = :id', [
 						':id' => $model ['id']
 					] )->all ();
+					
+			$model['distance'] = $this->getDistance($latitude, $longitude, $model['latitude'], $model['longitude']);
 			$model['comments'] = $comments;
 			$result['items'][]=$model;
 		}
@@ -97,7 +108,37 @@ class RecommendationsController extends Controller
 		//$dataProvider->
 		return $result;
 	}
-
+	function getDistance($lat1, $lng1, $lat2, $lng2)
+	{
+		$earthRadius = 6367000; //approximate radius of earth in meters
+	
+		/*
+		 Convert these degrees to radians
+		 to work with the formula
+		 */
+	
+		$lat1 = ($lat1 * pi() ) / 180;
+		$lng1 = ($lng1 * pi() ) / 180;
+	
+		$lat2 = ($lat2 * pi() ) / 180;
+		$lng2 = ($lng2 * pi() ) / 180;
+	
+		/*
+		 Using the
+		 Haversine formula
+	
+		 http://en.wikipedia.org/wiki/Haversine_formula
+	
+		 calculate the distance
+		 */
+	
+		$calcLongitude = $lng2 - $lng1;
+		$calcLatitude = $lat2 - $lat1;
+		$stepOne = pow(sin($calcLatitude / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($calcLongitude / 2), 2);  $stepTwo = 2 * asin(min(1, sqrt($stepOne)));
+		$calculatedDistance = $earthRadius * $stepTwo;
+	
+		return round($calculatedDistance);
+	}
     /**
      * Creates a new Applyjobs model.
      * If creation is successful, the browser will be redirected to the 'view' page.

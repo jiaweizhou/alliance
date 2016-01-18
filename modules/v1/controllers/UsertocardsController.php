@@ -50,7 +50,7 @@ class UsertocardsController extends Controller {
 		}
 		$model = new Usertocards();
 		$model['userid'] = $user['id'];
-		foreach (array('cardnumber','name','idcard','lphone','location') as $item){
+		foreach (array('cardnumber','name','idcard','lphone','location','bankname','bankcode') as $item){
 			$model[$item] = $data[$item];
 		}
 		if($model->save()){

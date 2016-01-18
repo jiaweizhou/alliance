@@ -12,6 +12,9 @@ use yii\rest\Serializer;
 use app\modules\v1\models\Addresses;
 use app\modules\v1\models\Realauth;
 use app\modules\v1\models\Usertocards;
+use app\modules\v1\models\Traderecords;
+use yii\data\ActiveDataProvider;
+
 use function Qiniu\json_decode;
 use app\modules\v1\models\app\modules\v1\models;
 class UsersController extends Controller {
@@ -26,6 +29,114 @@ class UsersController extends Controller {
 		$user=Users::find()->where(['phone'=>$data['phone']])->one();
 		return $user;
 	}
+	
+	public function actionTraderecords(){
+		$data = Yii::$app->request->post();
+		if(empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		
+		$query = (new \yii\db\Query ())
+			->from('traderecords')
+			->where('userid = ' . $user->id)
+			->orderBy('created_at desc');
+		$dataProvider = new ActiveDataProvider([
+				'query' => $query,
+		]);
+		
+		return $dataProvider;
+	}
+	
+	public function actionMoneyin(){
+		$data = Yii::$app->request->post();
+		if(empty($data['count'])||empty($data['type'])||empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		$model =  new Traderecords();
+		$model->userid = $user['id'];
+		$model->type = $data['type'];
+		if($model->type == 1){
+			$model->description = '自己人联盟支付宝充值';
+		}else if($model->type == 2){
+			$model->description = '自己人联盟微信支付充值';
+		}
+		$model->cardid = 0;
+		$model->count = $data['count'];
+		$model->created_at = time();
+		try{
+			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
+				if(!$model->save()){
+					throw new Exception("save traderecord fail");
+				}
+				$rows = Users::updateAllCounters(['money'=>$model['count']],['id'=>$user['id']]);
+				if($rows != 1){
+					throw new Exception("update user fail");
+				}
+			});
+		} catch (\Exception $e) {
+			return array (
+					'flag' => 0,
+					'error'=>$e->getMessage(),
+					'msg' => 'money in fail!'
+			);
+		}
+		
+		return array(
+				'flag' => 1,
+				'msg' => 'money in success!'
+		);
+	}
+	
+	public function actionMoneyout(){
+		$data = Yii::$app->request->post();
+		if(empty($data['count'])||empty($data['cardid'])||empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		$model =  new Traderecords();
+		$model->userid = $user['id'];
+		$model->type = -1;
+		$model->description = '自己人联盟用户提现';
+		$model->cardid = $data['cardid'];
+		$model->count = $data['count'];
+		$model->ishandled = 1;
+		$model->created_at = time();
+		try{
+			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
+				if(!$model->save()){
+					throw new Exception("save traderecord fail");
+				}
+				$rows = Users::updateAllCounters(['money'=>$model['count']] * -1,'id = ' . user['id'] . ' and money > ' . $model['count']);
+				if($rows != 1){
+					throw new Exception("update user fail");
+				}
+			});
+		} catch (\Exception $e) {
+			return array (
+					'flag' => 0,
+					'error'=>$e->getMessage(),
+					'msg' => 'money out fail!'
+			);
+		}
+	
+		return array(
+				'flag' => 1,
+				'msg' => 'money out success!'
+		);
+	}
+	
 	public function actionSearch(){
 		$data = Yii::$app->request->post();
 		if(empty($data['search'])||empty($data['phone'])){
@@ -37,14 +148,20 @@ class UsersController extends Controller {
 		$me = Users::findOne(['phone'=>$data['phone']]);
 		
 		$users = (new \yii\db\Query ())
-		->select('id,id as huanxinid,phone,nickname,concerncount,thumb')
+		->distinct('users.id')
+		->select(['users.id','users.id as huanxinid','phone','nickname','concerncount','thumb','if(isnull(friends.id),0,1) as isfriend'])
 		->from('users')
+		->join('LEFT JOIN','friends','friends.myid = users.id')
 		->where(['phone'=>$data['search']])
 		->orFilterWhere(['like','nickname',$data['search']])
 		->all();
 		$t = array();
 		foreach ($users as $user){
 			$t[]=$user['id'];
+		}
+		
+		if(empty($t)){
+			return array();
 		}
 		
 		$friendcounts = (new \yii\db\Query ())
@@ -66,6 +183,21 @@ class UsersController extends Controller {
 		}
 		return $users;
 	}
+	
+	public function actionRealinfo(){
+		$data = Yii::$app->request->post();
+		if(empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		return Realauth::findone(['userid'=>$user['id']]);
+		
+	}
+	
+	
 	public function actionRealauth(){
 		$data = Yii::$app->request->post();
 		if(empty($data['phone'])){
@@ -90,19 +222,20 @@ class UsersController extends Controller {
 		$model['created_at'] = time();
 		try{
 			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
-				$model->save();
+				if(!$model->save()){
+					throw new Exception("status is not 0");
+				}
 				if($user['status']!=0)
 					throw new Exception("status is not 0");
 				else {
 					$user['status']=1;
 					$user->save();
-					var_dump($user->errors);
 				}
 			});
 		} catch (\Exception $e) {
 			return array (
 					'flag' => 0,
-					'error'=>$e,
+					'error'=>$model->errors,
 					'msg' => 'checkauth false!'
 			);
 		}
@@ -556,6 +689,16 @@ class UsersController extends Controller {
 		unset($model['paypwd']);
 		unset($model['pwd']);
 		$model['huanxinid'] = $model['id'];
+		
+		$friendcounts = (new \yii\db\Query ())
+		->select('count(id) as friendcount')
+		->from('friends')
+		->where('myid ='. $model['id'])
+		->One();
+		
+		//var_dump($friendcounts);
+		$model['friendcount'] = $friendcounts['friendcount'];
+		
 		return $model;
 	}
 	public function actionChangepwdbypwd(){
