@@ -63,8 +63,9 @@ class EnvelopesController extends Controller {
 		$enve['type'] = $type;
 		$enve['count'] = $count;
 		$enve['created_at'] = time();
+		$record = new Traderecords();
 		try{
-			$result=$user->getDb()->transaction(function($db) use ($enve,$user) {
+			$result=$user->getDb()->transaction(function($db) use ($enve,$user,$record) {
 			if(!$user->save()){
 				throw new Exception("save user fail");
 			}
@@ -72,7 +73,6 @@ class EnvelopesController extends Controller {
 				throw new Exception("save enve fail");
 			}
 			if($enve['type'] == 1){
-				$record = new Traderecords();
 				$record->userid = $user['id'];
 				$record->type = 3;
 				$record->description = '自己人联盟红包';
