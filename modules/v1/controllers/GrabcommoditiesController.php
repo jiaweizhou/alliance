@@ -12,6 +12,7 @@ use yii\filters\VerbFilter;
 use app\modules\v1\models\Users;
 use app\modules\v1\models\app\modules\v1\models;
 use app\modules\v1\models\Traderecords;
+use app\modules\v1\models\Consignment;
 use yii\db\yii\db;
 
 /**
@@ -624,7 +625,7 @@ class GrabcommoditiesController extends Controller
     }
     public function actionGetcommodity(){
     	$data=Yii::$app->request->post();
-    	if(!(isset($data['phone'])&&isset($data['grabcommodityid']))){
+    	if(!(isset($data['phone'])&&isset($data['grabcommodityid'])&&isset($data['addressid']))){
     		return 	array (
     				'flag' => 0,
     				'msg' => 'no enough arg!'
@@ -666,10 +667,18 @@ class GrabcommoditiesController extends Controller
     	try {
     		$updategrab=$connection->createCommand('update $grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
     		//$insertwait=$connection->createCommand('update $grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
-    		sdfasdfasdf;
     		if(!($updategrab)){
     			throw new Exception("Value must be 1 or below");
     		}
+    		
+    		$con = new Consignment();
+                $con['grabcommodityid'] = $grabcommodity['id'];
+                $con['addressid'] = $data['addressid'];
+                $con['created_at'] = time();
+                $con['status'] = 0;
+                if(!$con->save()){
+                        throw new Exception($con->errors);
+                }
     		// ... executing other SQL statements ...
     		$transaction->commit();
     
