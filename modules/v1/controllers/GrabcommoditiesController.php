@@ -632,7 +632,7 @@ class GrabcommoditiesController extends Controller
     		);
     	}
     	//Users::findOne(['phone'=>$data['phone']])
-    	$grabcommodity = Grabcorns::findOne(['id'=>$data['grabcommodityid']]);
+    	$grabcommodity = Grabcommodities::findOne(['id'=>$data['grabcommodityid']]);
     	 
     	if(!$grabcommodity){
     		return 	array (
