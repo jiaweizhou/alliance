@@ -72,13 +72,13 @@ class EnvelopesController extends Controller {
 				throw new Exception("save enve fail");
 			}
 			if($enve['type'] == 1){
-				record = new Traderecords();
-				record->userid = $user['id'];
-				record->type = 3;
-				record->description = '自己人联盟红包';
-				record->cardid = 0;
-				record->count = $enve['count'];
-				record->created_at = time();
+				$record = new Traderecords();
+				$record->userid = $user['id'];
+				$record->type = 3;
+				$record->description = '自己人联盟红包';
+				$record->cardid = 0;
+				$record->count = $enve['count'];
+				$record->created_at = time();
 				
 				if(!$record->save()){
 					throw new Exception("save record fail");
