@@ -688,6 +688,7 @@ class GrabcommoditiesController extends Controller
     		//var_dump($e->getMessage());
     		//Yii::$app->log->logger->
     		return 	array (
+    				'error'=>$e->getMessage(),
     				'flag' => 0,
     				'msg' => 'get commodity fail!'
     		);
