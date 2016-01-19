@@ -665,7 +665,7 @@ class GrabcommoditiesController extends Controller
     	$transaction=$connection->beginTransaction();
     	$updategrab=0;
     	try {
-    		$updategrab=$connection->createCommand('update $grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
+    		$updategrab=$connection->createCommand('update grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
     		//$insertwait=$connection->createCommand('update $grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
     		if(!($updategrab)){
     			throw new Exception("Value must be 1 or below");
