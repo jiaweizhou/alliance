@@ -26,8 +26,8 @@ class Consignment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['userid', 'addressid','grabcommodityid','created_at','status'], 'required'],
-            [['userid', 'addressid','grabcommodityid','created_at','status'], 'integer']
+            [['addressid','grabcommodityid','created_at','status'], 'required'],
+            [['addressid','grabcommodityid','created_at','status'], 'integer']
         ];
     }
     /**
