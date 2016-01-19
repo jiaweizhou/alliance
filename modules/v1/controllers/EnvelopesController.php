@@ -67,9 +67,11 @@ class EnvelopesController extends Controller {
 		try{
 			$result=$user->getDb()->transaction(function($db) use ($enve,$user,$record) {
 			if(!$user->save()){
+				var_dump("1");
 				throw new Exception("save user fail");
 			}
 			if(!$enve->save()){
+				var_dump("2");
 				throw new Exception("save enve fail");
 			}
 			if($enve['type'] == 1){
@@ -81,6 +83,7 @@ class EnvelopesController extends Controller {
 				$record->created_at = time();
 				
 				if(!$record->save()){
+					var_dump("3");
 					throw new Exception("save record fail");
 				}
 			}
