@@ -677,6 +677,7 @@ class GrabcommoditiesController extends Controller
                 $con['created_at'] = time();
                 $con['status'] = 0;
                 if(!$con->save()){
+                	var_dump($con->errors);
                         throw new Exception($con->errors);
                 }
     		// ... executing other SQL statements ...
