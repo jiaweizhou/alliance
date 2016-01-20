@@ -235,7 +235,7 @@ class GrabcornsController extends Controller
 					':id' => $grabcorn['id']
 			] )
 			->limit(50)
-			->where('grabcornrecords.created_at < '.$grabcorns['end_at'])
+			->where('grabcornrecords.created_at < '.$grabcorn['end_at'])
 			->all ();
 			return $records;
 	}
