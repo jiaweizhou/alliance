@@ -118,7 +118,7 @@ class UsersController extends Controller {
 				if(!$model->save()){
 					throw new Exception("save traderecord fail");
 				}
-				$rows = Users::updateAllCounters(['money'=>$model['count']] * -1,'id = ' . user['id'] . ' and money > ' . $model['count']);
+				$rows = Users::updateAllCounters(['money'=>$model['count'] * -1],'id = ' . user['id'] . ' and money > ' . $model['count']);
 				if($rows != 1){
 					throw new Exception("update user fail");
 				}
@@ -154,6 +154,12 @@ class UsersController extends Controller {
 			);
 		}
 		
+		if($user['status']!=1){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'have not real auth!'
+			);
+		}
 		
 		if(Traderecords::findOne(['userid'=>$user['id'],'type' => 0])){
 			return 	array (
@@ -175,7 +181,7 @@ class UsersController extends Controller {
 				if(!$model->save()){
 					throw new Exception("save traderecord fail");
 				}
-				$rows = Users::updateAllCounters(['alliancerewards'=>$model['count']] * -1,'id = ' . user['id'] . ' and alliancerewards  > ' . $model['count']);
+				$rows = Users::updateAllCounters(['alliancerewards'=>$model['count'] * -1,'status'=>1] ,'id = ' . user['id'] . ' and alliancerewards  > ' . $model['count']);
 				if($rows != 1){
 					throw new Exception("update user fail");
 				}
