@@ -137,6 +137,64 @@ class UsersController extends Controller {
 		);
 	}
 	
+	public function actionRewardout(){
+		$data = Yii::$app->request->post();
+		if(empty($data['count'])||empty($data['cardid'])||empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		
+		if($user['alliancerewards']<1000){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'reward not enough!'
+			);
+		}
+		
+		
+		if(Traderecords::findOne(['userid'=>$user['id'],'type' => 0])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'already been get!'
+			);
+		}
+		
+		$model =  new Traderecords();
+		$model->userid = $user['id'];
+		$model->type = 0;
+		$model->description = '自己人联盟联盟奖励提取';
+		$model->cardid = $data['cardid'];
+		$model->count = $data['count'];
+		$model->ishandled = 1;
+		$model->created_at = time();
+		try{
+			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
+				if(!$model->save()){
+					throw new Exception("save traderecord fail");
+				}
+				$rows = Users::updateAllCounters(['alliancerewards'=>$model['count']] * -1,'id = ' . user['id'] . ' and alliancerewards  > ' . $model['count']);
+				if($rows != 1){
+					throw new Exception("update user fail");
+				}
+			});
+		} catch (\Exception $e) {
+			return array (
+					'flag' => 0,
+					//'error'=>$e->getMessage(),
+					'msg' => 'reward out fail!'
+			);
+		}
+	
+		return array(
+				'flag' => 1,
+				'msg' => 'money out success!'
+		);
+	}
+	
+	
 	public function actionSearch(){
 		$data = Yii::$app->request->post();
 		if(empty($data['search'])||empty($data['phone'])){
