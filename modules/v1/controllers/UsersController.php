@@ -118,7 +118,7 @@ class UsersController extends Controller {
 				if(!$model->save()){
 					throw new Exception("save traderecord fail");
 				}
-				$rows = Users::updateAllCounters(['money'=>$model['count'] * -1],'id = ' . user['id'] . ' and money > ' . $model['count']);
+				$rows = Users::updateAllCounters(['money'=>(int )$model['count'] * -1],'id = ' . user['id'] . ' and money > ' . $model['count']);
 				if($rows != 1){
 					throw new Exception("update user fail");
 				}
