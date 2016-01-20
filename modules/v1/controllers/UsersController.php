@@ -701,6 +701,44 @@ class UsersController extends Controller {
 		
 		return $model;
 	}
+	
+	public function actionView2(){
+		$data = Yii::$app->request->post ();
+		if(empty($data['phone'])||empty($data['herphone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		
+		$model=(new \yii\db\Query ())->from('users')->where(['phone'=>$data['herphone']])->one();
+		unset($model['paypwd']);
+		unset($model['pwd']);
+		$model['huanxinid'] = $model['id'];
+		
+		$friendcounts = (new \yii\db\Query ())
+		->select('count(id) as friendcount')
+		->from('friends')
+		->where('myid ='. $model['id'])
+		->One();
+		
+		//var_dump($friendcounts);
+		$model['friendcount'] = $friendcounts['friendcount'];
+		
+		$isfriend = (new \yii\db\Query ())
+		->from('friends')
+		->where('myid ='. $model['id'] . ' and friendid = ' . $user['id'])
+		->One();
+		if($isfriend){
+			$model['isfriend'] = '1';	
+		}else{
+			$model['isfriend'] = '0';	
+		}
+		return $model;
+	}
+	
 	public function actionChangepwdbypwd(){
 		$data = Yii::$app->request->post ();
 		$model=Users::findone(['phone'=>$data['phone']]);
