@@ -204,6 +204,44 @@ class GrabcornsController extends Controller
 		$result['myrecords']=$myrecords;
 		return $result;
 	}
+	
+	public function actionLast50()
+	{
+		$data=Yii::$app->request->post();
+		if(!(isset($data['grabcornid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$grabcorn = (new \yii\db\Query ())->select('grabcorns.*,grabcorns.id as version')->from('grabcorns')->where(['id'=>$data['grabcornid']])->one();
+		if(!$grabcorn){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no grabcorn with this id!'
+			);
+		}
+		$records = (new \yii\db\Query ())->select ( [
+					'grabcornrecords.count',
+					'grabcornrecords.id',
+					'grabcornrecords.created_at',
+					'grabcornrecords.type',
+					'users.phone',
+					'users.nickname',
+					'users.thumb'
+			] )->from ( 'grabcornrecords' )
+			->orderBy('grabcornrecords.created_at desc')
+			->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
+					':id' => $grabcorn['id']
+			] )
+			->limit(50)
+			->where('grabcornrecords.created_at < '.$grabcorns['end_at'])
+			->all ();
+			return $records;
+	}
+	
+	
+	
 	public function actionMorerecords(){
 		$data=Yii::$app->request->post();
 		if(!(isset($data['grabcornid']))){
