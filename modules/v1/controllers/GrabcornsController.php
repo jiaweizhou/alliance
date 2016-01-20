@@ -14,7 +14,7 @@ use app\modules\v1\controllers\CacheLock;
 use yii\filters\VerbFilter;
 use app\modules\v1\models\Users;
 use app\modules\v1\models\app\modules\v1\models;
-
+use app\modules\v1\models\Traderecords;
 /**
  * ApplyjobsController implements the CRUD actions for Applyjobs model.
  */
@@ -690,12 +690,12 @@ class GrabcornsController extends Controller
     				'msg' => 'find user fail!'
     		);
     	}
-    	if($grabcorn->winneruserid !=$user->id){
-    		return 	array (
-    				'flag' => 0,
-    				'msg' => 'you are not the winner!'
-    		);
-    	}
+    	// if($grabcorn->winneruserid !=$user->id){
+    	// 	return 	array (
+    	// 			'flag' => 0,
+    	// 			'msg' => 'you are not the winner!'
+    	// 	);
+    	// }
     	 
 //     	if($grabcorn->isgot !=0){
 //     		return 	array (
@@ -717,11 +717,23 @@ class GrabcornsController extends Controller
     	try {
     		
     		$updategrab=$connection->createCommand('update grabcornrecords g1 set g1.isgotback=1 where g1.grabcornid = :id and g1.userid = :userid',[':id'=>$data['grabcornid'],':userid'=>$user->id])->execute();
+    		
     		$updateuser=$connection->createCommand('update users u1  set u1.corns = u1.corns + :back where u1.id=:id',[':id'=>$user->id,':back'=>intval($back * 0.9)])->execute();
-    		 
     		if(!($updateuser)){
     			throw new Exception("Value must be 1 or below");
     		}
+    		$trade = new Traderecords();
+    		$model->userid = $user['id'];
+		$model->type = 4;
+		$model->description = '自己人联盟提前保本';
+		$model->cardid = 0;
+		$model->count = intval($back * 0.9);
+		$model->ishandled = 0;
+		$model->created_at = time();
+		if(!$model->save()){
+			throw new Exception("Value must be 1 or below");
+		}
+    		
     		// ... executing other SQL statements ...
     		$transaction->commit();
     	
@@ -730,7 +742,6 @@ class GrabcornsController extends Controller
     		//var_dump($e->getMessage());
     		//Yii::$app->log->logger->
     		return 	array (
-    				'err'=>$e,
     				'flag' => 0,
     				'msg' => 'get corn fail!'
     		);
