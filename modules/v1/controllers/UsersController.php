@@ -156,17 +156,22 @@ class UsersController extends Controller {
 			);
 		}
 		
-		if($user['status']!=1){
+		if($user['status']<1){
 			return 	array (
 					'flag' => 0,
 					'msg' => 'have not real auth!'
 			);
 		}
-		
+		if($user['status']==2){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'have been get!'
+			);
+		}
 		if(Traderecords::findOne(['userid'=>$user['id'],'type' => 0])){
 			return 	array (
 					'flag' => 0,
-					'msg' => 'already been get!'
+					'msg' => 'have been get!'
 			);
 		}
 		
