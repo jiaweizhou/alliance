@@ -718,7 +718,7 @@ class GrabcornsController extends Controller
     		
     		$updategrab=$connection->createCommand('update grabcornrecords g1 set g1.isgotback=1 where g1.grabcornid = :id and g1.userid = :userid',[':id'=>$data['grabcornid'],':userid'=>$user->id])->execute();
     		
-    		$updateuser=$connection->createCommand('update users u1  set u1.corns = u1.corns + :back where u1.id=:id',[':id'=>$user->id,':back'=>intval($back * 0.9)])->execute();
+    		$updateuser=$connection->createCommand('update users u1  set u1.money = u1.money + :back where u1.id=:id',[':id'=>$user->id,':back'=>intval($back * 0.9)])->execute();
     		if(!($updateuser)){
     			throw new Exception("Value must be 1 or below");
     		}
@@ -747,7 +747,7 @@ class GrabcornsController extends Controller
     		);
     	}
     	return 	array (
-    			'c'=>$updategrab,
+    			//'c'=>$updategrab,
     			'flag' => 1,
     			'msg' => 'get corn success!'
     	);
