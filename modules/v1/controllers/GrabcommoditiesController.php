@@ -260,7 +260,7 @@ class GrabcommoditiesController extends Controller
 				':id' => $grabcommodity['id']
 		] )
 		->limit(50)
-		->where('grabcornrecords.created_at < '.$grabcommodity['end_at'])
+		->where('grabcommodityrecords.created_at < '.$grabcommodity['end_at'])
 		->all ();
 		
 		return $records;
