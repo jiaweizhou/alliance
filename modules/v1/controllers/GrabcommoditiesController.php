@@ -229,6 +229,43 @@ class GrabcommoditiesController extends Controller
 		$result['myrecords']=$myrecords;
 		return $result;
 	}
+	
+	public function actionLast50()
+	{
+		$data=Yii::$app->request->post();
+		if(!(isset($data['grabcommodityid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$grabcommodity = (new \yii\db\Query ())->select('grabcommodities.*,grabcommodities.id as version')->from('grabcommodities')->where(['id'=>$data['grabcommodityid']])->one();
+		if(!$grabcommodity){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no grabcommodity with this id!'
+			);
+		}
+		$records = (new \yii\db\Query ())->select ( [
+				'grabcommodityrecords.count',
+				'grabcommodityrecords.id',
+				'grabcommodityrecords.created_at',
+				'users.phone',
+				'users.nickname',
+				'users.thumb'
+		] )
+		->from ( 'grabcommodityrecords' )
+		->orderBy('grabcommodityrecords.created_at desc')
+		->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and grabcommodityrecords.grabcommodityid = :id', [
+				':id' => $grabcommodity['id']
+		] )
+		->limit(50)
+		->where('grabcornrecords.created_at < '.$grabcommodity['end_at'])
+		->all ();
+		
+		return $records;
+	}
+	
 	public function actionMorerecords(){
 		$data=Yii::$app->request->post();
 		if(!(isset($data['grabcommodityid']))){
