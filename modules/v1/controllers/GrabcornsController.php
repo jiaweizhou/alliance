@@ -723,14 +723,14 @@ class GrabcornsController extends Controller
     			throw new Exception("Value must be 1 or below");
     		}
     		$trade = new Traderecords();
-    		$model->userid = $user['id'];
-		$model->type = 4;
-		$model->description = '自己人联盟提前保本';
-		$model->cardid = 0;
-		$model->count = intval($back * 0.9);
-		$model->ishandled = 0;
-		$model->created_at = time();
-		if(!$model->save()){
+    		$trade->userid = $user['id'];
+		$trade->type = 4;
+		$trade->description = '自己人联盟提前保本';
+		$trade->cardid = 0;
+		$trade->count = intval($back * 0.9);
+		$trade->ishandled = 0;
+		$trade->created_at = time();
+		if(!$trade->save()){
 			throw new Exception("Value must be 1 or below");
 		}
     		
