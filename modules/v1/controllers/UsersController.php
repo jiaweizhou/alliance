@@ -189,7 +189,7 @@ class UsersController extends Controller {
 					throw new Exception("save traderecord fail");
 				}
 				$sub = $model['count'] * -1;
-				$rows = Users::updateAllCounters(['alliancerewards'=> $sub,'status'=>1] ,'id = ' . $user['id'] . ' and alliancerewards  > ' . $model['count']);
+				$rows = Users::updateAllCounters(['alliancerewards'=> $sub,'status'=>1] ,'id = ' . $user['id'] . ' and alliancerewards  >= ' . $model['count']);
 				if($rows != 1){
 					throw new Exception("update user fail");
 				}
