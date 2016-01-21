@@ -66,7 +66,7 @@ class EnvelopesController extends Controller {
 		$record = new Traderecords();
 		if($enve['count'] != 0){
 			try{
-				$result=$user->getDb()->transaction(function($db) use ($enve,$user,$record) {
+					$result=$user->getDb()->transaction(function($db) use ($enve,$user,$record) {
 					if(!$user->save()){
 						//var_dump("1");
 						throw new Exception("save user fail");
@@ -89,8 +89,6 @@ class EnvelopesController extends Controller {
 							throw new Exception("save record fail");
 						}
 					}	
-				}
-				
 				});
 			} catch (\Exception $e) {
 				return array (
