@@ -231,9 +231,8 @@ class GrabcornsController extends Controller
 					'users.thumb'
 			] )->from ( 'grabcornrecords' )
 			->orderBy('grabcornrecords.created_at desc')
-			->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id and grabcornrecords.grabcornid = :id', [
-					':id' => $grabcorn['id']
-			] )
+			->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id 
+			 )
 			->limit(50)
 			->where('grabcornrecords.created_at < '.$grabcorn['end_at'])
 			->all ();
