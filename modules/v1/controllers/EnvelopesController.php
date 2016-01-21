@@ -64,41 +64,43 @@ class EnvelopesController extends Controller {
 		$enve['count'] = $count;
 		$enve['created_at'] = time();
 		$record = new Traderecords();
-		try{
-			$result=$user->getDb()->transaction(function($db) use ($enve,$user,$record) {
-			if(!$user->save()){
-				var_dump("1");
-				throw new Exception("save user fail");
-			}
-			if($enve['count'] != 0){
-				if(!$enve->save()){
-					var_dump("2");
-					throw new Exception("save enve fail");
-				}
-				if($enve['type'] == 1){
-					$record->userid = $user['id'];
-					$record->type = 3;
-					$record->description = '自己人联盟红包';
-					$record->cardid = 0;
-					$record->count = $enve['count'];
-					$record->created_at = time();
-					
-					if(!$record->save()){
-						var_dump("3");
-						throw new Exception("save record fail");
+		if($enve['count'] != 0){
+			try{
+				$result=$user->getDb()->transaction(function($db) use ($enve,$user,$record) {
+					if(!$user->save()){
+						//var_dump("1");
+						throw new Exception("save user fail");
 					}
-				}	
+				
+					if(!$enve->save()){
+						//var_dump("2");
+						throw new Exception("save enve fail");
+					}
+					if($enve['type'] == 1){
+						$record->userid = $user['id'];
+						$record->type = 3;
+						$record->description = '自己人联盟红包';
+						$record->cardid = 0;
+						$record->count = $enve['count'];
+						$record->created_at = time();
+						
+						if(!$record->save()){
+							//var_dump("3");
+							throw new Exception("save record fail");
+						}
+					}	
+				}
+				
+				});
+			} catch (\Exception $e) {
+				return array (
+						'error'=>$e->getMessage(),
+						'flag' => 0,
+						'msg' => 'failure!'
+				);
 			}
-			
-			});
-		} catch (\Exception $e) {
-			return array (
-					'error'=>$e->getMessage(),
-					'flag' => 0,
-					'msg' => 'failure!'
-			);
 		}
-		
+	
 		return array(
 			'type'=>$type,
 			'flag'=>1,
