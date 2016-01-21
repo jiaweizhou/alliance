@@ -149,7 +149,7 @@ class UsersController extends Controller {
 		}
 		$user = Users::findOne(['phone'=>$data['phone']]);
 		
-		if($user['alliancerewards']<1000){
+		if($user['alliancerewards']<10){
 			return 	array (
 					'flag' => 0,
 					'msg' => 'reward not enough!'
