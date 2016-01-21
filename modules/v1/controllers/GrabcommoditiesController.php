@@ -256,9 +256,8 @@ class GrabcommoditiesController extends Controller
 		] )
 		->from ( 'grabcommodityrecords' )
 		->orderBy('grabcommodityrecords.created_at desc')
-		->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id and grabcommodityrecords.grabcommodityid = :id', [
-				':id' => $grabcommodity['id']
-		] )
+		->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id'
+		)
 		->limit(50)
 		->where('grabcommodityrecords.created_at < '.$grabcommodity['end_at'])
 		->all ();
