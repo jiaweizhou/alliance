@@ -306,7 +306,7 @@ class GrabcornsController extends Controller
 	 		if(!is_dir($dirname))
 	 			mkdir($dirname,0777,true);
 	 		$handle = fopen($dirname .'/'. $model['id'], "w+");
-	 		$numbers = range (10000001,10000000+$model->needed);
+	 		$numbers = range (10000001,10000000+$model->needed / 10);
 	 		shuffle ($numbers);
 	 		$string['numbers'] = $numbers;
 	 		$string['begin']=0;
@@ -447,7 +447,7 @@ class GrabcornsController extends Controller
 		$lock->lock();
 		$raw=file_get_contents($lockfile);
 		$numbers=json_decode($raw,true);
-		$arr2 = array_splice($numbers['numbers'],0, $data['count']);
+		$arr2 = array_splice($numbers['numbers'],0, $data['count']/10);
 		$usernumbers = join(' ', $arr2);
 		
     	$connection = Yii::$app->db;
