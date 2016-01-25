@@ -108,6 +108,8 @@ class TbothersController extends Controller {
 		$model->title = $data ['title'];
 		$model->content = $data ['content'];
 		$model->pictures = isset($data['pictures'])?$data['pictures']:"";
+		$model->longitude = isset($data['longitude'])?$data['longitude']:0;
+    $model->latitude = isset($data['latitude'])?$data['latitude']:0;
 		$model->created_at = time ();
 // 		for($i=1;$i<=9;$i++){
 //         	$msg->setAttribute('picture'. $i, isset($data['picture' . $i])?$data['picture' . $i]:'');
