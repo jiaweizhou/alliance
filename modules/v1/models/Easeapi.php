@@ -27,7 +27,8 @@ class Easeapi {
 		);
 		if ($token_save == 'cookie') {
 			if(!isset($_COOKIE['access_token'])) {
-				$result = json_decode($this->curl('/token', $params), true);
+				$result = $this->curl('/token', $params)['result'];
+				$result = json_decode($result, true);
 				setcookie('access_token', $result['access_token'], time() + $result['expires_in']);
 				return $result['access_token'];
 			} else {
@@ -39,7 +40,8 @@ class Easeapi {
 			if ($fp) {
 				$arr = unserialize(fgets($fp));
 				if ($arr['expires_in'] < time()) {
-					$result = $this->curl('/token', $params);
+					$result = $this->curl('/token', $params)['result'];
+					$result = json_decode($result, true);
 					$result['expires_in'] = $result['expires_in'] + time ();
 					@fwrite($fp, serialize($result));
 					return $result['access_token'];
@@ -50,7 +52,7 @@ class Easeapi {
 				fclose ($fp);
 				exit ();
 			}
-			$result = $this->curl('/token', $params);
+			$result = $this->curl('/token', $params)['result'];
 			$result = json_decode($result,true);
 			$result ['expires_in'] = $result['expires_in'] + time ();
 			$fp = @fopen('easeapi.txt', 'w');
