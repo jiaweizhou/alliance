@@ -12,6 +12,7 @@ use yii\filters\VerbFilter;
 use app\modules\v1\models\Users;
 use app\modules\v1\models\app\modules\v1\models;
 use app\modules\v1\models\Traderecords;
+use app\modules\v1\models\Consignment;
 use yii\db\yii\db;
 
 /**
@@ -228,6 +229,42 @@ class GrabcommoditiesController extends Controller
 		$result['myrecords']=$myrecords;
 		return $result;
 	}
+	
+	public function actionLast50()
+	{
+		$data=Yii::$app->request->post();
+		if(!(isset($data['grabcommodityid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$grabcommodity = (new \yii\db\Query ())->select('grabcommodities.*,grabcommodities.id as version')->from('grabcommodities')->where(['id'=>$data['grabcommodityid']])->one();
+		if(!$grabcommodity){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no grabcommodity with this id!'
+			);
+		}
+		$records = (new \yii\db\Query ())->select ( [
+				'grabcommodityrecords.count',
+				'grabcommodityrecords.id',
+				'grabcommodityrecords.created_at',
+				'users.phone',
+				'users.nickname',
+				'users.thumb'
+		] )
+		->from ( 'grabcommodityrecords' )
+		->orderBy('grabcommodityrecords.created_at desc')
+		->join ( 'INNER JOIN', 'users', 'grabcommodityrecords.userid = users.id'
+		)
+		->limit(50)
+		->where('grabcommodityrecords.created_at < '.$grabcommodity['end_at'])
+		->all ();
+		
+		return $records;
+	}
+	
 	public function actionMorerecords(){
 		$data=Yii::$app->request->post();
 		if(!(isset($data['grabcommodityid']))){
@@ -624,14 +661,14 @@ class GrabcommoditiesController extends Controller
     }
     public function actionGetcommodity(){
     	$data=Yii::$app->request->post();
-    	if(!(isset($data['phone'])&&isset($data['grabcommodityid']))){
+    	if(!(isset($data['phone'])&&isset($data['grabcommodityid'])&&isset($data['addressid']))){
     		return 	array (
     				'flag' => 0,
     				'msg' => 'no enough arg!'
     		);
     	}
     	//Users::findOne(['phone'=>$data['phone']])
-    	$grabcommodity = Grabcorns::findOne(['id'=>$data['grabcommodityid']]);
+    	$grabcommodity = Grabcommodities::findOne(['id'=>$data['grabcommodityid']]);
     	 
     	if(!$grabcommodity){
     		return 	array (
@@ -664,12 +701,21 @@ class GrabcommoditiesController extends Controller
     	$transaction=$connection->beginTransaction();
     	$updategrab=0;
     	try {
-    		$updategrab=$connection->createCommand('update $grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
+    		$updategrab=$connection->createCommand('update grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
     		//$insertwait=$connection->createCommand('update $grabcommodities g1 set g1.isgot=1 where g1.id=:id',[':id'=>$data['grabcommodityid']])->execute();
-    		sdfasdfasdf;
     		if(!($updategrab)){
     			throw new Exception("Value must be 1 or below");
     		}
+    		
+    		$con = new Consignment();
+                $con['grabcommodityid'] = $grabcommodity['id'];
+                $con['addressid'] = $data['addressid'];
+                $con['created_at'] = time();
+                $con['status'] = 0;
+                if(!$con->save()){
+                	var_dump($con->errors);
+                        throw new Exception($con->errors);
+                }
     		// ... executing other SQL statements ...
     		$transaction->commit();
     
@@ -678,6 +724,7 @@ class GrabcommoditiesController extends Controller
     		//var_dump($e->getMessage());
     		//Yii::$app->log->logger->
     		return 	array (
+    				'error'=>$e->getMessage(),
     				'flag' => 0,
     				'msg' => 'get commodity fail!'
     		);

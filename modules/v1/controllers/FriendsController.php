@@ -76,9 +76,51 @@ class FriendsController extends Controller
 		//return $friendcounts;
 		
 		return $f;
-		
-		
+	
 	}
+
+    public function actionGetcontactsinfobyarray(){
+        $data = Yii::$app->request->post ();
+        if(!(isset($data['contactphones']))){
+            return  array (
+                    'flag' => 0,
+                    'msg' => 'no enough arg!'
+            );
+        }
+        
+        //var_dump(join($data['huanxinids'], ','));
+        $user = Users::find()->where(['phone'=>$data['phone']])->one();
+
+        $f = (new \yii\db\Query ())
+        ->select('users.id as huanxinid,users.phone,users.thumb,users.nickname,users.friendcount,users.concerncount')
+        ->from('users')
+        ->where('phone in ('. join($data['contactphones'], ',').')')
+        //->andFilterWhere(['in','id','('.join($data['huanxinids'], ',').')'])
+        ->all();
+        
+        $friendcounts = (new \yii\db\Query ())
+        ->select('myid , count(id) as friendcount')
+        ->from('friends')
+        ->where('myid in ('.join($data['huanxinids'], ',').')')
+        ->groupBy('myid')
+        ->all();
+        $l=array();
+        foreach ($friendcounts as $friendcount){
+            $l[$friendcount['myid']] = $friendcount['friendcount'];
+        }
+        foreach ($f as $i=>$t){
+            $t=$f[$i]['huanxinid'];
+            if(isset($l[$t])){
+                $f[$i]['friendcount'] = $l[$t];
+            }
+            //$f[$i]['friendcount'] = $l[];
+        }
+        //return $friendcounts;
+        
+        return $f;
+        
+    }
+    
     public function actionApprove(){
     	$data = Yii::$app->request->post ();
     	//var_dump($data);

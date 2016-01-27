@@ -14,7 +14,7 @@ use app\modules\v1\controllers\CacheLock;
 use yii\filters\VerbFilter;
 use app\modules\v1\models\Users;
 use app\modules\v1\models\app\modules\v1\models;
-
+use app\modules\v1\models\Traderecords;
 /**
  * ApplyjobsController implements the CRUD actions for Applyjobs model.
  */
@@ -204,6 +204,43 @@ class GrabcornsController extends Controller
 		$result['myrecords']=$myrecords;
 		return $result;
 	}
+	
+	public function actionLast50()
+	{
+		$data=Yii::$app->request->post();
+		if(!(isset($data['grabcornid']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$grabcorn = (new \yii\db\Query ())->select('grabcorns.*,grabcorns.id as version')->from('grabcorns')->where(['id'=>$data['grabcornid']])->one();
+		if(!$grabcorn){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no grabcorn with this id!'
+			);
+		}
+		$records = (new \yii\db\Query ())->select ( [
+					'grabcornrecords.count',
+					'grabcornrecords.id',
+					'grabcornrecords.created_at',
+					'grabcornrecords.type',
+					'users.phone',
+					'users.nickname',
+					'users.thumb'
+			] )->from ( 'grabcornrecords' )
+			->orderBy('grabcornrecords.created_at desc')
+			->join ( 'INNER JOIN', 'users', 'grabcornrecords.userid = users.id'
+			 )
+			->limit(50)
+			->where('grabcornrecords.created_at < '.$grabcorn['end_at'])
+			->all ();
+			return $records;
+	}
+	
+	
+	
 	public function actionMorerecords(){
 		$data=Yii::$app->request->post();
 		if(!(isset($data['grabcornid']))){
@@ -269,7 +306,7 @@ class GrabcornsController extends Controller
 	 		if(!is_dir($dirname))
 	 			mkdir($dirname,0777,true);
 	 		$handle = fopen($dirname .'/'. $model['id'], "w+");
-	 		$numbers = range (10000001,10000000+$model->needed);
+	 		$numbers = range (10000001,10000000+$model->needed / 10);
 	 		shuffle ($numbers);
 	 		$string['numbers'] = $numbers;
 	 		$string['begin']=0;
@@ -410,7 +447,7 @@ class GrabcornsController extends Controller
 		$lock->lock();
 		$raw=file_get_contents($lockfile);
 		$numbers=json_decode($raw,true);
-		$arr2 = array_splice($numbers['numbers'],0, $data['count']);
+		$arr2 = array_splice($numbers['numbers'],0, $data['count']/10);
 		$usernumbers = join(' ', $arr2);
 		
     	$connection = Yii::$app->db;
@@ -690,12 +727,12 @@ class GrabcornsController extends Controller
     				'msg' => 'find user fail!'
     		);
     	}
-    	if($grabcorn->winneruserid !=$user->id){
-    		return 	array (
-    				'flag' => 0,
-    				'msg' => 'you are not the winner!'
-    		);
-    	}
+    	// if($grabcorn->winneruserid !=$user->id){
+    	// 	return 	array (
+    	// 			'flag' => 0,
+    	// 			'msg' => 'you are not the winner!'
+    	// 	);
+    	// }
     	 
 //     	if($grabcorn->isgot !=0){
 //     		return 	array (
@@ -717,11 +754,23 @@ class GrabcornsController extends Controller
     	try {
     		
     		$updategrab=$connection->createCommand('update grabcornrecords g1 set g1.isgotback=1 where g1.grabcornid = :id and g1.userid = :userid',[':id'=>$data['grabcornid'],':userid'=>$user->id])->execute();
-    		$updateuser=$connection->createCommand('update users u1  set u1.corns = u1.corns + :back where u1.id=:id',[':id'=>$user->id,':back'=>intval($back * 0.9)])->execute();
-    		 
+    		
+    		$updateuser=$connection->createCommand('update users u1  set u1.money = u1.money + :back where u1.id=:id',[':id'=>$user->id,':back'=>intval($back * 0.9)])->execute();
     		if(!($updateuser)){
     			throw new Exception("Value must be 1 or below");
     		}
+    		$trade = new Traderecords();
+    		$trade->userid = $user['id'];
+		$trade->type = 4;
+		$trade->description = '自己人联盟提前保本';
+		$trade->cardid = 0;
+		$trade->count = intval($back * 0.9);
+		$trade->ishandled = 0;
+		$trade->created_at = time();
+		if(!$trade->save()){
+			throw new Exception("Value must be 1 or below");
+		}
+    		
     		// ... executing other SQL statements ...
     		$transaction->commit();
     	
@@ -730,13 +779,12 @@ class GrabcornsController extends Controller
     		//var_dump($e->getMessage());
     		//Yii::$app->log->logger->
     		return 	array (
-    				'err'=>$e,
     				'flag' => 0,
     				'msg' => 'get corn fail!'
     		);
     	}
     	return 	array (
-    			'c'=>$updategrab,
+    			//'c'=>$updategrab,
     			'flag' => 1,
     			'msg' => 'get corn success!'
     	);

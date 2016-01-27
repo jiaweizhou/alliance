@@ -9,6 +9,8 @@ use app\modules\v1\models\Envelopes;
 use app\modules\v1\models\Easeapi;
 use app\modules\v1\controllers\CacheLock;
 use yii\rest\Serializer;
+use app\modules\v1\models\Traderecords;
+
 class EnvelopesController extends Controller {
 	//public $modelClass = 'app\modules\v1\models\Users';
 	public $serializer = [
@@ -51,7 +53,11 @@ class EnvelopesController extends Controller {
 		$type = rand(1,2);
 		switch($type){
 			case 1:
+<<<<<<< HEAD
 				$user->money += $count;
+=======
+				$user->money+= $count;
+>>>>>>> fbfb0856e2e6264052854209badc394691137a58
 			case 2:
 				$user->cornsforgrab+= $count;
 		}
@@ -61,21 +67,42 @@ class EnvelopesController extends Controller {
 		$enve['type'] = $type;
 		$enve['count'] = $count;
 		$enve['created_at'] = time();
-		try{
-			$result=$user->getDb()->transaction(function($db) use ($enve,$user) {
-				$user->save();
-				$enve->save();
-			});
-		} catch (\Exception $e) {
-			return array (
-					//'error'=>$model->errors,
-					'flag' => 0,
-					'msg' => 'failure!'
-			);
+		$record = new Traderecords();
+		if($enve['count'] != 0){
+			try{
+					$result=$user->getDb()->transaction(function($db) use ($enve,$user,$record) {
+					if(!$user->save()){
+						//var_dump("1");
+						throw new Exception("save user fail");
+					}
+				
+					if(!$enve->save()){
+						//var_dump("2");
+						throw new Exception("save enve fail");
+					}
+					if($enve['type'] == 1){
+						$record->userid = $user['id'];
+						$record->type = 3;
+						$record->description = '自己人联盟红包';
+						$record->cardid = 0;
+						$record->count = $enve['count'];
+						$record->created_at = time();
+						
+						if(!$record->save()){
+							//var_dump("3");
+							throw new Exception("save record fail");
+						}
+					}	
+				});
+			} catch (\Exception $e) {
+				return array (
+						'error'=>$e->getMessage(),
+						'flag' => 0,
+						'msg' => 'failure!'
+				);
+			}
 		}
-		
-		$user->save();
-		
+	
 		return array(
 			'type'=>$type,
 			'flag'=>1,

@@ -154,7 +154,8 @@ class ApplyjobsController extends Controller
         $model->content = isset($data['content'])?$data['content']:'';
         $model->professionid = isset($data['professionid'])?$data['professionid']:0;
         $model->herphone = isset($data['herphone'])?$data['herphone']:0;
-        
+        $model->longitude = isset($data['longitude'])?$data['longitude']:0;
+        $model->latitude = isset($data['latitude'])?$data['latitude']:0;
         //$model->load($data);
         $model->userid = $user->id;
         $model->created_at = time();

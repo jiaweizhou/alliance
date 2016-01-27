@@ -118,7 +118,9 @@ class UsersController extends Controller {
 				if(!$model->save()){
 					throw new Exception("save traderecord fail");
 				}
-				$rows = Users::updateAllCounters(['money'=>$model['count']] * -1,'id = ' . user['id'] . ' and money > ' . $model['count']);
+				$sub = $model['count'] * -1;
+				var_dump($sub);
+				$rows = Users::updateAllCounters(['money'=>$sub ],'id = ' . $user['id'] . ' and money > ' . $model['count']);
 				if($rows != 1){
 					throw new Exception("update user fail");
 				}
@@ -136,6 +138,76 @@ class UsersController extends Controller {
 				'msg' => 'money out success!'
 		);
 	}
+	
+	public function actionRewardout(){
+		$data = Yii::$app->request->post();
+		if(empty($data['count'])||empty($data['cardid'])||empty($data['phone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		
+		if($user['alliancerewards']<10){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'reward not enough!'
+			);
+		}
+		
+		if($user['status']<1){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'have not real auth!'
+			);
+		}
+		if($user['status']==2){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'have been get!'
+			);
+		}
+		if(Traderecords::findOne(['userid'=>$user['id'],'type' => 0])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'have been get!'
+			);
+		}
+		
+		$model =  new Traderecords();
+		$model->userid = $user['id'];
+		$model->type = 0;
+		$model->description = '自己人联盟联盟奖励提取';
+		$model->cardid = $data['cardid'];
+		$model->count = $data['count'];
+		$model->ishandled = 1;
+		$model->created_at = time();
+		try{
+			$result=$model->getDb()->transaction(function($db) use ($model,$user) {
+				if(!$model->save()){
+					throw new Exception("save traderecord fail");
+				}
+				$sub = $model['count'] * -1;
+				$rows = Users::updateAllCounters(['alliancerewards'=> $sub,'status'=>1] ,'id = ' . $user['id'] . ' and alliancerewards  >= ' . $model['count']);
+				if($rows != 1){
+					throw new Exception("update user fail");
+				}
+			});
+		} catch (\Exception $e) {
+			return array (
+					'flag' => 0,
+					'error'=>$e->getMessage(),
+					'msg' => 'reward out fail!'
+			);
+		}
+	
+		return array(
+				'flag' => 1,
+				'msg' => 'money out success!'
+		);
+	}
+	
 	
 	public function actionSearch(){
 		$data = Yii::$app->request->post();
@@ -701,6 +773,44 @@ class UsersController extends Controller {
 		
 		return $model;
 	}
+	
+	public function actionView2(){
+		$data = Yii::$app->request->post ();
+		if(empty($data['phone'])||empty($data['herphone'])){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		
+		$model=(new \yii\db\Query ())->from('users')->where(['phone'=>$data['herphone']])->one();
+		unset($model['paypwd']);
+		unset($model['pwd']);
+		$model['huanxinid'] = $model['id'];
+		
+		$friendcounts = (new \yii\db\Query ())
+		->select('count(id) as friendcount')
+		->from('friends')
+		->where('myid ='. $model['id'])
+		->One();
+		
+		//var_dump($friendcounts);
+		$model['friendcount'] = $friendcounts['friendcount'];
+		
+		$isfriend = (new \yii\db\Query ())
+		->from('friends')
+		->where('myid ='. $model['id'] . ' and friendid = ' . $user['id'])
+		->One();
+		if($isfriend){
+			$model['isfriend'] = '1';	
+		}else{
+			$model['isfriend'] = '0';	
+		}
+		return $model;
+	}
+	
 	public function actionChangepwdbypwd(){
 		$data = Yii::$app->request->post ();
 		$model=Users::findone(['phone'=>$data['phone']]);
