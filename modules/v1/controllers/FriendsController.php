@@ -38,6 +38,43 @@ class FriendsController extends Controller
 		//var_dump(array_intersect($f1, $f2)) ;
 		//$user = Friends::findAll(['phone'=>$data['phone']]);
 	}
+	
+	public function actionGetinfobyphonearray(){
+		$data = Yii::$app->request->post ();
+		if(!(isset($data['phones'])&&isset($data['phone']))){
+			return 	array (
+					'flag' => 0,
+					'msg' => 'no enough arg!'
+			);
+		}
+		$user = Users::findOne(['phone'=>$data['phone']]);
+		$people = (new \yii\db\Query ())
+			->select(['users.id','users.thumb','users.phone','users.nickname','if(isnull(users.id.friendid)) 0 1 as isfriend'])
+			->from('users')
+			->join('LEFT JOIN','friends','friends.myid = users.id and friends.friendid = ' . $user['id'])
+			->where('users.phone in ('.join($data['phones'], ',').')')
+			->all();
+		$map = array();
+		foreach ($people as $t){
+			$map[$t['phone']] = $t;
+		}
+		$ret = array();
+		for($data['phones'] : $phone){
+			if(isset($map[$phone])){
+				$map[$phone]['isregisted'] = 1;
+				$ret[] = $map[$phone];
+			}else{
+				$t = array();
+				$t['phone'] = $phone;
+				$t['isregisted'] = 0;
+				$ret[] = $t;
+			}
+		}
+		return $ret;
+		
+	}
+	
+	
 	public function actionGetinfobyarray(){
 		$data = Yii::$app->request->post ();
 		if(!(isset($data['huanxinids']))){
