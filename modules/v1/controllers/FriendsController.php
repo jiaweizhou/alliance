@@ -59,7 +59,7 @@ class FriendsController extends Controller
 			$map[$t['phone']] = $t;
 		}
 		$ret = array();
-		for($data['phones'] : $phone){
+		foreach ($data['phones'] as $phone){
 			if(isset($map[$phone])){
 				$map[$phone]['isregisted'] = 1;
 				$ret[] = $map[$phone];
