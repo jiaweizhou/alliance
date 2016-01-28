@@ -49,7 +49,7 @@ class FriendsController extends Controller
 		}
 		$user = Users::findOne(['phone'=>$data['phone']]);
 		$people = (new \yii\db\Query ())
-			->select(['users.id','users.thumb','users.phone','users.nickname','if(isnull(users.id.friendid)) 0 1 as isfriend'])
+			->select(['users.id','users.thumb','users.phone','users.nickname','if(isnull(friends.friendid),0,1) as isfriend'])
 			->from('users')
 			->join('LEFT JOIN','friends','friends.myid = users.id and friends.friendid = ' . $user['id'])
 			->where('users.phone in ('.join($data['phones'], ',').')')
